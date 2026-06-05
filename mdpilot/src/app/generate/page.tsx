@@ -1,16 +1,14 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-import dynamic from 'next/dynamic';
+import { useState, useEffect } from 'react';
 import Stepper from '@/components/Stepper';
-import TokenMeter from '@/components/TokenMeter';
+import OutputView, { type OptimizerSummary } from '@/components/OutputView';
+import ModelSelector from '@/components/ModelSelector';
+import TemplateGallery, { type Template } from '@/components/TemplateGallery';
 import { countTokens } from '@/lib/tokenizer';
 import { optimizeFiles } from '@/lib/optimizer';
-import type { CrossFileOptimizerResult } from '@/lib/optimizer';
+import type { AIProvider } from '@/lib/ai-client';
 import type { GenerationRequest, MDFileType, ProjectType, Audience, AITool, GeneratedFile } from '@/types';
-
-// CodeMirror accesses DOM APIs — load only on client
-const MarkdownEditor = dynamic(() => import('@/components/MarkdownEditor'), { ssr: false });
 
 // ── Stack detection ──────────────────────────────────────────────────────────
 
@@ -66,18 +64,26 @@ function getHowToUse(type: MDFileType): string {
       '📍 Place at your project root as AGENTS.md.\n\n✅ Read by: GitHub Copilot, Cursor, OpenAI Codex, Claude Code, Windsurf, Zed\n\nThis file tells AI coding assistants how to work in your project — coding style, commands, permission boundaries. Without it, agents guess and often guess wrong.',
     claude:
       '📍 Place at your project root as CLAUDE.md.\n\n✅ Read by: Claude Code only\n\nLoads automatically every session. Contains gotchas and constraints Claude would get wrong by reading code alone. Saves ~200 tokens per message by preventing repeated clarification questions.',
+    skill:
+      '📍 Place in your project or a shared skills directory.\n\n✅ Read by: Claude Code, Cursor, Copilot (via agentskills.io standard)\n\nDefines a reusable capability your AI agent can invoke. The description field is critical — it determines whether the skill gets triggered. A well-written SKILL.md means your agent automatically knows how to handle specific tasks.',
+    design:
+      '📍 Place at your project root as DESIGN.md.\n\n✅ Read by: Gemini, Claude, Cursor (Google Labs spec, April 2026)\n\nContains your exact design tokens — colors, typography, spacing, component rules. AI agents use these values literally when generating UI. Without this, agents default to generic styling that doesn\'t match your brand.',
     contributing:
-      '📍 Place at your project root as CONTRIBUTING.md.\n\nGitHub shows this to anyone opening an issue or PR. Reduces maintainer burden by answering setup and process questions upfront.',
+      '📍 Place at your project root.\n\nGitHub surfaces this to anyone opening an issue or PR. It answers "how do I contribute?" so you don\'t have to answer it repeatedly. The first-contribution path section is what converts visitors into contributors.',
     security:
-      '📍 Place at your project root as SECURITY.md.\n\nGitHub Security tab links to this. Tells researchers how to report vulnerabilities responsibly instead of opening public issues.',
+      '📍 Place at your project root.\n\nGitHub\'s Security tab links to this. Without it, vulnerability reporters may open public issues exposing the flaw. This file gives them a private channel instead.',
+    context:
+      '📍 Place at your project root. Update each coding session.\n\n✅ Read by: Claude Code, Cursor\n\nUnlike CLAUDE.md (permanent), CONTEXT.md is your daily scratchpad — what you\'re working on today, known broken things, decisions in progress. It prevents your AI agent from re-discovering things you already know.',
   };
   return guides[type] ?? '📍 Place at your project root.';
 }
 
 // ── File recommendation ──────────────────────────────────────────────────────
 
-// V1: only files that have API prompts
-const V1_SUPPORTED: MDFileType[] = ['readme', 'agents', 'claude'];
+// All file types that have a backing system prompt
+const V1_SUPPORTED: MDFileType[] = [
+  'readme', 'agents', 'claude', 'skill', 'design', 'contributing', 'security', 'context',
+];
 
 interface RecommendedFile {
   type: MDFileType;
@@ -99,19 +105,21 @@ function getRecommendedFiles(
   const usesAI = aiTools.length > 0 && !aiTools.includes('none');
   if (usesAI) {
     files.push({ type: 'agents', name: 'AGENTS.md', why: 'Universal AI instructions — read by all your tools', recommended: true });
+    files.push({ type: 'skill', name: 'SKILL.md', why: 'Custom reusable agent capability', recommended: false });
+    files.push({ type: 'context', name: 'CONTEXT.md', why: 'Session-level notes for your AI agent', recommended: false });
   }
   if (aiTools.includes('claude')) {
     files.push({ type: 'claude', name: 'CLAUDE.md', why: 'Tuned for Claude Code specifically', recommended: true });
   }
   if (projectType === 'design') {
-    files.push({ type: 'design', name: 'DESIGN.md', why: 'Design tokens AI agents will respect', recommended: true, v2: true });
+    files.push({ type: 'design', name: 'DESIGN.md', why: 'Design tokens AI agents will respect', recommended: true });
   }
   if (audience === 'public') {
-    files.push({ type: 'contributing', name: 'CONTRIBUTING.md', why: 'How others contribute to your project', recommended: true, v2: true });
-    files.push({ type: 'security', name: 'SECURITY.md', why: 'How to report vulnerabilities', recommended: false, v2: true });
+    files.push({ type: 'contributing', name: 'CONTRIBUTING.md', why: 'How others contribute to your project', recommended: true });
+    files.push({ type: 'security', name: 'SECURITY.md', why: 'How to report vulnerabilities', recommended: false });
   }
   if (audience === 'team') {
-    files.push({ type: 'contributing', name: 'CONTRIBUTING.md', why: 'How your team contributes', recommended: false, v2: true });
+    files.push({ type: 'contributing', name: 'CONTRIBUTING.md', why: 'How your team contributes', recommended: false });
   }
 
   return files;
@@ -184,12 +192,39 @@ export default function GeneratePage() {
   const [currentFileIndex, setCurrentFileIndex]   = useState(0);
   const [error, setError]                         = useState<string | null>(null);
 
-  // Output UI state
-  const [activeTab, setActiveTab]                 = useState(0);
-  const [expandedHowTo, setExpandedHowTo]         = useState<MDFileType | null>(null);
-  const [copied, setCopied]                       = useState(false);
-  const [optimizerResult, setOptimizerResult]     = useState<CrossFileOptimizerResult | null>(null);
-  const [viewMode, setViewMode]                   = useState<'original' | 'optimized'>('optimized');
+  // Output state
+  const [optimizer, setOptimizer]                 = useState<OptimizerSummary | null>(null);
+
+  // Model provider
+  const [providers, setProviders]                 = useState<AIProvider[]>([]);
+  const [selectedProvider, setSelectedProvider]   = useState<AIProvider>('claude');
+
+  // Template gallery
+  const [showTemplates, setShowTemplates]         = useState(false);
+  const [templateName, setTemplateName]           = useState<string | null>(null);
+
+  // Pre-fill stack context from Convert mode handoff
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('from') === 'convert') {
+      const content = sessionStorage.getItem('mdpilot_convert_context');
+      if (content) {
+        setRawStackInput(content);
+        sessionStorage.removeItem('mdpilot_convert_context');
+      }
+    }
+  }, []);
+
+  // Fetch available model providers
+  useEffect(() => {
+    fetch('/api/providers')
+      .then(r => r.json())
+      .then((d: { providers: AIProvider[] }) => {
+        setProviders(d.providers);
+        if (d.providers.length > 0) setSelectedProvider(d.providers[0]);
+      })
+      .catch(() => {});
+  }, []);
 
   // ── canProceed ──────────────────────────────────────────────────────────────
 
@@ -231,6 +266,19 @@ export default function GeneratePage() {
     }
   };
 
+  const handleSelectTemplate = (t: Template) => {
+    setProjectType(t.projectType);
+    setProjectDescription('');
+    setAudience(t.audience);
+    setAiTools(t.aiTools);
+    setDetectedStack(t.stack);
+    setRawStackInput(t.stack.join(', '));
+    setSelectedFiles(t.files.filter(f => V1_SUPPORTED.includes(f)));
+    setTemplateName(t.name);
+    setShowTemplates(false);
+    setStep(5); // jump to review
+  };
+
   const toggleAiTool = (tool: AITool) => {
     setAiTools(prev => {
       if (tool === 'none') {
@@ -260,7 +308,6 @@ export default function GeneratePage() {
     setIsGenerating(true);
     setError(null);
     setGeneratedFiles([]);
-    setActiveTab(0);
     setFileStatuses(filesToGen.map(type => ({
       type,
       filename: filenameMap[type] ?? `${type}.md`,
@@ -288,7 +335,7 @@ export default function GeneratePage() {
         const res = await fetch('/api/generate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ fileType, request }),
+          body: JSON.stringify({ fileType, request, provider: selectedProvider }),
         });
         const data = await res.json() as { type: MDFileType; filename: string; content: string; error?: string };
         if (!res.ok) throw new Error(data.error ?? 'Generation failed');
@@ -319,8 +366,7 @@ export default function GeneratePage() {
       const optimized = optimizeFiles(
         results.map(f => ({ type: f.type, filename: f.filename, content: f.content }))
       );
-      setOptimizerResult(optimized);
-      setViewMode('optimized');
+      setOptimizer({ totalTokensBefore: optimized.totalTokensBefore, totalTokensAfter: optimized.totalTokensAfter, passes: optimized.passes });
       const finalFiles = results.map((f, i) => ({
         ...f,
         optimizedContent: optimized.files[i]?.optimizedContent ?? f.content,
@@ -336,6 +382,8 @@ export default function GeneratePage() {
   const handleRetry = async (type: MDFileType) => {
     const filenameMap: Record<string, string> = {
       readme: 'README.md', agents: 'AGENTS.md', claude: 'CLAUDE.md',
+      skill: 'SKILL.md', design: 'DESIGN.md', contributing: 'CONTRIBUTING.md',
+      security: 'SECURITY.md', context: 'CONTEXT.md', task: 'TASK.md', spec: 'SPEC.md',
     };
     setFileStatuses(prev => prev.map(s => s.type === type ? { ...s, status: 'generating', error: undefined } : s));
     setError(null);
@@ -354,7 +402,7 @@ export default function GeneratePage() {
       const res = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fileType: type, request }),
+        body: JSON.stringify({ fileType: type, request, provider: selectedProvider }),
       });
       const data = await res.json() as { type: MDFileType; filename: string; content: string; error?: string };
       if (!res.ok) throw new Error(data.error ?? 'Generation failed');
@@ -371,7 +419,7 @@ export default function GeneratePage() {
       const optimized = optimizeFiles(
         updatedFiles.map(f => ({ type: f.type, filename: f.filename, content: f.content }))
       );
-      setOptimizerResult(optimized);
+      setOptimizer({ totalTokensBefore: optimized.totalTokensBefore, totalTokensAfter: optimized.totalTokensAfter, passes: optimized.passes });
       const finalFiles = updatedFiles.map((f, i) => ({
         ...f,
         optimizedContent: optimized.files[i]?.optimizedContent ?? f.content,
@@ -386,40 +434,6 @@ export default function GeneratePage() {
       setFileStatuses(prev => prev.map(s => s.type === type ? { ...s, status: 'error', error: msg } : s));
       setError(`Failed to generate ${type}: ${msg}`);
     }
-  };
-
-  // ── Copy / download ──────────────────────────────────────────────────────────
-
-  const handleCopy = (content: string) => {
-    void navigator.clipboard.writeText(content);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleDownload = (filename: string, content: string) => {
-    const blob = new Blob([content], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const handleDownloadZip = async () => {
-    const JSZip = (await import('jszip')).default;
-    const zip = new JSZip();
-    generatedFiles.forEach(f => {
-      const content = viewMode === 'optimized' && f.optimizedContent ? f.optimizedContent : f.content;
-      zip.file(f.filename, content);
-    });
-    const blob = await zip.generateAsync({ type: 'blob' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'mdpilot-generated.zip';
-    a.click();
-    URL.revokeObjectURL(url);
   };
 
   // ── Loading view ─────────────────────────────────────────────────────────────
@@ -499,187 +513,19 @@ export default function GeneratePage() {
     );
   }
 
-  // ── Output view ──────────────────────────────────────────────────────────────
+  // ── Output view (shared component) ───────────────────────────────────────────
 
   if (generatedFiles.length > 0) {
-    const activeFile = generatedFiles[activeTab] ?? generatedFiles[0];
-    const displayContent =
-      viewMode === 'optimized' && activeFile.optimizedContent
-        ? activeFile.optimizedContent
-        : activeFile.content;
-    const displayTokens =
-      viewMode === 'optimized' && activeFile.optimizedTokenCount != null
-        ? activeFile.optimizedTokenCount
-        : activeFile.tokenCount;
-
     return (
-      <div className="min-h-screen bg-[var(--md-dark-2)] px-4 sm:px-8 py-12">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-xl font-semibold">Your files are ready</h2>
-            <p className="text-xs text-[var(--md-text-tertiary)] mt-0.5">
-              {generatedFiles.length} file{generatedFiles.length > 1 ? 's' : ''} generated
-            </p>
-          </div>
-          <button
-            onClick={() => { setGeneratedFiles([]); setFileStatuses([]); setOptimizerResult(null); setStep(5); }}
-            className="text-sm text-[var(--md-text-secondary)] hover:text-[var(--md-text)] transition-colors"
-          >
-            ← Back
-          </button>
-        </div>
-
-        {/* Token meter */}
-        {optimizerResult && (
-          <TokenMeter
-            totalBefore={optimizerResult.totalTokensBefore}
-            totalAfter={optimizerResult.totalTokensAfter}
-            passes={optimizerResult.passes}
-          />
-        )}
-
-        {/* Failed files */}
-        {fileStatuses.some(s => s.status === 'error') && (
-          <div className="mb-4 rounded-xl border border-[var(--md-coral-light)] bg-[var(--md-coral-light)] px-4 py-3">
-            {fileStatuses.filter(s => s.status === 'error').map(s => (
-              <div key={s.type} className="flex items-center justify-between">
-                <span className="text-sm text-[var(--md-coral)]">❌ {s.filename} failed: {s.error}</span>
-                <button
-                  onClick={() => void handleRetry(s.type)}
-                  className="text-xs px-3 py-1.5 rounded-lg border border-[var(--md-coral)] text-[var(--md-coral)] hover:bg-white/50 transition-colors ml-3 shrink-0"
-                >
-                  Retry
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Tab bar — scrollable on mobile */}
-        <div className="flex overflow-x-auto border-b border-[var(--md-border)] scrollbar-none">
-          {generatedFiles.map((f, i) => {
-            const isActive   = activeTab === i;
-            const optTokens  = f.optimizedTokenCount ?? f.tokenCount;
-            const origTokens = f.tokenCount;
-            const showOptimized = viewMode === 'optimized' && f.optimizedContent;
-            return (
-              <button
-                key={f.type}
-                onClick={() => { setActiveTab(i); setExpandedHowTo(null); }}
-                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-mono border-b-2 -mb-px transition-colors ${
-                  isActive
-                    ? 'border-[var(--md-blue)] text-[var(--md-blue)]'
-                    : 'border-transparent text-[var(--md-text-secondary)] hover:text-[var(--md-text)]'
-                }`}
-              >
-                {f.filename}
-                {showOptimized ? (
-                  <span className="flex items-center gap-1 font-sans">
-                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[var(--md-teal-light)] text-[var(--md-teal)]">
-                      {optTokens}t
-                    </span>
-                    <span className="text-[10px] text-[var(--md-text-tertiary)] line-through">
-                      {origTokens}
-                    </span>
-                  </span>
-                ) : (
-                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-sans ${
-                    isActive
-                      ? 'bg-[var(--md-blue-light)] text-[var(--md-blue)]'
-                      : 'bg-white/6 text-[var(--md-text-tertiary)]'
-                  }`}>
-                    {origTokens}t
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Export bar */}
-        <div className="flex flex-wrap items-center gap-2 px-1 py-3 border-b border-[var(--md-border)]">
-          <button
-            onClick={() => handleCopy(displayContent)}
-            className="text-xs px-3 py-1.5 rounded-lg border border-[var(--md-border)] hover:bg-[var(--md-blue-light)] transition-colors"
-          >
-            {copied ? '✓ Copied' : 'Copy'}
-          </button>
-          <button
-            onClick={() => handleDownload(activeFile.filename, displayContent)}
-            className="text-xs px-3 py-1.5 rounded-lg border border-[var(--md-border)] hover:bg-[var(--md-blue-light)] transition-colors"
-          >
-            Download .md
-          </button>
-          {generatedFiles.length > 1 && (
-            <button
-              onClick={() => void handleDownloadZip()}
-              className="text-xs px-3 py-1.5 rounded-lg bg-[var(--md-blue)] text-white hover:opacity-90 transition-opacity"
-            >
-              Download .zip
-            </button>
-          )}
-          {viewMode === 'optimized' && activeFile.optimizedTokenCount != null && (
-            <span className="ml-auto text-[11px] font-semibold text-[var(--md-teal)] bg-[var(--md-teal-light)] px-2.5 py-1 rounded-full">
-              ↓ {((1 - activeFile.optimizedTokenCount / activeFile.tokenCount) * 100).toFixed(0)}% optimized
-            </span>
-          )}
-        </div>
-
-        {/* CodeMirror split-pane editor */}
-        <MarkdownEditor
-          key={`${activeFile.type}-${viewMode}`}
-          content={displayContent}
-          onChange={(newContent) => {
-            setGeneratedFiles(prev => prev.map((f, i) =>
-              i === activeTab
-                ? viewMode === 'optimized'
-                  ? { ...f, optimizedContent: newContent, optimizedTokenCount: countTokens(newContent) }
-                  : { ...f, content: newContent, tokenCount: countTokens(newContent) }
-                : f
-            ));
-          }}
-          filename={activeFile.filename}
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-          hasOptimized={!!activeFile.optimizedContent}
-        />
-
-        {/* How to use — collapsible */}
-        <div className="mt-3 rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)] overflow-hidden">
-          <button
-            onClick={() => setExpandedHowTo(prev => prev === activeFile.type ? null : activeFile.type)}
-            className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-white/[0.03] transition-colors"
-          >
-            <span className="flex items-center gap-2 text-sm font-medium">
-              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} className="text-[var(--md-blue)] shrink-0">
-                <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
-              </svg>
-              How to use this file
-            </span>
-            <svg
-              width="14"
-              height="14"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-              className={`text-[var(--md-text-tertiary)] transition-transform ${expandedHowTo === activeFile.type ? 'rotate-180' : ''}`}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-            </svg>
-          </button>
-          {expandedHowTo === activeFile.type && (
-            <div className="px-4 pb-4 pt-1 border-t border-[var(--md-border)]">
-              <pre className="text-xs text-[var(--md-text-secondary)] leading-relaxed whitespace-pre-wrap font-sans">
-                {activeFile.howToUse}
-              </pre>
-            </div>
-          )}
-        </div>
-      </div>
-      </div>
+      <OutputView
+        title="Your files are ready"
+        generatedFiles={generatedFiles}
+        setGeneratedFiles={setGeneratedFiles}
+        fileStatuses={fileStatuses}
+        optimizer={optimizer}
+        onBack={() => { setGeneratedFiles([]); setFileStatuses([]); setOptimizer(null); setStep(5); }}
+        onRetry={(t) => void handleRetry(t)}
+      />
     );
   }
 
@@ -701,6 +547,22 @@ export default function GeneratePage() {
 
   return (
     <div className="min-h-screen bg-[var(--md-dark-2)] px-4 sm:px-8 py-12">
+    {showTemplates && (
+      <TemplateGallery onSelect={handleSelectTemplate} onClose={() => setShowTemplates(false)} />
+    )}
+
+    {/* Start from template link — only on first step */}
+    {step === 0 && (
+      <div className="max-w-xl mx-auto mb-4 text-center">
+        <button
+          onClick={() => setShowTemplates(true)}
+          className="text-sm text-[#4FACFF] hover:text-[#73C0FF] transition-colors"
+        >
+          Or start from a template →
+        </button>
+      </div>
+    )}
+
     <Stepper
       steps={STEPS}
       currentStep={step}
@@ -944,13 +806,18 @@ export default function GeneratePage() {
       {step === 5 && (
         <div>
           <h2 className="text-xl font-semibold mb-1">Ready to generate</h2>
-          <p className="text-sm text-[var(--md-text-secondary)] mb-6">
+          <p className="text-sm text-[var(--md-text-secondary)] mb-4">
             3 questions answered.{' '}
             <span className="font-medium text-[var(--md-text)]">
               {selectedFiles.filter(t => V1_SUPPORTED.includes(t)).length} file
               {selectedFiles.filter(t => V1_SUPPORTED.includes(t)).length !== 1 ? 's' : ''} queued.
             </span>
           </p>
+          {templateName && (
+            <p className="text-xs text-[#4FACFF] bg-[#4FACFF]/[0.08] rounded-lg px-3 py-2 mb-6">
+              ✦ Pre-filled from template: <span className="font-medium">{templateName}</span>. Edit anything before generating.
+            </p>
+          )}
           <div className="rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)] divide-y divide-white/8 mb-6">
             {[
               { label: 'Building',  value: reviewBuildingLabel },
@@ -965,6 +832,14 @@ export default function GeneratePage() {
               </div>
             ))}
           </div>
+
+          {/* Model selector */}
+          {providers.length > 0 && (
+            <div className="rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)] p-4 mb-6">
+              <ModelSelector selected={selectedProvider} onChange={setSelectedProvider} available={providers} />
+            </div>
+          )}
+
           <p className="text-xs text-center text-[var(--md-text-tertiary)]">
             One API call per file — takes about 5–15 seconds total.
           </p>

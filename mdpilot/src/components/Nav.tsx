@@ -5,8 +5,8 @@ import Link from 'next/link';
 
 const NAV_LINKS = [
   { label: 'Generate',     href: '/generate' },
+  { label: 'Task',         href: '/task' },
   { label: 'Features',     href: '/#features' },
-  { label: 'How it works', href: '/#how-it-works' },
   { label: 'GitHub',       href: 'https://github.com', external: true },
 ];
 
@@ -44,8 +44,8 @@ export default function Nav() {
               <span className="font-bold text-[15px] text-white tracking-tight" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                 MDPilot
               </span>
-              <span className="hidden sm:inline text-[10px] font-mono text-white/25 border border-white/[0.08] rounded-full px-2 py-0.5">
-                v1
+              <span className="hidden sm:inline text-[10px] font-mono text-[#4FACFF] border border-[#4FACFF]/30 bg-[#4FACFF]/[0.08] rounded-full px-2 py-0.5">
+                v2
               </span>
             </Link>
 

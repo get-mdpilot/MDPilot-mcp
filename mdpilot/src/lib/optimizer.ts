@@ -188,6 +188,81 @@ function compressStructure(content: string): string {
   return result.trim();
 }
 
+// ── Pass 4: Verbose compression ───────────────────────────────────────────────
+
+const VERBOSE_PATTERNS: [RegExp, string][] = [
+  // Wordy → concise
+  [/in order to/gi, 'to'],
+  [/due to the fact that/gi, 'because'],
+  [/at this point in time/gi, 'now'],
+  [/in the event that/gi, 'if'],
+  [/for the purpose of/gi, 'to'],
+  [/with regard to/gi, 'about'],
+  [/in regard to/gi, 'about'],
+  [/on a daily basis/gi, 'daily'],
+  [/a large number of/gi, 'many'],
+  [/a small number of/gi, 'few'],
+  [/the vast majority of/gi, 'most'],
+  [/at the present time/gi, 'now'],
+  [/prior to/gi, 'before'],
+  [/subsequent to/gi, 'after'],
+  [/in close proximity to/gi, 'near'],
+  [/is able to/gi, 'can'],
+  [/has the ability to/gi, 'can'],
+  [/it is important to note that/gi, ''],
+  [/it should be noted that/gi, ''],
+  [/it is worth mentioning that/gi, ''],
+  [/as a matter of fact/gi, ''],
+  [/needless to say/gi, ''],
+  // Redundant pairs
+  [/each and every/gi, 'every'],
+  [/first and foremost/gi, 'first'],
+  [/any and all/gi, 'all'],
+  [/one and only/gi, 'only'],
+  [/null and void/gi, 'void'],
+  [/various different/gi, 'various'],
+  [/completely finished/gi, 'finished'],
+  [/absolutely essential/gi, 'essential'],
+  [/basic fundamentals/gi, 'fundamentals'],
+  [/future plans/gi, 'plans'],
+  [/past history/gi, 'history'],
+  [/end result/gi, 'result'],
+  [/free gift/gi, 'gift'],
+  [/new innovation/gi, 'innovation'],
+];
+
+function applyVerboseCompression(content: string): string {
+  let result = content;
+  for (const [re, repl] of VERBOSE_PATTERNS) {
+    result = result.replace(re, repl);
+  }
+  // Tidy artefacts: capital-leading orphan spaces, double spaces
+  return result.replace(/  +/g, ' ').replace(/ +([.,;:])/g, '$1');
+}
+
+// ── Pass 5: Smart line compression ─────────────────────────────────────────────
+
+function compressLines(content: string): string {
+  let result = content;
+
+  // Remove heading descriptions that just restate the heading
+  result = result.replace(
+    /^(#{2,3}\s+.+)\n\n(?:This section (?:describes|explains|covers|shows|details) (?:how to|the|about) .+\.?\n)/gm,
+    '$1\n\n',
+  );
+
+  // Collapse multiple blank lines to single
+  result = result.replace(/\n{3,}/g, '\n\n');
+
+  // Remove trailing whitespace
+  result = result.replace(/[ \t]+$/gm, '');
+
+  // Compress prose admonition prefixes to blockquote markers
+  result = result.replace(/^(?:Note|Important|Warning|Tip): /gm, '> ');
+
+  return result.trim();
+}
+
 // ── Public API ────────────────────────────────────────────────────────────────
 
 export function optimizeFiles(
@@ -230,6 +305,28 @@ export function optimizeFiles(
     name: 'Structure compression',
     description: 'Cleaned code blocks and collapsed blank lines',
     tokensSaved: Math.max(0, p3Saved),
+  });
+
+  // ── Pass 4: Verbose compression ─────────────────────────────────────────────
+  const p4Before = working.map(c => countTokens(c));
+  working = working.map(c => applyVerboseCompression(c));
+  const p4After = working.map(c => countTokens(c));
+  const p4Saved = p4Before.reduce((s, t, i) => s + t - p4After[i], 0);
+  allPasses.push({
+    name: 'Verbose compression',
+    description: 'Simplified wordy phrases',
+    tokensSaved: Math.max(0, p4Saved),
+  });
+
+  // ── Pass 5: Line compression ────────────────────────────────────────────────
+  const p5Before = working.map(c => countTokens(c));
+  working = working.map(c => compressLines(c));
+  const p5After = working.map(c => countTokens(c));
+  const p5Saved = p5Before.reduce((s, t, i) => s + t - p5After[i], 0);
+  allPasses.push({
+    name: 'Line compression',
+    description: 'Cleaned markdown structure',
+    tokensSaved: Math.max(0, p5Saved),
   });
 
   // ── Assemble ──────────────────────────────────────────────────────────────

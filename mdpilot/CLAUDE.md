@@ -17,7 +17,29 @@ Input (text paste / file drop / MarkItDown conversion)
 
 ## Current focus
 
-v1 MVP — Week 2: intake wizard + generation wiring live. Groq API active (Anthropic credits depleted temporarily).
+v2 shipped — all 3 modes live, multi-model choice, 9 file types, 5-pass optimizer, badge generator, templates, auto-TOC. Next: v3 planning. Groq API active (Anthropic credits depleted temporarily).
+
+## v2 architecture notes
+
+- `src/lib/ai-client.ts` — unified multi-provider wrapper (claude/gpt/gemini/groq). `getAvailableProviders()` reads which keys exist; `/api/generate` resolves provider with fallback to first available, so requesting `claude` with no key falls back to Groq automatically.
+- `src/lib/prompts/` — 10 prompts now (readme, agents, claude, task, spec, skill, design, contributing, security, context). `buildUserMessage` branches: task/spec/`mode:'task'` → raw-input wrapper, else project-context.
+- `src/lib/optimizer.ts` — 5 passes: boilerplate strip, cross-file dedup, structure compression, verbose compression, line compression. NOTE: pass 3 fn is `compressStructure`, pass 5 fn is `compressLines` — do not confuse them.
+- `src/lib/toc-generator.ts` — `insertTOC` injects/replaces a TOC after the first heading.
+- `src/components/OutputView.tsx` — shared output view for all 3 modes. Props: `showAgentPrompt` (task), `footer` (convert cross-mode CTAs), `backLabel`. Owns the editor-content transforms (TOC, badge insertion).
+- Convert mode needs the `markitdown` CLI — see the dependency note below.
+
+## Gotchas
+
+- After rapid `next dev` restarts, unexpected route 404s ("Failed to find Server Action") mean a stale Turbopack cache — `rm -rf .next` and restart, don't chase a code bug.
+- CSS theme is dark-only: design tokens in `globals.css` are dark values; never reintroduce `dark:` Tailwind variants (the site has no light mode). The markdown preview pane is the one intentional light surface.
+
+## Convert mode dependency (MarkItDown)
+
+`/api/convert` shells out to the `markitdown` CLI via `child_process`. It is NOT installed by npm.
+- Install: `pipx install 'markitdown[all]'` — NOT `pip install` (Homebrew Python is externally-managed / PEP 668)
+- Lands at `~/.local/bin/markitdown`; the route probes PATH + `~/.local/bin` + Homebrew/usr-local bins
+- `GET /api/convert` is a health check returning `{ available: boolean }` — the page shows a setup banner when false
+- Requires Node runtime (`export const runtime = 'nodejs'`), not Edge — will not work on Vercel Edge
 
 ## AI tools & design resources active in this project
 

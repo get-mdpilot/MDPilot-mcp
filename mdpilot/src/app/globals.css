@@ -138,6 +138,9 @@
 .card-selected-violet {
   box-shadow: 0 0 0 1.5px #A855F7, 0 0 24px rgba(168,85,247,0.18);
 }
+.card-selected-coral {
+  box-shadow: 0 0 0 1.5px #E05E3A, 0 0 24px rgba(224,94,58,0.18);
+}
 
 /* Terminal window chrome */
 .terminal-chrome {

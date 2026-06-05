@@ -15,6 +15,10 @@ interface MarkdownEditorProps {
   viewMode: 'original' | 'optimized';
   onViewModeChange: (mode: 'original' | 'optimized') => void;
   hasOptimized: boolean;
+  /** Toolbar actions (optional) */
+  onInsertTOC?: () => void;
+  onToggleBadges?: () => void;
+  showBadgeButton?: boolean;
 }
 
 const EDITOR_THEME = EditorView.theme({
@@ -41,6 +45,9 @@ export default function MarkdownEditor({
   viewMode,
   onViewModeChange,
   hasOptimized,
+  onInsertTOC,
+  onToggleBadges,
+  showBadgeButton = false,
 }: MarkdownEditorProps) {
   const editorContainerRef = useRef<HTMLDivElement>(null);
   const editorViewRef      = useRef<EditorView | null>(null);
@@ -94,10 +101,34 @@ export default function MarkdownEditor({
 
   return (
     <div className="flex flex-col rounded-xl border border-[var(--md-border)] overflow-hidden bg-[var(--md-surface)]">
-      {/* Top bar */}
-      <div className="flex items-center justify-between gap-3 px-4 py-2.5 border-b border-[var(--md-border)] bg-[var(--md-surface)] shrink-0">
+      {/* Top bar / toolbar */}
+      <div className="flex items-center justify-between gap-3 px-4 py-2.5 border-b border-[var(--md-border)] bg-[var(--md-surface)] shrink-0 flex-wrap">
         {/* Filename */}
         <span className="text-xs font-mono font-semibold text-[var(--md-text)]">{filename}</span>
+
+        {/* Toolbar actions */}
+        {(onInsertTOC || (showBadgeButton && onToggleBadges)) && (
+          <div className="flex items-center gap-1.5">
+            {onInsertTOC && (
+              <button
+                onClick={onInsertTOC}
+                title="Insert table of contents"
+                className="text-[11px] px-2.5 py-1 rounded-md border border-[var(--md-border)] text-[var(--md-text-secondary)] hover:text-[var(--md-text)] hover:border-white/20 transition-colors"
+              >
+                📑 TOC
+              </button>
+            )}
+            {showBadgeButton && onToggleBadges && (
+              <button
+                onClick={onToggleBadges}
+                title="Add badges"
+                className="text-[11px] px-2.5 py-1 rounded-md border border-[var(--md-border)] text-[var(--md-text-secondary)] hover:text-[var(--md-text)] hover:border-white/20 transition-colors"
+              >
+                🏷️ Badges
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Original / Optimized toggle */}
         {hasOptimized && (

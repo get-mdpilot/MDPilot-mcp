@@ -301,6 +301,115 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
+          MODES — three ways to generate markdown
+      ══════════════════════════════════════════════════════════════════ */}
+      <section id="modes" className="max-w-6xl mx-auto px-5 sm:px-8 pb-12">
+        <div className="text-center mb-12">
+          <div className="section-label mb-5">MODES</div>
+          <h2 className="text-[clamp(1.8rem,4vw,2.8rem)] font-black text-white tracking-[-0.04em]">
+            Three modes. One platform.
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {[
+            {
+              href: '/generate', live: true, badge: null,
+              icon: '✨', label: 'Generate', accent: '#4FACFF',
+              tag: '3 questions → .md',
+              desc: 'Answer 3 questions, paste your stack. Get README, AGENTS.md, CLAUDE.md tuned for your AI tools.',
+            },
+            {
+              href: '/task', live: true, badge: 'New',
+              icon: '📋', label: 'Task', accent: '#E05E3A',
+              tag: 'ticket → TASK.md',
+              desc: 'Paste a Jira ticket or Slack thread. Get an agent-ready TASK.md with zero clarification needed.',
+            },
+            {
+              href: '/convert', live: true, badge: 'New',
+              icon: '🔄', label: 'Convert', accent: '#2DD4BF',
+              tag: 'any file → .md',
+              desc: 'Drop a PDF, Word doc, or PowerPoint. Get clean, token-efficient markdown via MarkItDown.',
+            },
+          ].map(mode => {
+            const Tag = mode.live ? 'a' : 'div';
+            return (
+              <Tag
+                key={mode.label}
+                {...(mode.live ? { href: mode.href } : {})}
+                className={`group relative rounded-2xl border border-white/[0.07] bg-white/[0.03] p-6 overflow-hidden transition-all duration-200 ${
+                  mode.live ? 'card-interactive cursor-pointer' : 'opacity-60 cursor-not-allowed'
+                }`}
+              >
+                <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                  style={{ background: `${mode.accent}33` }} />
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-11 h-11 rounded-xl flex items-center justify-center text-xl border"
+                      style={{ background: `${mode.accent}14`, borderColor: `${mode.accent}26` }}>
+                      {mode.icon}
+                    </div>
+                    {!mode.live ? (
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/[0.06] text-white/40">soon</span>
+                    ) : mode.badge ? (
+                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1"
+                        style={{ background: `${mode.accent}26`, color: mode.accent }}>
+                        ✦ {mode.badge}
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#34D399]/15 text-[#34D399] flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#34D399]" /> Live
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <h3 className="text-[16px] font-bold text-white" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>{mode.label}</h3>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-white/[0.08] text-white/35">{mode.tag}</span>
+                  </div>
+                  <p className="text-[13px] text-white/45 leading-relaxed mb-3">{mode.desc}</p>
+                  {mode.live && (
+                    <span className="inline-flex items-center gap-1 text-[13px] font-medium" style={{ color: mode.accent }}>
+                      Try it
+                      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} className="group-hover:translate-x-0.5 transition-transform">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                      </svg>
+                    </span>
+                  )}
+                </div>
+              </Tag>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          WHAT'S NEW IN V2
+      ══════════════════════════════════════════════════════════════════ */}
+      <section className="max-w-4xl mx-auto px-5 sm:px-8 pb-16">
+        <div className="rounded-2xl border border-[#4FACFF]/20 bg-[#4FACFF]/[0.04] p-8 sm:p-10">
+          <div className="flex items-center gap-2 mb-6">
+            <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-[#4FACFF] text-[#07070f]">v2</span>
+            <h2 className="text-xl font-bold tracking-tight" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>What&apos;s new</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
+            {[
+              'Task mode — paste any ticket, get TASK.md',
+              'Convert mode — drop files, get markdown',
+              'Multi-model — Claude, GPT-4o, or Gemini',
+              '9 file types — SKILL.md, DESIGN.md, and more',
+              'Badge generator + templates + auto-TOC',
+              '5-pass token optimizer',
+            ].map(item => (
+              <div key={item} className="flex items-start gap-2.5">
+                <span className="text-[#34D399] shrink-0 mt-0.5">✅</span>
+                <span className="text-sm text-white/70">{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
           TOKEN OPTIMIZER — dark section
           Skill: Data-dense + heat-map + progress indicators
       ══════════════════════════════════════════════════════════════════ */}

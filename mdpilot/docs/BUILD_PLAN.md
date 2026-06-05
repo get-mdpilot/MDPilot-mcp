@@ -29,33 +29,36 @@
 - [ ] Error handling + per-file retry
 
 ### Week 4 — Token optimizer (moat)
-- [ ] Pass 1: js-tiktoken, per-file + total token counts
-- [ ] Pass 2: boilerplate strip (filler-phrase regex)
-- [ ] Pass 3: cross-file dedup (heading chunking + string similarity)
-- [ ] Before/after token meter + per-pass savings log
-- [ ] "Apply optimizations" toggle
+- [x] Pass 1: js-tiktoken, per-file + total token counts
+- [x] Pass 2: boilerplate strip (filler-phrase regex)
+- [x] Pass 3: cross-file dedup (heading chunking + string similarity)
+- [x] Before/after token meter + per-pass savings log
+- [x] "Apply optimizations" toggle (Original/Optimized)
 
 ### Week 5 — Output, quick wins, launch
-- [ ] Split-pane: CodeMirror left, rendered preview right
-- [ ] Editable output before export
-- [ ] Copy / download .md / download .zip
-- [ ] "How to use this file" panel per file type
-- [ ] Empty/error states + mobile pass
-- [ ] Final QA + deploy + landing page
+- [x] Split-pane: CodeMirror left, rendered preview right
+- [x] Editable output before export
+- [x] Copy / download .md / download .zip
+- [x] "How to use this file" panel per file type
+- [x] Empty/error states + mobile pass
+- [x] Final QA + landing page (deploy: manual via `vercel --prod`)
 
-## v2 — Full platform (~6-8 weeks after v1)
-- Task mode (paste ticket → TASK.md)
-- Convert mode (MarkItDown via MCP)
-- Optimizer passes 4-5 (compression, structure)
-- Multi-model choice (Claude / GPT / Gemini)
-- Badge generator, template gallery, auto-TOC
-- More file types: SKILL.md, DESIGN.md, CONTRIBUTING.md, SECURITY.md, CONTEXT.md
+## v2 — Full platform ✅ COMPLETE
+- [x] Task mode (paste ticket → TASK.md + SPEC.md)
+- [x] Convert mode (MarkItDown via CLI / child_process; cross-mode handoff)
+- [x] Optimizer passes 4-5 (verbose compression, line compression)
+- [x] Multi-model choice (Claude / GPT-4o / Gemini / Groq) with provider fallback
+- [x] Badge generator, template gallery, auto-TOC, editor toolbar
+- [x] 9 file types: + SKILL.md, DESIGN.md, CONTRIBUTING.md, SECURITY.md, CONTEXT.md
+- [x] Shared OutputView across all 3 modes
 
-## v3 — Growth (~4-6 weeks after v2)
-- Shareable public links (read-only URLs)
-- Light accounts + saved history
-- Pricing + billing (Stripe)
-- Analytics (PostHog)
+## v3 — Growth (next milestone)
+- [ ] Shareable public links (read-only URLs)
+- [ ] Light accounts + saved history
+- [ ] Pricing + billing (Stripe)
+- [ ] Analytics (PostHog)
+- [ ] Real PDF/scanned-doc OCR in Convert mode
+- [ ] Streaming generation (token-by-token output)
 
 ## Out of scope (for now)
 - GitHub sync / one-click PR
