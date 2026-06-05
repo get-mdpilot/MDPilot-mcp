@@ -23,7 +23,7 @@ export default function TokenMeter({ totalBefore, totalAfter, passes }: TokenMet
   const fillPct = totalBefore > 0 ? Math.min(100, (totalAfter / totalBefore) * 100) : 100;
 
   return (
-    <div className="rounded-xl border border-[var(--md-border)] bg-white dark:bg-[#1a1a1a] px-4 py-3 mb-4">
+    <div className="rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)] px-4 py-3 mb-4">
       {/* Top row: after count + reduction badge */}
       <div className="flex items-center justify-between mb-2.5">
         <div className="flex items-baseline gap-1.5">

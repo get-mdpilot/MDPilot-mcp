@@ -22,13 +22,13 @@ const EDITOR_THEME = EditorView.theme({
   '.cm-scroller': { overflow: 'auto', fontFamily: 'ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, monospace' },
   '.cm-content': { padding: '1rem', minHeight: '100%' },
   '.cm-gutters': {
-    backgroundColor: 'var(--md-surface)',
-    borderRight: '1px solid var(--md-border)',
-    color: 'var(--md-text-tertiary)',
+    backgroundColor: '#0a0a14',
+    borderRight: '1px solid rgba(255,255,255,0.07)',
+    color: 'rgba(240,240,248,0.28)',
     fontSize: '11px',
   },
   '.cm-activeLineGutter': { backgroundColor: 'transparent' },
-  '.cm-activeLine': { backgroundColor: 'rgba(0,0,0,0.02)' },
+  '.cm-activeLine': { backgroundColor: 'rgba(255,255,255,0.03)' },
   '.cm-selectionBackground': { backgroundColor: 'rgba(37,99,235,0.12)' },
   '&.cm-focused .cm-selectionBackground': { backgroundColor: 'rgba(37,99,235,0.18)' },
   '.cm-cursor': { borderLeftColor: 'var(--md-blue)' },
@@ -93,7 +93,7 @@ export default function MarkdownEditor({
   const tokens = countTokens(content);
 
   return (
-    <div className="flex flex-col rounded-xl border border-[var(--md-border)] overflow-hidden bg-white dark:bg-[#0e0e18]">
+    <div className="flex flex-col rounded-xl border border-[var(--md-border)] overflow-hidden bg-[var(--md-surface)]">
       {/* Top bar */}
       <div className="flex items-center justify-between gap-3 px-4 py-2.5 border-b border-[var(--md-border)] bg-[var(--md-surface)] shrink-0">
         {/* Filename */}
@@ -101,14 +101,14 @@ export default function MarkdownEditor({
 
         {/* Original / Optimized toggle */}
         {hasOptimized && (
-          <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-black/5 dark:bg-white/5">
+          <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-white/5">
             {(['original', 'optimized'] as const).map(mode => (
               <button
                 key={mode}
                 onClick={() => onViewModeChange(mode)}
                 className={`text-[11px] px-2.5 py-1 rounded-md transition-all capitalize ${
                   viewMode === mode
-                    ? 'bg-white dark:bg-white/10 text-[var(--md-text)] shadow-sm font-medium'
+                    ? 'bg-white/10 text-[var(--md-text)] shadow-sm font-medium'
                     : 'text-[var(--md-text-secondary)] hover:text-[var(--md-text)]'
                 }`}
               >
@@ -131,9 +131,9 @@ export default function MarkdownEditor({
           <div ref={editorContainerRef} className="h-full" />
         </div>
 
-        {/* Right — Rendered preview */}
-        <div className="flex-1 min-w-0 min-h-[300px] lg:min-h-0 overflow-auto p-6 bg-white dark:bg-[#0e0e18]">
-          <div className="md-preview text-sm text-[var(--md-text)]">
+        {/* Right — Rendered preview (always white so prose is readable) */}
+        <div className="flex-1 min-w-0 min-h-[300px] lg:min-h-0 overflow-auto p-6 bg-white">
+          <div className="md-preview text-sm">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {content}
             </ReactMarkdown>

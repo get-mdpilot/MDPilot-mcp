@@ -38,7 +38,7 @@ export default function Stepper({
                   ? 'w-1.5 h-1.5 sm:w-2 sm:h-2 bg-[var(--md-blue)] opacity-60'
                   : i === currentStep
                   ? 'w-4 h-1.5 sm:w-6 sm:h-2 bg-[var(--md-blue)]'
-                  : 'w-1.5 h-1.5 sm:w-2 sm:h-2 bg-black/10 dark:bg-white/10'
+                  : 'w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white/10'
               }`}
             />
           ))}

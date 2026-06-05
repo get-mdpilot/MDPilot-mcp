@@ -426,7 +426,8 @@ export default function GeneratePage() {
 
   if (isGenerating || (fileStatuses.length > 0 && !isGenerating && generatedFiles.length === 0)) {
     return (
-      <div className="max-w-xl mx-auto px-4 sm:px-0">
+      <div className="min-h-screen bg-[var(--md-dark-2)] px-4 sm:px-8 py-12">
+      <div className="max-w-xl mx-auto">
         <h2 className="text-xl font-semibold mb-1">Generating your files…</h2>
         <p className="text-sm text-[var(--md-text-secondary)] mb-6">
           {isGenerating
@@ -439,7 +440,7 @@ export default function GeneratePage() {
           {fileStatuses.map(f => (
             <div
               key={f.type}
-              className="flex items-center justify-between rounded-xl border border-[var(--md-border)] bg-white dark:bg-[#1a1a1a] px-4 py-3"
+              className="flex items-center justify-between rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)] px-4 py-3"
             >
               <span className="text-sm font-mono font-medium">{f.filename}</span>
               <span className="flex items-center gap-2 text-sm">
@@ -494,13 +495,14 @@ export default function GeneratePage() {
           </div>
         )}
       </div>
+      </div>
     );
   }
 
   // ── Output view ──────────────────────────────────────────────────────────────
 
   if (generatedFiles.length > 0) {
-    const activeFile    = generatedFiles[activeTab] ?? generatedFiles[0];
+    const activeFile = generatedFiles[activeTab] ?? generatedFiles[0];
     const displayContent =
       viewMode === 'optimized' && activeFile.optimizedContent
         ? activeFile.optimizedContent
@@ -511,6 +513,7 @@ export default function GeneratePage() {
         : activeFile.tokenCount;
 
     return (
+      <div className="min-h-screen bg-[var(--md-dark-2)] px-4 sm:px-8 py-12">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -585,7 +588,7 @@ export default function GeneratePage() {
                   <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-sans ${
                     isActive
                       ? 'bg-[var(--md-blue-light)] text-[var(--md-blue)]'
-                      : 'bg-black/5 dark:bg-white/10 text-[var(--md-text-tertiary)]'
+                      : 'bg-white/6 text-[var(--md-text-tertiary)]'
                   }`}>
                     {origTokens}t
                   </span>
@@ -644,10 +647,10 @@ export default function GeneratePage() {
         />
 
         {/* How to use — collapsible */}
-        <div className="mt-3 rounded-xl border border-[var(--md-border)] bg-white dark:bg-[#1a1a1a] overflow-hidden">
+        <div className="mt-3 rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)] overflow-hidden">
           <button
             onClick={() => setExpandedHowTo(prev => prev === activeFile.type ? null : activeFile.type)}
-            className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-colors"
+            className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-white/[0.03] transition-colors"
           >
             <span className="flex items-center gap-2 text-sm font-medium">
               <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} className="text-[var(--md-blue)] shrink-0">
@@ -676,6 +679,7 @@ export default function GeneratePage() {
           )}
         </div>
       </div>
+      </div>
     );
   }
 
@@ -696,6 +700,7 @@ export default function GeneratePage() {
     : buildOptions.find(o => o.id === projectType)?.label ?? '—';
 
   return (
+    <div className="min-h-screen bg-[var(--md-dark-2)] px-4 sm:px-8 py-12">
     <Stepper
       steps={STEPS}
       currentStep={step}
@@ -719,8 +724,8 @@ export default function GeneratePage() {
                 onClick={() => setProjectType(opt.id)}
                 className={`flex items-start gap-3 rounded-xl border p-4 text-left w-full transition-all ${
                   projectType === opt.id
-                    ? 'border-[var(--md-blue)] bg-[var(--md-blue-light)]'
-                    : 'border-[var(--md-border)] bg-white dark:bg-[#1a1a1a] hover:border-[var(--md-blue)]/50'
+                    ? 'border-[#4FACFF]/50 bg-[#4FACFF]/[0.07] card-selected-blue'
+                    : 'border-white/[0.07] bg-white/[0.03] hover:border-white/[0.14] hover:bg-white/[0.05] hover:-translate-y-[1px]'
                 }`}
               >
                 <span className="text-xl mt-0.5">{opt.icon}</span>
@@ -737,7 +742,7 @@ export default function GeneratePage() {
               onChange={e => setProjectDescription(e.target.value)}
               placeholder="Describe your project in a sentence or two…"
               rows={3}
-              className="mt-4 w-full rounded-xl border border-[var(--md-blue)] bg-white dark:bg-[#1a1a1a] p-4 text-sm resize-none focus:outline-none transition-colors"
+              className="mt-4 w-full rounded-xl border border-[var(--md-blue)] bg-[var(--md-surface)] p-4 text-sm resize-none focus:outline-none transition-colors"
               autoFocus
             />
           )}
@@ -758,8 +763,8 @@ export default function GeneratePage() {
                 onClick={() => setAudience(opt.id)}
                 className={`flex items-center gap-4 rounded-xl border p-4 text-left w-full transition-all ${
                   audience === opt.id
-                    ? 'border-[var(--md-blue)] bg-[var(--md-blue-light)]'
-                    : 'border-[var(--md-border)] bg-white dark:bg-[#1a1a1a] hover:border-[var(--md-blue)]/50'
+                    ? 'border-[#4FACFF]/50 bg-[#4FACFF]/[0.07] card-selected-blue'
+                    : 'border-white/[0.07] bg-white/[0.03] hover:border-white/[0.14] hover:bg-white/[0.05] hover:-translate-y-[1px]'
                 }`}
               >
                 <span className="text-2xl">{opt.icon}</span>
@@ -789,8 +794,8 @@ export default function GeneratePage() {
                   onClick={() => toggleAiTool(opt.id)}
                   className={`flex items-start gap-3 rounded-xl border p-4 text-left w-full transition-all ${
                     selected
-                      ? 'border-[var(--md-teal)] bg-[var(--md-teal-light)]'
-                      : 'border-[var(--md-border)] bg-white dark:bg-[#1a1a1a] hover:border-[var(--md-teal)]/50'
+                      ? 'border-[#2DD4BF]/50 bg-[#2DD4BF]/[0.07] card-selected-teal'
+                      : 'border-white/[0.07] bg-white/[0.03] hover:border-white/[0.14] hover:bg-white/[0.05] hover:-translate-y-[1px]'
                   }`}
                 >
                   <span className={`text-lg mt-0.5 font-mono ${selected ? 'text-[var(--md-teal)]' : 'text-[var(--md-text-tertiary)]'}`}>
@@ -818,9 +823,9 @@ export default function GeneratePage() {
           <h2 className="text-xl font-semibold mb-1">Paste your tech stack</h2>
           <p className="text-sm text-[var(--md-text-secondary)] mb-6">
             Paste your{' '}
-            <code className="font-mono text-xs bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded">package.json</code>
+            <code className="font-mono text-xs bg-white/6 px-1.5 py-0.5 rounded">package.json</code>
             ,{' '}
-            <code className="font-mono text-xs bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded">requirements.txt</code>
+            <code className="font-mono text-xs bg-white/6 px-1.5 py-0.5 rounded">requirements.txt</code>
             , or just type what you use. We'll detect it automatically.
           </p>
           <textarea
@@ -831,7 +836,7 @@ export default function GeneratePage() {
             }}
             placeholder={"e.g. Next.js + Supabase + Tailwind\nor paste your package.json here…"}
             rows={9}
-            className="w-full rounded-xl border border-[var(--md-border)] bg-white dark:bg-[#1a1a1a] p-4 text-sm font-mono resize-none focus:outline-none focus:border-[var(--md-blue)] transition-colors"
+            className="w-full rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)] p-4 text-sm font-mono resize-none focus:outline-none focus:border-[var(--md-blue)] transition-colors"
           />
           {detectedStack.length > 0 && (
             <div className="mt-3">
@@ -884,7 +889,7 @@ export default function GeneratePage() {
                       ? 'opacity-50 cursor-not-allowed'
                       : selected
                       ? 'border-l-[var(--md-teal)] bg-[var(--md-teal-light)] border-[var(--md-teal)]/30'
-                      : 'border-l-transparent bg-white dark:bg-[#1a1a1a] hover:border-l-[var(--md-teal)]/50'
+                      : 'border-l-transparent bg-[var(--md-surface)] hover:border-l-[var(--md-teal)]/50'
                   }`}
                 >
                   {/* Checkbox */}
@@ -911,7 +916,7 @@ export default function GeneratePage() {
                         </span>
                       )}
                       {f.v2 && (
-                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-black/5 dark:bg-white/10 text-[var(--md-text-tertiary)]">
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/6 text-[var(--md-text-tertiary)]">
                           v2
                         </span>
                       )}
@@ -946,7 +951,7 @@ export default function GeneratePage() {
               {selectedFiles.filter(t => V1_SUPPORTED.includes(t)).length !== 1 ? 's' : ''} queued.
             </span>
           </p>
-          <div className="rounded-xl border border-[var(--md-border)] bg-white dark:bg-[#1a1a1a] divide-y divide-[var(--md-border)] mb-6">
+          <div className="rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)] divide-y divide-white/8 mb-6">
             {[
               { label: 'Building',  value: reviewBuildingLabel },
               { label: 'Audience',  value: audienceOptions.find(o => o.id === audience)?.label ?? '—' },
@@ -966,5 +971,6 @@ export default function GeneratePage() {
         </div>
       )}
     </Stepper>
+    </div>
   );
 }
