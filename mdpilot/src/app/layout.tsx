@@ -86,7 +86,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
 
             <div className="border-t border-white/6 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <p className="text-xs text-white/25">© 2026 MDPilot. Ship better markdown files, faster.</p>
+              <p className="text-xs text-white/25">
+                © 2026 MDPilot. Ship better markdown files, faster.
+                <span className="mx-2 text-white/15">·</span>
+                <a href="/privacy" className="hover:text-white/50 transition-colors">Privacy</a>
+              </p>
               <div className="flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-[var(--md-green)] animate-pulse" />
                 <span className="text-xs text-white/25">All systems operational</span>

@@ -1,11 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import TokenMeter from '@/components/TokenMeter';
 import BadgeGenerator from '@/components/BadgeGenerator';
+import DataConsent from '@/components/DataConsent';
 import { countTokens } from '@/lib/tokenizer';
 import { insertTOC } from '@/lib/toc-generator';
+import { trackFeedback, storeTrainingSample, editBucket } from '@/lib/telemetry';
 import type { GeneratedFile, FileGenStatus, MDFileType, OptimizationPass } from '@/types';
 
 const MarkdownEditor = dynamic(() => import('@/components/MarkdownEditor'), { ssr: false });
@@ -30,6 +32,12 @@ interface OutputViewProps {
   backLabel?:       string;
   /** Optional content rendered below the how-to panel (e.g. cross-mode CTAs) */
   footer?:          React.ReactNode;
+  /** Telemetry context (all optional — feedback UI hidden if no eventId) */
+  eventId?:         string | null;
+  promptVersion?:   number;
+  role?:            string;
+  /** The user input that produced this output (for consent-gated samples) */
+  sampleInput?:     string;
 }
 
 function extractAgentPrompt(content: string): string | null {
@@ -48,6 +56,10 @@ export default function OutputView({
   showAgentPrompt = false,
   backLabel = '← Back',
   footer,
+  eventId = null,
+  promptVersion,
+  role,
+  sampleInput = '',
 }: OutputViewProps) {
   const [activeTab, setActiveTab]         = useState(0);
   const [viewMode, setViewMode]           = useState<'original' | 'optimized'>('optimized');
@@ -55,6 +67,11 @@ export default function OutputView({
   const [agentCopied, setAgentCopied]     = useState(false);
   const [expandedHowTo, setExpandedHowTo] = useState<MDFileType | null>(null);
   const [showBadges, setShowBadges]       = useState(false);
+  // Telemetry state
+  const [edited, setEdited]               = useState(false);
+  const [thumbs, setThumbs]               = useState<'up' | 'down' | null>(null);
+  const [consent, setConsent]             = useState(false);
+  const originalOutputRef                 = useRef<string>('');
 
   const activeFile = generatedFiles[activeTab] ?? generatedFiles[0];
   if (!activeFile) return null;
@@ -95,11 +112,49 @@ export default function OutputView({
     return lines.join('\n');
   });
 
+  // Capture the original (unedited) output once per generation, for edit detection.
+  useEffect(() => {
+    originalOutputRef.current = displayContent;
+    setEdited(false);
+    setThumbs(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [eventId]);
+
+  // ── Feedback (fire-and-forget) ───────────────────────────────────────────
+  const fireKeptFeedback = () => {
+    if (!eventId) return;
+    const bucket = editBucket(originalOutputRef.current, displayContent);
+    void trackFeedback(eventId, {
+      keptUnedited: !edited,
+      editDistanceBucket: bucket,
+      promptVersion,
+    });
+  };
+
+  const handleThumbs = (value: 'up' | 'down') => {
+    const next = thumbs === value ? null : value;
+    setThumbs(next);
+    if (eventId && next) void trackFeedback(eventId, { thumbs: next, promptVersion });
+  };
+
+  const handleConsent = (checked: boolean) => {
+    setConsent(checked);
+    if (checked && sampleInput) {
+      void storeTrainingSample({
+        input: sampleInput,
+        output: displayContent,
+        role,
+        fileType: activeFile.type,
+      });
+    }
+  };
+
   // ── Actions ──────────────────────────────────────────────────────────────
   const handleCopy = (content: string) => {
     void navigator.clipboard.writeText(content);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+    fireKeptFeedback();
   };
 
   const handleCopyAgent = (content: string) => {
@@ -116,6 +171,7 @@ export default function OutputView({
     a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
+    fireKeptFeedback();
   };
 
   const handleDownloadZip = async () => {
@@ -292,6 +348,7 @@ export default function OutputView({
           key={`${activeFile.type}-${viewMode}`}
           content={displayContent}
           onChange={(newContent) => {
+            if (newContent !== originalOutputRef.current) setEdited(true);
             setGeneratedFiles(prev => prev.map((f, i) =>
               i === activeTab
                 ? viewMode === 'optimized'
@@ -337,6 +394,35 @@ export default function OutputView({
             </div>
           )}
         </div>
+
+        {/* Feedback + consent (only when telemetry context is present) */}
+        {eventId && (
+          <div className="mt-3 space-y-3">
+            {/* Thumbs */}
+            <div className="flex items-center gap-3 rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)] px-4 py-3">
+              <span className="text-xs text-[var(--md-text-secondary)]">Was this useful?</span>
+              <div className="flex gap-1.5">
+                <button
+                  onClick={() => handleThumbs('up')}
+                  className={`px-2.5 py-1 rounded-lg border text-sm transition-colors ${
+                    thumbs === 'up' ? 'border-[var(--md-teal)] bg-[var(--md-teal-light)] text-[var(--md-teal)]' : 'border-[var(--md-border)] hover:bg-white/[0.05]'
+                  }`}
+                  aria-label="Thumbs up"
+                >👍</button>
+                <button
+                  onClick={() => handleThumbs('down')}
+                  className={`px-2.5 py-1 rounded-lg border text-sm transition-colors ${
+                    thumbs === 'down' ? 'border-[var(--md-coral)] bg-[var(--md-coral-light)] text-[var(--md-coral)]' : 'border-[var(--md-border)] hover:bg-white/[0.05]'
+                  }`}
+                  aria-label="Thumbs down"
+                >👎</button>
+              </div>
+              {thumbs && <span className="text-[11px] text-[var(--md-text-tertiary)] ml-auto">Thanks for the signal</span>}
+            </div>
+            {/* Consent (opt-in, default off) */}
+            <DataConsent checked={consent} onChange={handleConsent} />
+          </div>
+        )}
 
         {/* Optional footer (e.g. cross-mode CTAs) */}
         {footer && <div className="mt-4">{footer}</div>}

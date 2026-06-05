@@ -34,9 +34,14 @@ export async function POST(req: NextRequest) {
     const chosen = provider ?? request.provider ?? available[0];
     const effective = available.includes(chosen) ? chosen : available[0];
 
+    const { content: systemPrompt, version: promptVersion } = await getSystemPrompt(
+      fileType,
+      request.role ?? 'developer',
+    );
+
     const content = await generateWithProvider(
       { provider: effective },
-      getSystemPrompt(fileType),
+      systemPrompt,
       buildUserMessage(fileType, request),
     );
 
@@ -45,6 +50,7 @@ export async function POST(req: NextRequest) {
       filename: filenames[fileType],
       content,
       provider: effective,
+      promptVersion,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Generation failed';

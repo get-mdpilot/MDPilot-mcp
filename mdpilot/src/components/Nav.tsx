@@ -6,6 +6,7 @@ import Link from 'next/link';
 const NAV_LINKS = [
   { label: 'Generate',     href: '/generate' },
   { label: 'Task',         href: '/task' },
+  { label: 'Atmosphere',   href: '/atmosphere' },
   { label: 'Features',     href: '/#features' },
   { label: 'GitHub',       href: 'https://github.com', external: true },
 ];

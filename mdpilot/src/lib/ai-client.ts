@@ -75,6 +75,65 @@ async function generateGroq(system: string, user: string, model: string): Promis
   return res.choices[0]?.message?.content ?? '';
 }
 
+// ── Vision (image → text) ────────────────────────────────────────────────────
+
+export type VisionProvider = 'gemini' | 'groq';
+
+// Groq's current multimodal model (llama-3.2-vision-preview was retired).
+const GROQ_VISION_MODEL   = 'meta-llama/llama-4-scout-17b-16e-instruct';
+const GEMINI_VISION_MODEL = 'gemini-2.0-flash';
+
+async function analyzeWithGroq(
+  systemPrompt: string, userMessage: string, imageBase64: string, mimeType: string,
+): Promise<string> {
+  const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
+  const response = await client.chat.completions.create({
+    model: GROQ_VISION_MODEL,
+    max_tokens: 2048,
+    messages: [
+      {
+        role: 'user',
+        content: [
+          { type: 'image_url', image_url: { url: `data:${mimeType};base64,${imageBase64}` } },
+          { type: 'text', text: `${systemPrompt}\n\n${userMessage}` },
+        ],
+      },
+    ],
+  });
+  return response.choices[0]?.message?.content ?? '';
+}
+
+async function analyzeWithGemini(
+  systemPrompt: string, userMessage: string, imageBase64: string, mimeType: string,
+): Promise<string> {
+  const client = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY ?? process.env.GEMINI_API_KEY ?? '');
+  const model = client.getGenerativeModel({ model: GEMINI_VISION_MODEL, systemInstruction: systemPrompt });
+  const result = await model.generateContent([
+    { inlineData: { mimeType, data: imageBase64 } },
+    { text: userMessage },
+  ]);
+  return result.response.text();
+}
+
+export async function analyzeImageWithProvider(
+  provider: VisionProvider,
+  systemPrompt: string,
+  userMessage: string,
+  imageBase64: string,
+  mimeType: string,
+): Promise<string> {
+  if (provider === 'groq') return analyzeWithGroq(systemPrompt, userMessage, imageBase64, mimeType);
+  return analyzeWithGemini(systemPrompt, userMessage, imageBase64, mimeType);
+}
+
+// Vision-capable providers that have a configured key
+export function getAvailableVisionProviders(): VisionProvider[] {
+  const out: VisionProvider[] = [];
+  if (process.env.GOOGLE_AI_API_KEY || process.env.GEMINI_API_KEY) out.push('gemini');
+  if (process.env.GROQ_API_KEY) out.push('groq');
+  return out;
+}
+
 // Which providers have a configured API key
 export function getAvailableProviders(): AIProvider[] {
   const providers: AIProvider[] = [];

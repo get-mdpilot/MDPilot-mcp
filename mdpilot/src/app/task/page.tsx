@@ -9,6 +9,7 @@ import OutputView, { type OptimizerSummary } from '@/components/OutputView';
 import ModelSelector from '@/components/ModelSelector';
 import { countTokens } from '@/lib/tokenizer';
 import { optimizeFiles } from '@/lib/optimizer';
+import { trackGeneration } from '@/lib/telemetry';
 import type { AIProvider } from '@/lib/ai-client';
 import type { GenerationRequest, MDFileType, GeneratedFile, FileGenStatus } from '@/types';
 
@@ -52,6 +53,8 @@ export default function TaskPage() {
   const [currentFileIndex, setCurrentFileIndex] = useState(0);
   const [optimizer, setOptimizer]           = useState<OptimizerSummary | null>(null);
   const [error, setError]                   = useState<string | null>(null);
+  const [eventId, setEventId]               = useState<string | null>(null);
+  const [promptVersion, setPromptVersion]   = useState<number | undefined>(undefined);
 
   // Model provider
   const [providers, setProviders]               = useState<AIProvider[]>([]);
@@ -133,9 +136,10 @@ export default function TaskPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ fileType, request, provider: selectedProvider }),
         });
-        const data = await res.json() as { type: MDFileType; filename: string; content: string; error?: string };
+        const data = await res.json() as { type: MDFileType; filename: string; content: string; promptVersion?: number; error?: string };
         if (!res.ok) throw new Error(data.error ?? 'Generation failed');
 
+        if (i === 0 && data.promptVersion != null) setPromptVersion(data.promptVersion);
         const tokens = countTokens(data.content);
         results.push({
           type: data.type,
@@ -161,6 +165,14 @@ export default function TaskPage() {
         optimizedContent:    opt.files[i]?.optimizedContent ?? f.content,
         optimizedTokenCount: opt.files[i]?.tokensAfter ?? f.tokenCount,
       })));
+
+      trackGeneration({
+        role: 'developer',
+        fileType: filesToGen.join(','),
+        provider: selectedProvider,
+        tokensBefore: opt.totalTokensBefore,
+        tokensAfter: opt.totalTokensAfter,
+      }).then(setEventId);
     }
     setIsGenerating(false);
   };
@@ -261,9 +273,13 @@ export default function TaskPage() {
         setGeneratedFiles={setGeneratedFiles}
         fileStatuses={fileStatuses}
         optimizer={optimizer}
-        onBack={() => { setGeneratedFiles([]); setFileStatuses([]); setOptimizer(null); setStep(2); }}
+        onBack={() => { setGeneratedFiles([]); setFileStatuses([]); setOptimizer(null); setEventId(null); setStep(2); }}
         onRetry={(t) => void handleRetry(t)}
         showAgentPrompt
+        eventId={eventId}
+        promptVersion={promptVersion}
+        role="developer"
+        sampleInput={taskInput}
       />
     );
   }

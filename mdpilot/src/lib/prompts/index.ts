@@ -1,32 +1,50 @@
 import type { GenerationRequest, MDFileType } from '@/types';
-import { AGENTS_SYSTEM_PROMPT } from './agents';
-import { CLAUDE_SYSTEM_PROMPT } from './claude';
-import { README_SYSTEM_PROMPT } from './readme';
-import { TASK_SYSTEM_PROMPT } from './task';
-import { SPEC_SYSTEM_PROMPT } from './spec';
-import { SKILL_SYSTEM_PROMPT } from './skill';
-import { DESIGN_SYSTEM_PROMPT } from './design';
-import { CONTRIBUTING_SYSTEM_PROMPT } from './contributing';
-import { SECURITY_SYSTEM_PROMPT } from './security';
-import { CONTEXT_SYSTEM_PROMPT } from './context';
+import { supabase, supabaseEnabled } from '@/lib/supabase';
+import { FALLBACK_PROMPTS } from './fallback';
 
-const SYSTEM_PROMPTS: Partial<Record<MDFileType, string>> = {
-  readme:       README_SYSTEM_PROMPT,
-  agents:       AGENTS_SYSTEM_PROMPT,
-  claude:       CLAUDE_SYSTEM_PROMPT,
-  task:         TASK_SYSTEM_PROMPT,
-  spec:         SPEC_SYSTEM_PROMPT,
-  skill:        SKILL_SYSTEM_PROMPT,
-  design:       DESIGN_SYSTEM_PROMPT,
-  contributing: CONTRIBUTING_SYSTEM_PROMPT,
-  security:     SECURITY_SYSTEM_PROMPT,
-  context:      CONTEXT_SYSTEM_PROMPT,
-};
+export interface ResolvedPrompt {
+  content: string;
+  version: number; // 0 = hardcoded fallback
+}
 
-export function getSystemPrompt(fileType: MDFileType): string {
-  const prompt = SYSTEM_PROMPTS[fileType];
-  if (!prompt) throw new Error(`No prompt for: ${fileType}`);
-  return prompt;
+// In-memory cache (per server instance) — 5 min TTL
+const cache = new Map<string, { content: string; version: number; ts: number }>();
+const CACHE_TTL = 5 * 60 * 1000;
+
+export async function getSystemPrompt(
+  fileType: MDFileType,
+  role: string = 'developer',
+): Promise<ResolvedPrompt> {
+  const key = `${fileType}:${role}`;
+  const cached = cache.get(key);
+  if (cached && Date.now() - cached.ts < CACHE_TTL) {
+    return { content: cached.content, version: cached.version };
+  }
+
+  if (supabaseEnabled) {
+    try {
+      const { data } = await supabase
+        .from('prompt_templates')
+        .select('content, version')
+        .eq('file_type', fileType)
+        .eq('role', role)
+        .eq('is_active', true)
+        .order('version', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (data?.content) {
+        cache.set(key, { content: data.content, version: data.version, ts: Date.now() });
+        return { content: data.content, version: data.version };
+      }
+    } catch {
+      // Supabase down / no row / RLS — fall through to hardcoded fallback
+    }
+  }
+
+  const fallback = FALLBACK_PROMPTS[fileType];
+  if (!fallback) throw new Error(`No prompt for: ${fileType}`);
+  return { content: fallback, version: 0 };
 }
 
 export function buildUserMessage(fileType: MDFileType, req: GenerationRequest): string {

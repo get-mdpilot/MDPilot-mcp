@@ -20,6 +20,9 @@ export interface GenerationRequest {
 
   // Model provider selection
   provider?:  'claude' | 'gpt' | 'gemini' | 'groq';
+
+  // Role for role-specific prompt selection (Supabase prompt library)
+  role?:      string;
 }
 
 export interface GeneratedFile {

@@ -307,11 +307,11 @@ export default function Home() {
         <div className="text-center mb-12">
           <div className="section-label mb-5">MODES</div>
           <h2 className="text-[clamp(1.8rem,4vw,2.8rem)] font-black text-white tracking-[-0.04em]">
-            Three modes. One platform.
+            Four modes. One platform.
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {[
             {
               href: '/generate', live: true, badge: null,
@@ -330,6 +330,12 @@ export default function Home() {
               icon: '🔄', label: 'Convert', accent: '#2DD4BF',
               tag: 'any file → .md',
               desc: 'Drop a PDF, Word doc, or PowerPoint. Get clean, token-efficient markdown via MarkItDown.',
+            },
+            {
+              href: '/image-to-prompt', live: true, badge: 'New',
+              icon: '🖼️', label: 'Image → Prompt', accent: '#7C3AED',
+              tag: 'screenshot → prompt',
+              desc: 'Upload a screenshot or photo. Get a detailed recreation prompt formatted for FLUX, SD, Midjourney, DALL-E, and Gemini.',
             },
           ].map(mode => {
             const Tag = mode.live ? 'a' : 'div';
