@@ -164,6 +164,63 @@ tests:
       - type: not-contains
         value: "npm install"
 
+  # ── Task mode domain regression tests ──────────────────────────────────────
+  - description: AWS CloudFront — TASK.md (cache invalidation regression)
+    vars:
+      fileType: task
+      fixture:
+        $ref: ./fixtures/aws-cloudfront.json
+    assert:
+      - type: javascript
+        filePath: ./assertions/md-quality.js
+      - type: contains
+        value: "CloudFront"
+      - type: contains
+        value: "invalidat"
+      - type: not-contains
+        value: "TODO"
+
+  - description: Backend webhook — TASK.md (Stripe idempotency)
+    vars:
+      fileType: task
+      fixture:
+        $ref: ./fixtures/backend-webhook.json
+    assert:
+      - type: javascript
+        filePath: ./assertions/md-quality.js
+      - type: contains
+        value: "idempoten"
+      - type: contains
+        value: "signature"
+      - type: not-contains
+        value: "TODO"
+
+  - description: Database migration — TASK.md (zero-downtime column rename)
+    vars:
+      fileType: task
+      fixture:
+        $ref: ./fixtures/database-migration.json
+    assert:
+      - type: javascript
+        filePath: ./assertions/md-quality.js
+      - type: contains
+        value: "migration"
+      - type: not-contains
+        value: "TODO"
+
+  - description: Frontend hydration — TASK.md (SSR mismatch fix)
+    vars:
+      fileType: task
+      fixture:
+        $ref: ./fixtures/frontend-hydration.json
+    assert:
+      - type: javascript
+        filePath: ./assertions/md-quality.js
+      - type: contains
+        value: "hydration"
+      - type: not-contains
+        value: "TODO"
+
 # ── Eval options ───────────────────────────────────────────────────────────────
 evaluateOptions:
   maxConcurrency: 3

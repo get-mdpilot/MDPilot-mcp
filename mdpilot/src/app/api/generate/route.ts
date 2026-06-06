@@ -9,6 +9,7 @@ const filenames: Record<MDFileType, string> = {
   readme: 'README.md', agents: 'AGENTS.md', claude: 'CLAUDE.md',
   skill: 'SKILL.md', design: 'DESIGN.md', contributing: 'CONTRIBUTING.md',
   security: 'SECURITY.md', context: 'CONTEXT.md', task: 'TASK.md', spec: 'SPEC.md',
+  walkthrough: 'WALKTHROUGH.md',
 };
 
 export async function POST(req: NextRequest) {
@@ -37,6 +38,7 @@ export async function POST(req: NextRequest) {
     const { content: systemPrompt, version: promptVersion } = await getSystemPrompt(
       fileType,
       request.role ?? 'developer',
+      request,
     );
 
     const content = await generateWithProvider(

@@ -1,6 +1,32 @@
 import type { Metadata } from 'next';
+import { Space_Grotesk, DM_Sans, DM_Mono } from 'next/font/google';
 import './globals.css';
 import Nav from '@/components/Nav';
+import GlowCursor from '@/components/GlowCursor';
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-space-grotesk',
+  display: 'swap',
+  preload: true,
+});
+
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  variable: '--font-dm-sans',
+  display: 'swap',
+  preload: true,
+});
+
+const dmMono = DM_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  variable: '--font-dm-mono',
+  display: 'swap',
+  preload: false,
+});
 
 export const metadata: Metadata = {
   title: 'MDPilot — Ship better .md files, faster',
@@ -26,8 +52,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className={`${spaceGrotesk.variable} ${dmSans.variable} ${dmMono.variable} scroll-smooth`}>
       <body className="min-h-screen bg-[var(--md-dark)] text-white antialiased">
+        <GlowCursor />
         <Nav />
         <main>{children}</main>
 

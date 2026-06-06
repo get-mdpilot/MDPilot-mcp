@@ -1,0 +1,15 @@
+{
+  "fileType": "task",
+  "mode": "task",
+  "domain": "aws",
+  "executionMode": "guide",
+  "experienceLevel": "experienced",
+  "taskInput": "Add CloudFront distribution in front of our S3 static site. The site currently serves from an S3 bucket with static website hosting enabled. We need HTTPS, custom domain (cdn.example.com), and cache invalidation on every deploy. Cache-Control headers should be set correctly — JS/CSS assets versioned and immutable, HTML files no-cache. Budget: we're already using Route 53 for DNS.",
+  "detectedStack": ["aws", "s3", "cloudfront", "route53"],
+  "rawStackInput": "AWS S3, CloudFront, Route 53, Terraform",
+  "expectedKeywords": {
+    "task": ["CloudFront", "S3", "cache", "invalidat", "HTTPS", "Route 53"]
+  },
+  "requiredWatchouts": ["invalidation", "cache", "ACM", "OAI", "OAC"],
+  "forbiddenContent": ["TODO", "placeholder", "[INSERT", "your-bucket"]
+}

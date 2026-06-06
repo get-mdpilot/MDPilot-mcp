@@ -9,6 +9,7 @@ import { DESIGN_SYSTEM_PROMPT } from './design';
 import { CONTRIBUTING_SYSTEM_PROMPT } from './contributing';
 import { SECURITY_SYSTEM_PROMPT } from './security';
 import { CONTEXT_SYSTEM_PROMPT } from './context';
+import { EXPLAIN_SYSTEM_PROMPT } from './explain';
 
 // Hardcoded prompts — the source of truth for the seed script, and the
 // fallback whenever Supabase is unavailable or has no matching row.
@@ -23,4 +24,5 @@ export const FALLBACK_PROMPTS: Partial<Record<MDFileType, string>> = {
   contributing: CONTRIBUTING_SYSTEM_PROMPT,
   security:     SECURITY_SYSTEM_PROMPT,
   context:      CONTEXT_SYSTEM_PROMPT,
+  walkthrough:  EXPLAIN_SYSTEM_PROMPT,
 };

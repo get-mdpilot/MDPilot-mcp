@@ -1,8 +1,27 @@
-export type ProjectType = 'webapp' | 'mobile' | 'api' | 'library' | 'design' | 'other';
-export type Audience    = 'me' | 'team' | 'public';
-export type AITool      = 'claude' | 'cursor' | 'copilot' | 'windsurf' | 'chatgpt' | 'none';
-export type MDFileType  = 'readme' | 'agents' | 'claude' | 'skill' | 'design' | 'contributing' | 'security' | 'context' | 'task' | 'spec';
-export type AppMode     = 'generate' | 'task';
+export type ProjectType     = 'webapp' | 'mobile' | 'api' | 'library' | 'design' | 'other';
+export type Audience       = 'me' | 'team' | 'public';
+export type AITool         = 'claude' | 'cursor' | 'copilot' | 'windsurf' | 'chatgpt' | 'none';
+export type MDFileType     = 'readme' | 'agents' | 'claude' | 'skill' | 'design' | 'contributing' | 'security' | 'context' | 'task' | 'spec' | 'walkthrough';
+export type AppMode        = 'generate' | 'task';
+export type ExecutionMode  = 'guide' | 'ai_exec' | 'context';
+export type ExperienceLevel = 'new' | 'experienced';
+
+// Reader audience — who will READ the generated output (distinct from Audience = project scope)
+export type ReaderAudience  = 'ai_agent' | 'team' | 'non_technical' | 'learner';
+export type ReadingLevel    = 'plain' | 'standard' | 'expert';
+
+export interface GenerateOptions {
+  audience:         ReaderAudience;
+  readingLevel:     ReadingLevel;
+  includeReasoning: boolean;
+}
+
+export interface TaskOptions {
+  executionMode:       ExecutionMode;
+  experienceLevel:     ExperienceLevel;
+  includeVerification?: boolean;
+  showAlternatives?:   boolean;
+}
 
 export interface GenerationRequest {
   // Generate mode fields
@@ -15,8 +34,12 @@ export interface GenerationRequest {
   selectedFiles:      MDFileType[];
 
   // Task mode fields
-  taskInput?: string;
-  mode?:      AppMode;
+  taskInput?:      string;
+  mode?:           AppMode;
+  taskOptions?:    TaskOptions;
+
+  // Generate mode reader options
+  generateOptions?: GenerateOptions;
 
   // Model provider selection
   provider?:  'claude' | 'gpt' | 'gemini' | 'groq';

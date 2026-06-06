@@ -1,0 +1,15 @@
+{
+  "fileType": "task",
+  "mode": "task",
+  "domain": "frontend",
+  "executionMode": "guide",
+  "experienceLevel": "experienced",
+  "taskInput": "Fix hydration mismatch error on the dashboard page. Error: 'Warning: Expected server HTML to contain a matching div'. The component shows a timestamp formatted with toLocaleString() which differs between server and client locale. Also the component reads from localStorage on render which doesn't exist server-side. Next.js 14 App Router. Users report the page flickering on load.",
+  "detectedStack": ["nextjs", "react", "typescript"],
+  "rawStackInput": "Next.js 14, React, TypeScript, Tailwind",
+  "expectedKeywords": {
+    "task": ["hydration", "useEffect", "localStorage", "client", "server", "suppressHydrationWarning"]
+  },
+  "requiredWatchouts": ["hydration", "useEffect", "browser API", "'use client'"],
+  "forbiddenContent": ["TODO", "placeholder", "[INSERT"]
+}

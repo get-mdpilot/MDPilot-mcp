@@ -1,62 +1,17 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import TokenVizClient from '@/components/TokenVizClient';
+import VizBentoSection from '@/components/VizBentoSection';
+import MouseHero from '@/components/MouseHero';
+import StreamingDemo from '@/components/StreamingDemo';
+import ModesSection from '@/components/ModesSection';
 
-/* ─── Terminal code window (Magic MCP pattern: code-aesthetic decoration) ─── */
-function TerminalWindow({ lines }: { lines: { indent?: number; tokens: { type: string; text: string }[] }[] }) {
-  return (
-    <div className="terminal-chrome shadow-[0_0_60px_rgba(0,0,0,0.6)] w-full">
-      {/* Titlebar */}
-      <div className="terminal-titlebar">
-        <span className="terminal-dot bg-[#FF5F57]" />
-        <span className="terminal-dot bg-[#FEBC2E]" />
-        <span className="terminal-dot bg-[#28C840]" />
-        <span className="ml-3 text-[11px] font-mono text-white/25">CLAUDE.md — MDPilot</span>
-      </div>
-      {/* Code body */}
-      <div className="px-5 py-4 space-y-1 text-[12.5px] font-mono leading-relaxed">
-        {lines.map((line, i) => (
-          <div key={i} style={{ paddingLeft: `${(line.indent ?? 0) * 16}px` }}>
-            {line.tokens.map((t, j) => (
-              <span key={j} className={`token-${t.type}`}>{t.text}</span>
-            ))}
-          </div>
-        ))}
-        <div className="flex items-center gap-1 mt-1">
-          <span className="text-white/30">{'>'}</span>
-          <span className="text-[#82aaff]">_</span>
-          <span className="cursor w-2 h-4 bg-[#4FACFF] rounded-[2px] opacity-80" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ─── Floating 3-D file card ───────────────────────────────────────────────── */
-function FileCard({ filename, accent, glow, lines, className = '' }: {
-  filename: string; accent: string; glow: string; lines: string[]; className?: string;
-}) {
-  return (
-    <div className={`relative rounded-2xl border border-white/[0.07] bg-[rgba(13,13,26,0.85)] backdrop-blur-xl p-4 w-[200px] select-none ${glow} ${className}`}>
-      <div className="flex items-center gap-1.5 mb-3">
-        <span className="w-2 h-2 rounded-full bg-red-400/50" />
-        <span className="w-2 h-2 rounded-full bg-amber-400/50" />
-        <span className="w-2 h-2 rounded-full bg-green-400/50" />
-        <span className={`ml-auto text-[10px] font-mono font-bold ${accent}`}>{filename}</span>
-      </div>
-      <div className="space-y-1.5">
-        {lines.map((w, i) => (
-          <div key={i} className="h-[5px] rounded-full" style={{ width: w, background: i % 3 === 0 ? 'rgba(79,172,255,0.25)' : i % 3 === 1 ? 'rgba(168,85,247,0.20)' : 'rgba(255,255,255,0.08)' }} />
-        ))}
-      </div>
-    </div>
-  );
-}
 
 /* ─── Feature card (Magic MCP: gradient-border + glow hover) ────────────────  */
 function FeatureCard({ num, filename, accent, borderColor, glowColor, bgColor, icon, title, desc, tags }: {
   num: string; filename: string; accent: string; borderColor: string; glowColor: string; bgColor: string;
-  icon: string; title: string; desc: string; tags: string[];
+  icon: ReactNode; title: string; desc: string; tags: string[];
 }) {
   return (
     <div className={`group relative rounded-2xl border ${borderColor} ${bgColor} p-6 cursor-default card-interactive gradient-border overflow-hidden`}>
@@ -65,7 +20,7 @@ function FeatureCard({ num, filename, accent, borderColor, glowColor, bgColor, i
 
       <div className="relative z-10">
         <div className="flex items-start justify-between mb-5">
-          <div className={`w-10 h-10 rounded-xl ${bgColor} border ${borderColor} flex items-center justify-center text-xl`}>
+          <div className={`w-10 h-10 rounded-xl ${bgColor} border ${borderColor} flex items-center justify-center ${accent}`}>
             {icon}
           </div>
           <span className="font-mono text-[10px] text-white/20 font-medium">{num}</span>
@@ -91,23 +46,23 @@ function FeatureCard({ num, filename, accent, borderColor, glowColor, bgColor, i
 
 /* ─── Works-with brand pill ─────────────────────────────────────────────── */
 function BrandPill({
-  name, color, font, weight = 700, icon,
+  name, color, weight = 600, icon,
 }: {
-  name: string; color: string; font: string; weight?: number;
+  name: string; color: string; weight?: number;
   icon: ReactNode;
 }) {
   return (
     <div
-      className="flex items-center gap-2.5 px-5 py-2.5 rounded-full border shrink-0"
+      className="flex items-center gap-2.5 px-4 py-2 rounded-full border shrink-0"
       style={{
-        borderColor: `${color}28`,
-        background: `${color}0d`,
+        borderColor: `${color}22`,
+        background: `${color}0a`,
       }}
     >
-      <span className="shrink-0 opacity-90" style={{ color }}>{icon}</span>
+      <span className="shrink-0" style={{ color, opacity: 0.85 }}>{icon}</span>
       <span
         className="text-[13px] tracking-tight whitespace-nowrap"
-        style={{ fontFamily: font, fontWeight: weight, color }}
+        style={{ fontWeight: weight, color }}
       >
         {name}
       </span>
@@ -117,76 +72,98 @@ function BrandPill({
 
 /* ─── Works-with scrolling marquee ──────────────────────────────────────── */
 function WorksWithMarquee() {
-  const brands: Array<{ name: string; color: string; font: string; weight?: number; icon: ReactNode }> = [
+  // All fonts use only what next/font loads: Space Grotesk, DM Sans, DM Mono
+  const brands: Array<{ name: string; color: string; weight?: number; icon: ReactNode }> = [
     {
       name: 'Claude Code',
-      color: '#D4A853',
-      font: "'Inter', 'DM Sans', sans-serif",
-      weight: 700,
+      // Anthropic's brand color — warm orange-clay
+      color: '#CC785C',
+      weight: 600,
       icon: (
-        // Anthropic "A" mark — triangle with interior cutout
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2.5L3.5 20.5h4.5L12 8.5l4 12h4.5L12 2.5zm0 7.5 2.3 6H9.7L12 10z" />
+        // Anthropic "A" — isosceles triangle, interior negative-space triangle
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+          <path d="M13.827 3.45L21.5 19.5h-3.895l-1.65-3.8H8.03l-1.648 3.8H2.5l7.674-16.05h3.653zm-1.824 4.282-2.48 5.718h4.959l-2.48-5.718z" />
         </svg>
       ),
     },
     {
       name: 'Cursor',
-      color: '#E2E8F0',
-      font: "'Space Grotesk', sans-serif",
-      weight: 700,
+      // Cursor's minimal identity — near-white on dark
+      color: '#CDD6F4',
+      weight: 600,
       icon: (
-        // Cursor arrow pointer
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M5.5 3.21V20.8l4.3-4.3 2.6 6.03 2.22-.96-2.6-6.04H18L5.5 3.21z" />
+        // Mouse-cursor arrow — the actual Cursor product icon shape
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+          <path d="M4 2.5v18.4l5.1-5.1 3.1 7.2 2.6-1.1-3.1-7.2H18L4 2.5z" />
         </svg>
       ),
     },
     {
       name: 'GitHub Copilot',
-      color: '#A78BFA',
-      font: "'DM Sans', sans-serif",
-      weight: 700,
+      // GitHub Copilot uses a vivid purple/violet brand color
+      color: '#8B5CF6',
+      weight: 600,
       icon: (
-        // GitHub octocat mark
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
+        // GitHub Octocat silhouette — official simplified mark
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+          <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
         </svg>
       ),
     },
     {
       name: 'Windsurf',
-      color: '#2DD4BF',
-      font: "'Inter', 'DM Sans', sans-serif",
-      weight: 700,
+      // Codeium / Windsurf uses a bright teal-cyan identity
+      color: '#06B6D4',
+      weight: 600,
       icon: (
-        // Wave / swoosh mark
-        <svg width="20" height="18" viewBox="0 0 28 20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-          <path d="M2 10c3-5 8-8 12-5s8 8 12 5" />
-          <path d="M2 16c3-4 8-6 12-4s8 5 12 4" />
+        // Stylised sail / wind wave — Windsurf's wave motif
+        <svg width="18" height="15" viewBox="0 0 26 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+          <path d="M1 9c3-6 8-9 13-6s9 9 11 6" />
+          <path d="M3 15c2-4 7-7 10-5s8 6 10 5" />
         </svg>
       ),
     },
     {
-      name: 'ChatGPT / Codex',
+      name: 'Goose',
+      // Block (formerly Square) open-source AI agent — Block's brand amber/gold
+      color: '#F59E0B',
+      weight: 600,
+      icon: (
+        // Goose — stylised bird silhouette in profile (long neck, body, beak)
+        <svg width="18" height="16" viewBox="0 0 26 20" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          {/* Body */}
+          <path d="M4 14c0 0 2-5 8-5s8 4 8 4" />
+          {/* Neck sweeping up */}
+          <path d="M20 13c1-3 2-6 4-8" />
+          {/* Head */}
+          <circle cx="23.5" cy="4.5" r="1.8" fill="currentColor" stroke="none" />
+          {/* Beak */}
+          <path d="M25 4l2-1" />
+          {/* Tail */}
+          <path d="M4 14c-1 1-2 3-1 4" />
+        </svg>
+      ),
+    },
+    {
+      name: 'ChatGPT',
+      // OpenAI brand green
       color: '#10A37F',
-      font: "'Inter', sans-serif",
-      weight: 700,
+      weight: 600,
       icon: (
-        // OpenAI logo — four-arc star shape
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M22.282 9.821a5.985 5.985 0 00-.516-4.91 6.046 6.046 0 00-6.51-2.9A6.065 6.065 0 004.981 4.18a5.985 5.985 0 00-3.998 2.9 6.046 6.046 0 00.743 7.097 5.98 5.98 0 00.51 4.911 6.051 6.051 0 006.515 2.9A5.985 5.985 0 0013.26 24a6.056 6.056 0 005.772-4.206 5.99 5.99 0 003.997-2.9 6.056 6.056 0 00-.747-7.073zM13.26 22.43a4.476 4.476 0 01-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 00.392-.681v-6.737l2.02 1.168a.071.071 0 01.038.052v5.583a4.504 4.504 0 01-4.494 4.494zM3.6 18.304a4.47 4.47 0 01-.535-3.014l.142.085 4.783 2.759a.771.771 0 00.78 0l5.843-3.369v2.332a.08.08 0 01-.033.062L9.74 19.95a4.5 4.5 0 01-6.14-1.646zM2.34 7.896a4.485 4.485 0 012.366-1.973V11.6a.766.766 0 00.388.676l5.815 3.355-2.02 1.168a.076.076 0 01-.071 0l-4.83-2.786A4.504 4.504 0 012.34 7.872zm16.597 3.855l-5.843-3.37 2.019-1.168a.076.076 0 01.071 0l4.83 2.791a4.494 4.494 0 01-.676 8.105v-5.678a.79.79 0 00-.4-.68zm2.01-3.023l-.141-.085-4.774-2.782a.776.776 0 00-.785 0L9.409 9.23V6.897a.066.066 0 01.028-.061l4.83-2.787a4.5 4.5 0 016.68 4.66zm-12.64 4.135l-2.02-1.164a.08.08 0 01-.038-.057V6.075a4.5 4.5 0 017.375-3.453l-.142.08L8.704 5.46a.795.795 0 00-.393.681zm1.097-2.365l2.602-1.5 2.607 1.5v2.999l-2.597 1.5-2.607-1.5z" />
+        // OpenAI bloom / rotary-petals logo — accurate simplified form
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+          <path d="M22.28 9.82a6 6 0 0 0-.52-4.91 6.05 6.05 0 0 0-6.5-2.9 6.07 6.07 0 0 0-10.26 2.27 6 6 0 0 0-4 2.9 6.05 6.05 0 0 0 .74 7.1 6 6 0 0 0 .51 4.91 6.05 6.05 0 0 0 6.52 2.9A6 6 0 0 0 13.26 24a6.06 6.06 0 0 0 5.77-4.21 6 6 0 0 0 4-2.9 6.06 6.06 0 0 0-.75-7.07zM13.26 22.4a4.5 4.5 0 0 1-2.88-1.04l.14-.08 4.78-2.76a.8.8 0 0 0 .39-.68v-6.74l2.02 1.17a.07.07 0 0 1 .04.05v5.58a4.5 4.5 0 0 1-4.49 4.5zM3.6 18.3a4.47 4.47 0 0 1-.54-3.01l.14.08 4.78 2.76a.77.77 0 0 0 .78 0l5.84-3.37v2.33a.08.08 0 0 1-.03.06l-4.83 2.79A4.5 4.5 0 0 1 3.6 18.3zM2.34 7.9a4.49 4.49 0 0 1 2.37-1.97v5.67a.77.77 0 0 0 .39.68l5.82 3.36-2.02 1.17a.08.08 0 0 1-.07 0L3.99 14A4.5 4.5 0 0 1 2.34 7.9zm16.6 3.86-5.84-3.37 2.02-1.17a.08.08 0 0 1 .07 0l4.83 2.79a4.5 4.5 0 0 1-.68 8.1V12.44a.79.79 0 0 0-.4-.68zm2.01-3.02-.14-.09-4.77-2.78a.78.78 0 0 0-.79 0L9.41 9.24V6.9a.07.07 0 0 1 .03-.06L14.27 4.1a4.5 4.5 0 0 1 6.68 4.66zm-12.64 4.14-2.02-1.16a.08.08 0 0 1-.04-.06V6.07a4.5 4.5 0 0 1 7.38-3.45l-.14.08-4.78 2.76a.8.8 0 0 0-.4.68zm1.1-2.37 2.6-1.5 2.61 1.5v3l-2.6 1.5-2.61-1.5z" />
         </svg>
       ),
     },
     {
-      name: 'Zed AI',
-      color: '#9B8CFF',
-      font: "'Syne', 'Space Grotesk', sans-serif",
-      weight: 800,
+      name: 'Zed',
+      // Zed editor — electric violet, their actual brand hue
+      color: '#9D7CD8',
+      weight: 700,
       icon: (
-        // Zed bold Z letterform
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+        // Zed "Z" letterform — their actual logo is a bold Z slash
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
           <path d="M5 5h14L6 19h13" />
         </svg>
       ),
@@ -198,16 +175,13 @@ function WorksWithMarquee() {
 
   return (
     <section className="relative border-y border-white/[0.05] bg-[var(--md-dark-2)] py-5 overflow-hidden">
-      {/* Label */}
       <p className="text-center text-[10px] font-mono text-white/20 uppercase tracking-[0.14em] mb-4">
         Works with
       </p>
-
-      {/* Marquee */}
       <div className="marquee-container">
-        <div className="marquee-track gap-4 px-4">
+        <div className="marquee-track gap-3 px-4">
           {doubled.map((brand, i) => (
-            <BrandPill key={i} {...brand} />
+            <BrandPill key={i} name={brand.name} color={brand.color} weight={brand.weight} icon={brand.icon} />
           ))}
         </div>
       </div>
@@ -232,133 +206,13 @@ function PassRow({ n, label, desc, color }: { n: string; label: string; desc: st
 
 /* ─── Page ───────────────────────────────────────────────────────────────── */
 export default function Home() {
-  const terminalLines = [
-    { tokens: [{ type: 'comment', text: '# Claude Code Project Memory' }] },
-    { tokens: [] },
-    { tokens: [{ type: 'keyword', text: '## Stack' }] },
-    { tokens: [{ type: 'string', text: 'Next.js 14 · TypeScript · Tailwind · Prisma' }] },
-    { tokens: [] },
-    { tokens: [{ type: 'keyword', text: '## Gotchas' }] },
-    { tokens: [{ type: 'function', text: '- ' }, { type: 'string', text: 'Never call API from client components' }] },
-    { indent: 1, tokens: [{ type: 'function', text: '- ' }, { type: 'string', text: "runtime = 'nodejs' on API routes" }] },
-    { tokens: [] },
-    { tokens: [{ type: 'keyword', text: '## Commands' }] },
-    { tokens: [{ type: 'comment', text: '$ npm run dev  # start local server' }] },
-  ];
-
   return (
     <div className="bg-[var(--md-dark)] overflow-x-hidden">
 
       {/* ═══════════════════════════════════════════════════════════════
-          HERO — Dark OLED + code aesthetic (Skill: Developer Tool #91)
+          HERO — cursor-reactive 3D cards (MouseHero client component)
       ══════════════════════════════════════════════════════════════════ */}
-      <section className="relative min-h-[96vh] flex flex-col items-center justify-center px-5 sm:px-8 pt-4 pb-24 overflow-hidden">
-        {/* Grid texture */}
-        <div className="absolute inset-0 grid-bg opacity-60" />
-
-        {/* Atmospheric blobs */}
-        <div className="blob w-[700px] h-[700px] bg-[#4FACFF]/[0.07] -top-40 -left-40" />
-        <div className="blob w-[500px] h-[500px] bg-[#A855F7]/[0.06] -bottom-20 right-0" />
-        <div className="blob w-[300px] h-[300px] bg-[#2DD4BF]/[0.04] top-1/3 left-1/2" />
-
-        {/* Floating file cards — perspective 3D */}
-        <div className="absolute inset-0 pointer-events-none z-10 hidden xl:block">
-          <div className="float absolute top-[18%] left-[4%]"
-            style={{ transform: 'perspective(900px) rotateY(20deg) rotateX(-8deg)' }}>
-            <FileCard filename="README.md" accent="text-[#4FACFF]"
-              glow="shadow-[0_0_40px_rgba(79,172,255,0.12)]"
-              lines={['80%','60%','90%','45%','70%','55%']} />
-          </div>
-          <div className="float float-delay-1 absolute top-[22%] right-[4%]"
-            style={{ transform: 'perspective(900px) rotateY(-20deg) rotateX(-6deg)' }}>
-            <FileCard filename="AGENTS.md" accent="text-[#A855F7]"
-              glow="shadow-[0_0_40px_rgba(168,85,247,0.12)]"
-              lines={['65%','85%','50%','75%','40%','80%']} />
-          </div>
-          <div className="float float-delay-2 absolute bottom-[24%] left-[8%]"
-            style={{ transform: 'perspective(900px) rotateY(16deg) rotateX(6deg)' }}>
-            <FileCard filename="CLAUDE.md" accent="text-[#2DD4BF]"
-              glow="shadow-[0_0_40px_rgba(45,212,191,0.12)]"
-              lines={['70%','50%','85%','60%','45%']} />
-          </div>
-        </div>
-
-        {/* Hero content */}
-        <div className="relative z-20 text-center max-w-4xl mx-auto fade-up">
-          {/* Live badge — Magic MCP quality: pulse + glassmorphism */}
-          <div className="inline-flex items-center gap-2.5 px-4 py-2 mb-10 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-xl text-[12px] text-white/50">
-            <span className="relative flex h-2 w-2 shrink-0">
-              <span className="pulse-green absolute inline-flex h-full w-full rounded-full bg-[#34D399]" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-[#34D399]" />
-            </span>
-            Generate mode live — no account needed
-            <span className="hidden sm:inline text-white/20">·</span>
-            <span className="hidden sm:inline font-mono text-[#34D399]/70">try it →</span>
-          </div>
-
-          {/* Headline */}
-          <h1 className="text-[clamp(2.6rem,7.5vw,5.5rem)] font-black leading-[1.04] tracking-[-0.04em] mb-6">
-            <span className="text-white block">Docs that AI agents</span>
-            <span className="text-gradient-animated block">actually read.</span>
-          </h1>
-
-          <p className="text-[17px] sm:text-[18px] text-white/40 max-w-[540px] mx-auto leading-relaxed mb-10">
-            3 questions → production-grade{' '}
-            <span className="font-mono text-[15px] text-white/70 bg-white/[0.06] px-2 py-0.5 rounded-md">AGENTS.md</span>
-            {' '}/{' '}
-            <span className="font-mono text-[15px] text-white/70 bg-white/[0.06] px-2 py-0.5 rounded-md">CLAUDE.md</span>
-            {' '}/{' '}
-            <span className="font-mono text-[15px] text-white/70 bg-white/[0.06] px-2 py-0.5 rounded-md">README.md</span>
-            {' '}— token-optimized.
-          </p>
-
-          {/* CTAs */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-16">
-            <Link
-              href="/generate"
-              className="btn-shine relative inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-[#4FACFF] to-[#38D9A9] text-[#07070f] text-[15px] font-black shadow-[0_0_30px_rgba(79,172,255,0.30)] hover:shadow-[0_0_50px_rgba(79,172,255,0.50)] hover:scale-[1.03] active:scale-[0.98] transition-all duration-200"
-              style={{ fontFamily: 'Space Grotesk, sans-serif' }}
-            >
-              Generate my files
-              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-              </svg>
-            </Link>
-            <a
-              href="https://github.com" target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-white/[0.04] border border-white/[0.08] text-white/60 text-[15px] font-medium hover:text-white hover:border-white/[0.14] hover:bg-white/[0.06] transition-all duration-200"
-            >
-              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
-              </svg>
-              View on GitHub
-            </a>
-          </div>
-
-          {/* Stats strip */}
-          <div className="inline-grid grid-cols-3 divide-x divide-white/[0.06] bg-white/[0.03] border border-white/[0.07] backdrop-blur-xl rounded-2xl overflow-hidden">
-            {[
-              { v: '3',  l: 'file types'      },
-              { v: '27', l: 'stack detectors' },
-              { v: '0',  l: 'sign-ups'        },
-            ].map(s => (
-              <div key={s.l} className="px-6 sm:px-8 py-4 text-center group">
-                <p className="text-[22px] sm:text-[26px] font-black text-gradient-animated" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
-                  {s.v}
-                </p>
-                <p className="text-[10px] font-mono text-white/25 uppercase tracking-widest mt-0.5">{s.l}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Terminal code window — right side decoration on wide screens */}
-        <div className="relative z-20 mt-16 w-full max-w-lg mx-auto fade-up fade-up-2 xl:absolute xl:right-[4%] xl:bottom-[12%] xl:w-80 xl:mt-0">
-          <TerminalWindow lines={terminalLines} />
-          {/* Glow under the terminal */}
-          <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-2/3 h-8 bg-[#4FACFF]/15 rounded-full blur-xl" />
-        </div>
-      </section>
+      <MouseHero />
 
       <WorksWithMarquee />
 
@@ -380,7 +234,8 @@ export default function Home() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           <FeatureCard
-            num="[01]" filename="README.md" icon="📄"
+            num="[01]" filename="README.md"
+            icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>}
             accent="text-[#4FACFF]"
             borderColor="border-[#4FACFF]/[0.15]"
             glowColor="bg-[#4FACFF]/20"
@@ -390,7 +245,8 @@ export default function Home() {
             tags={['All platforms', 'Public repos', 'Indexed by GitHub']}
           />
           <FeatureCard
-            num="[02]" filename="AGENTS.md" icon="🤖"
+            num="[02]" filename="AGENTS.md"
+            icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg>}
             accent="text-[#A855F7]"
             borderColor="border-[#A855F7]/[0.15]"
             glowColor="bg-[#A855F7]/20"
@@ -400,7 +256,8 @@ export default function Home() {
             tags={['6 AI tools', 'Universal format', 'AGENTS.md spec']}
           />
           <FeatureCard
-            num="[03]" filename="CLAUDE.md" icon="🟠"
+            num="[03]" filename="CLAUDE.md"
+            icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/><path d="M21.17 8H12V2.05"/></svg>}
             accent="text-[#2DD4BF]"
             borderColor="border-[#2DD4BF]/[0.15]"
             glowColor="bg-[#2DD4BF]/20"
@@ -413,92 +270,9 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          MODES — three ways to generate markdown
+          MODES — four ways to generate markdown (live animated previews)
       ══════════════════════════════════════════════════════════════════ */}
-      <section id="modes" className="max-w-6xl mx-auto px-5 sm:px-8 pb-12">
-        <div className="text-center mb-12">
-          <div className="section-label mb-5">MODES</div>
-          <h2 className="text-[clamp(1.8rem,4vw,2.8rem)] font-black text-white tracking-[-0.04em]">
-            Four modes. One platform.
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {[
-            {
-              href: '/generate', live: true, badge: null,
-              icon: '✨', label: 'Generate', accent: '#4FACFF',
-              tag: '3 questions → .md',
-              desc: 'Answer 3 questions, paste your stack. Get README, AGENTS.md, CLAUDE.md tuned for your AI tools.',
-            },
-            {
-              href: '/task', live: true, badge: 'New',
-              icon: '📋', label: 'Task', accent: '#E05E3A',
-              tag: 'ticket → TASK.md',
-              desc: 'Paste a Jira ticket or Slack thread. Get an agent-ready TASK.md with zero clarification needed.',
-            },
-            {
-              href: '/convert', live: true, badge: 'New',
-              icon: '🔄', label: 'Convert', accent: '#2DD4BF',
-              tag: 'any file → .md',
-              desc: 'Drop a PDF, Word doc, or PowerPoint. Get clean, token-efficient markdown via MarkItDown.',
-            },
-            {
-              href: '/image-to-prompt', live: true, badge: 'New',
-              icon: '🖼️', label: 'Image → Prompt', accent: '#7C3AED',
-              tag: 'screenshot → prompt',
-              desc: 'Upload a screenshot or photo. Get a detailed recreation prompt formatted for FLUX, SD, Midjourney, DALL-E, and Gemini.',
-            },
-          ].map(mode => {
-            const Tag = mode.live ? 'a' : 'div';
-            return (
-              <Tag
-                key={mode.label}
-                {...(mode.live ? { href: mode.href } : {})}
-                className={`group relative rounded-2xl border border-white/[0.07] bg-white/[0.03] p-6 overflow-hidden transition-all duration-200 ${
-                  mode.live ? 'card-interactive cursor-pointer' : 'opacity-60 cursor-not-allowed'
-                }`}
-              >
-                <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                  style={{ background: `${mode.accent}33` }} />
-                <div className="relative z-10">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="w-11 h-11 rounded-xl flex items-center justify-center text-xl border"
-                      style={{ background: `${mode.accent}14`, borderColor: `${mode.accent}26` }}>
-                      {mode.icon}
-                    </div>
-                    {!mode.live ? (
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/[0.06] text-white/40">soon</span>
-                    ) : mode.badge ? (
-                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1"
-                        style={{ background: `${mode.accent}26`, color: mode.accent }}>
-                        ✦ {mode.badge}
-                      </span>
-                    ) : (
-                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#34D399]/15 text-[#34D399] flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#34D399]" /> Live
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <h3 className="text-[16px] font-bold text-white" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>{mode.label}</h3>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-white/[0.08] text-white/35">{mode.tag}</span>
-                  </div>
-                  <p className="text-[13px] text-white/45 leading-relaxed mb-3">{mode.desc}</p>
-                  {mode.live && (
-                    <span className="inline-flex items-center gap-1 text-[13px] font-medium" style={{ color: mode.accent }}>
-                      Try it
-                      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} className="group-hover:translate-x-0.5 transition-transform">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                      </svg>
-                    </span>
-                  )}
-                </div>
-              </Tag>
-            );
-          })}
-        </div>
-      </section>
+      <ModesSection />
 
       {/* ═══════════════════════════════════════════════════════════════
           WHAT'S NEW IN V2
@@ -556,61 +330,20 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Visual — token bar viz */}
-          <div className="relative">
-            <div className="terminal-chrome shadow-[0_0_80px_rgba(0,0,0,0.5)]">
-              <div className="terminal-titlebar">
-                <span className="terminal-dot bg-[#FF5F57]" />
-                <span className="terminal-dot bg-[#FEBC2E]" />
-                <span className="terminal-dot bg-[#28C840]" />
-                <span className="ml-3 text-[11px] font-mono text-white/25">Token optimizer — results</span>
-              </div>
-              <div className="p-6 space-y-5">
-                {/* Before/after bar */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[11px] font-mono text-white/30">Before</span>
-                    <span className="text-[11px] font-mono text-white/50">2,847 tokens</span>
-                  </div>
-                  <div className="h-2.5 w-full bg-white/[0.06] rounded-full overflow-hidden">
-                    <div className="h-full w-full bg-white/15 rounded-full" />
-                  </div>
-                </div>
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[11px] font-mono text-white/30">After</span>
-                    <span className="text-[11px] font-mono text-[#4FACFF]">1,764 tokens</span>
-                  </div>
-                  <div className="h-2.5 w-full bg-white/[0.06] rounded-full overflow-hidden">
-                    <div className="h-full rounded-full bg-gradient-to-r from-[#4FACFF] to-[#38D9A9] transition-all duration-700" style={{ width: '62%' }} />
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between pt-2 border-t border-white/[0.05]">
-                  <span className="text-[12px] text-white/30">Total saved</span>
-                  <span className="text-[18px] font-black text-[#34D399]" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>↓ 38%</span>
-                </div>
-
-                {/* Pass breakdown */}
-                <div className="space-y-2">
-                  {[
-                    { label: 'Boilerplate strip',     saved: 642, color: 'bg-[#FBBF24]' },
-                    { label: 'Cross-file dedup',      saved: 318, color: 'bg-[#FF6B6B]' },
-                    { label: 'Structure compression', saved: 123, color: 'bg-[#A855F7]' },
-                  ].map(p => (
-                    <div key={p.label} className="flex items-center gap-3">
-                      <span className={`w-2 h-2 rounded-full shrink-0 ${p.color}`} />
-                      <span className="text-[11px] text-white/35 flex-1">{p.label}</span>
-                      <span className="text-[11px] font-mono text-white/50">-{p.saved}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-3/4 h-8 bg-[#FBBF24]/10 blur-2xl rounded-full" />
-          </div>
+          {/* Visual — animated token viz */}
+          <TokenVizClient />
         </div>
       </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          STREAMING GENERATION DEMO
+      ══════════════════════════════════════════════════════════════════ */}
+      <StreamingDemo />
+
+      {/* ═══════════════════════════════════════════════════════════════
+          BENTO DATA VISUALIZATION
+      ══════════════════════════════════════════════════════════════════ */}
+      <VizBentoSection />
 
       {/* ═══════════════════════════════════════════════════════════════
           HOW IT WORKS — 3 steps with connector line

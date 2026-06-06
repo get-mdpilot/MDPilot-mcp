@@ -1,0 +1,15 @@
+{
+  "fileType": "task",
+  "mode": "task",
+  "domain": "database",
+  "executionMode": "guide",
+  "experienceLevel": "experienced",
+  "taskInput": "Rename users.username column to users.handle in production Postgres (50M rows). Zero-downtime requirement — we can't lock the table. Current code reads and writes username. New code needs to use handle. We have Prisma + Supabase. Rollout plan should deploy in 3 stages.",
+  "detectedStack": ["postgresql", "prisma", "supabase"],
+  "rawStackInput": "PostgreSQL, Prisma, Supabase",
+  "expectedKeywords": {
+    "task": ["migration", "backward", "backfill", "concurrent", "column", "zero-downtime"]
+  },
+  "requiredWatchouts": ["lock", "concurrent", "backwards-compatible", "three-step"],
+  "forbiddenContent": ["TODO", "placeholder", "[INSERT"]
+}

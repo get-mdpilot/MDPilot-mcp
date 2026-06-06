@@ -1,0 +1,15 @@
+{
+  "fileType": "task",
+  "mode": "task",
+  "domain": "backend",
+  "executionMode": "guide",
+  "experienceLevel": "experienced",
+  "taskInput": "Implement Stripe webhook handler for payment events. We need to handle payment_intent.succeeded, payment_intent.payment_failed, and customer.subscription.deleted. Each event must be idempotent — Stripe retries on failure. Signature verification is mandatory. Events should update our DB and trigger email notifications asynchronously. Respond 200 within 30s or Stripe marks as failed.",
+  "detectedStack": ["nodejs", "stripe", "express"],
+  "rawStackInput": "Node.js, Express, Stripe, PostgreSQL",
+  "expectedKeywords": {
+    "task": ["idempotent", "signature", "webhook", "async", "200", "retry"]
+  },
+  "requiredWatchouts": ["idempotency", "signature", "async", "timeout"],
+  "forbiddenContent": ["TODO", "placeholder", "[INSERT"]
+}
