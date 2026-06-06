@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -85,6 +86,132 @@ function FeatureCard({ num, filename, accent, borderColor, glowColor, bgColor, i
         </div>
       </div>
     </div>
+  );
+}
+
+/* ─── Works-with brand pill ─────────────────────────────────────────────── */
+function BrandPill({
+  name, color, font, weight = 700, icon,
+}: {
+  name: string; color: string; font: string; weight?: number;
+  icon: ReactNode;
+}) {
+  return (
+    <div
+      className="flex items-center gap-2.5 px-5 py-2.5 rounded-full border shrink-0"
+      style={{
+        borderColor: `${color}28`,
+        background: `${color}0d`,
+      }}
+    >
+      <span className="shrink-0 opacity-90" style={{ color }}>{icon}</span>
+      <span
+        className="text-[13px] tracking-tight whitespace-nowrap"
+        style={{ fontFamily: font, fontWeight: weight, color }}
+      >
+        {name}
+      </span>
+    </div>
+  );
+}
+
+/* ─── Works-with scrolling marquee ──────────────────────────────────────── */
+function WorksWithMarquee() {
+  const brands: Array<{ name: string; color: string; font: string; weight?: number; icon: ReactNode }> = [
+    {
+      name: 'Claude Code',
+      color: '#D4A853',
+      font: "'Inter', 'DM Sans', sans-serif",
+      weight: 700,
+      icon: (
+        // Anthropic "A" mark — triangle with interior cutout
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2.5L3.5 20.5h4.5L12 8.5l4 12h4.5L12 2.5zm0 7.5 2.3 6H9.7L12 10z" />
+        </svg>
+      ),
+    },
+    {
+      name: 'Cursor',
+      color: '#E2E8F0',
+      font: "'Space Grotesk', sans-serif",
+      weight: 700,
+      icon: (
+        // Cursor arrow pointer
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M5.5 3.21V20.8l4.3-4.3 2.6 6.03 2.22-.96-2.6-6.04H18L5.5 3.21z" />
+        </svg>
+      ),
+    },
+    {
+      name: 'GitHub Copilot',
+      color: '#A78BFA',
+      font: "'DM Sans', sans-serif",
+      weight: 700,
+      icon: (
+        // GitHub octocat mark
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
+        </svg>
+      ),
+    },
+    {
+      name: 'Windsurf',
+      color: '#2DD4BF',
+      font: "'Inter', 'DM Sans', sans-serif",
+      weight: 700,
+      icon: (
+        // Wave / swoosh mark
+        <svg width="20" height="18" viewBox="0 0 28 20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+          <path d="M2 10c3-5 8-8 12-5s8 8 12 5" />
+          <path d="M2 16c3-4 8-6 12-4s8 5 12 4" />
+        </svg>
+      ),
+    },
+    {
+      name: 'ChatGPT / Codex',
+      color: '#10A37F',
+      font: "'Inter', sans-serif",
+      weight: 700,
+      icon: (
+        // OpenAI logo — four-arc star shape
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M22.282 9.821a5.985 5.985 0 00-.516-4.91 6.046 6.046 0 00-6.51-2.9A6.065 6.065 0 004.981 4.18a5.985 5.985 0 00-3.998 2.9 6.046 6.046 0 00.743 7.097 5.98 5.98 0 00.51 4.911 6.051 6.051 0 006.515 2.9A5.985 5.985 0 0013.26 24a6.056 6.056 0 005.772-4.206 5.99 5.99 0 003.997-2.9 6.056 6.056 0 00-.747-7.073zM13.26 22.43a4.476 4.476 0 01-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 00.392-.681v-6.737l2.02 1.168a.071.071 0 01.038.052v5.583a4.504 4.504 0 01-4.494 4.494zM3.6 18.304a4.47 4.47 0 01-.535-3.014l.142.085 4.783 2.759a.771.771 0 00.78 0l5.843-3.369v2.332a.08.08 0 01-.033.062L9.74 19.95a4.5 4.5 0 01-6.14-1.646zM2.34 7.896a4.485 4.485 0 012.366-1.973V11.6a.766.766 0 00.388.676l5.815 3.355-2.02 1.168a.076.076 0 01-.071 0l-4.83-2.786A4.504 4.504 0 012.34 7.872zm16.597 3.855l-5.843-3.37 2.019-1.168a.076.076 0 01.071 0l4.83 2.791a4.494 4.494 0 01-.676 8.105v-5.678a.79.79 0 00-.4-.68zm2.01-3.023l-.141-.085-4.774-2.782a.776.776 0 00-.785 0L9.409 9.23V6.897a.066.066 0 01.028-.061l4.83-2.787a4.5 4.5 0 016.68 4.66zm-12.64 4.135l-2.02-1.164a.08.08 0 01-.038-.057V6.075a4.5 4.5 0 017.375-3.453l-.142.08L8.704 5.46a.795.795 0 00-.393.681zm1.097-2.365l2.602-1.5 2.607 1.5v2.999l-2.597 1.5-2.607-1.5z" />
+        </svg>
+      ),
+    },
+    {
+      name: 'Zed AI',
+      color: '#9B8CFF',
+      font: "'Syne', 'Space Grotesk', sans-serif",
+      weight: 800,
+      icon: (
+        // Zed bold Z letterform
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M5 5h14L6 19h13" />
+        </svg>
+      ),
+    },
+  ];
+
+  // Duplicate for seamless infinite loop (CSS transforms -50%)
+  const doubled = [...brands, ...brands];
+
+  return (
+    <section className="relative border-y border-white/[0.05] bg-[var(--md-dark-2)] py-5 overflow-hidden">
+      {/* Label */}
+      <p className="text-center text-[10px] font-mono text-white/20 uppercase tracking-[0.14em] mb-4">
+        Works with
+      </p>
+
+      {/* Marquee */}
+      <div className="marquee-container">
+        <div className="marquee-track gap-4 px-4">
+          {doubled.map((brand, i) => (
+            <BrandPill key={i} {...brand} />
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -233,22 +360,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          TOOLS TRUST BAR
-      ══════════════════════════════════════════════════════════════════ */}
-      <section className="relative border-y border-white/[0.05] bg-[var(--md-dark-2)] py-5 px-5 sm:px-8 overflow-hidden">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
-          <p className="text-[10px] font-mono text-white/20 uppercase tracking-[0.12em] shrink-0">Works with</p>
-          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-            {['Claude Code', 'Cursor', 'GitHub Copilot', 'Windsurf', 'ChatGPT / Codex', 'Zed AI'].map(tool => (
-              <span key={tool}
-                className="text-[12px] font-medium px-3.5 py-1.5 rounded-full border border-white/[0.07] text-white/35 hover:text-white/65 hover:border-white/[0.14] transition-all duration-200 cursor-default">
-                {tool}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
+      <WorksWithMarquee />
 
       {/* ═══════════════════════════════════════════════════════════════
           FILE FEATURES — numbered sections (readme.com/ai style)

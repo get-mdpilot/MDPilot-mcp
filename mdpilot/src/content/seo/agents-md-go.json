@@ -1,0 +1,24 @@
+{
+  "example": "# Role declaration\nI am the primary coding assistant for this Go project.\n\n# Environment setup\nTo set up the environment, run the following commands:\n```go\nGOPROXY=https://proxy.golang.org,direct go env -w GO111MODULE=on\ngit config --global --add safe.directory '*'\nGo version: 1.20.0\n```\n\n# File-scoped build/test commands\nUse the following commands to build and test files in this project:\n* Use `go run .` to run the main package.\n* Use `go build .` to build the main package.\n* Use `go test ./...` to run all tests.\n* Use `go mod tidy` to clean up the go.mod file.\n\n# Code style rules\n* All code must be formatted with `gofmt`.\n* Table-driven tests are preferred.\n* All tests should use the `context.Context` pattern.\n* No circular imports are allowed.\n* Interface-based design is preferred.\n\n# Key project paths\n* The main package is located in `./`.\n* The go.mod file is located in `./`.\n* Tests are located in `./` and subdirectories.\n\n# Permission boundaries\n## Allowed\n* Auto-format code with `gofmt`.\n* Run tests with `go test ./...`.\n* Update the go.mod file with `go mod tidy`.\n## Approve\n* Manual review of all changes to the main package.\n* Review of new dependencies added to the go.mod file.\n## Never\n* Directly push to the main branch.\n* Make changes to code style or formatting that are not automatically applied by `gofmt`.\n\n# PR format\nAll pull requests should include a clear description of changes made, and should be reviewed by at least one other team member.",
+  "tokenCount": 371,
+  "whySection": "In Go projects, maintaining a consistent code style and ensuring proper dependency management are crucial to avoid issues such as incorrect formatting and missing dependencies. The `go mod tidy` command helps to keep the go.mod file up-to-date, while `gofmt` ensures that all code is formatted consistently. Additionally, using table-driven tests and the `context.Context` pattern helps to write more robust and maintainable tests. By following these guidelines and using AGENTS.md, developers can reduce the risk of common mistakes and ensure that their project is well-organized and easy to maintain.",
+  "faqItems": [
+    {
+      "q": "What is AGENTS.md?",
+      "a": "AGENTS.md is an open standard for AI coding assistant instructions that provides guidelines for coding style, dependency management, and testing."
+    },
+    {
+      "q": "How do I format my Go code?",
+      "a": "You can format your Go code using the `gofmt` command, which is the standard formatting tool for Go."
+    },
+    {
+      "q": "Where should I place the go.mod file in my Go project?",
+      "a": "The go.mod file should be placed in the root directory of your Go project, alongside the main package."
+    },
+    {
+      "q": "What is the purpose of the context.Context pattern in Go tests?",
+      "a": "The context.Context pattern is used to provide a way to cancel tests and to handle timeouts and deadlines, making tests more robust and maintainable."
+    }
+  ],
+  "generatedAt": "2026-06-06T05:01:54.348Z"
+}

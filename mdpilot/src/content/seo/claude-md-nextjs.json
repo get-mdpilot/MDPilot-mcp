@@ -1,0 +1,20 @@
+{
+  "example": "# Project\nNext.js TypeScript App\n\n# Current focus\nImplementing App Router\n\n# Gotchas\n* Use `next dev` for development, `next build` and `next start` for production\n* Always use absolute imports with the `@/` prefix\n* Server components must be placed in the `app` directory, client components in `components` directory\n* Be cautious with TypeScript strict mode, it may cause issues with some third-party libraries\n* Tailwind CSS classes can be customized in the `tailwind.config.js` file\n* When deploying to Vercel, make sure to set the correct environment variables\n* Use `next lint` to check for code quality and security issues\n\n# Hard constraints\n* All new components must be written in TypeScript\n* App Router is the default routing system\n* Do not use the `pages` directory for new components, use the `app` directory instead",
+  "tokenCount": 208,
+  "whySection": "When working with Next.js projects, it's essential to consider the distinction between the App Router and Pages Router. The App Router is the default routing system in newer Next.js versions, but it can be confusing for developers to navigate. Additionally, the use of server and client components requires careful consideration of the directory structure and import paths. By including these details in the CLAUDE.md file, developers can quickly understand the project's architecture and avoid common pitfalls.",
+  "faqItems": [
+    {
+      "q": "What is CLAUDE.md?",
+      "a": "A markdown file that provides essential information about the project, including gotchas and hard constraints."
+    },
+    {
+      "q": "How do I handle routing in this project?",
+      "a": "This project uses the App Router, so all new components should be added to the `app` directory."
+    },
+    {
+      "q": "What is the purpose of the `@/` prefix in import paths?",
+      "a": "The `@/` prefix is used for absolute imports, which helps avoid issues with relative import paths and makes the code more maintainable."
+    }
+  ],
+  "generatedAt": "2026-06-06T05:01:44.277Z"
+}

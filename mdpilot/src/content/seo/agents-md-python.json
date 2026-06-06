@@ -1,0 +1,24 @@
+{
+  "example": "# Agent role declaration\nI am a Python developer assistant, helping with coding tasks in this project.\n\n# Environment setup\nTo get started, create a virtual environment with `python -m venv .venv`, then activate it with `source .venv/bin/activate` on Linux/macOS or `.venv\\Scripts\\activate` on Windows.\nInstall requirements with `pip install -r requirements.txt` or `pip install -e .` for an editable install, and `pip install -r dev-requirements.txt` for development tools.\n\n# File-scoped build/test commands\nRun tests with `pytest` and check formatting with `black .` and `ruff .`.\nBuild the project with `python -m build`.\n\n# Code style rules\nAdhere to PEP 8 conventions with type hints checked by `mypy`.\nFormatting is done with `black` and `ruff`, and code quality is checked with `flake8`.\n\n# Key project paths\nProject root: .\nSource code: src/\nTests: tests/\n\n# Permission boundaries\nAllowed: Editing files in src/ and tests/.\nApprove: Changes to pyproject.toml, requirements.txt, and dev-requirements.txt.\nNever: Modifications to .gitignore, .venv/, or other system files.\n\n# PR format\nPull requests should include a brief description of changes, and follow conventional commit messages with a type, brief description, and body.",
+  "tokenCount": 309,
+  "whySection": "Python developers often struggle with maintaining consistent coding standards and setting up their development environments. The AGENTS.md file helps alleviate this pain by providing a clear set of instructions for coding assistants, ensuring that all code contributions adhere to PEP 8 conventions and pass checks by tools like mypy and black. Additionally, the file helps with virtual environment setup using `python -m venv`, making it easier to manage dependencies with pip. By following the guidelines in AGENTS.md, developers can avoid common mistakes, such as incorrect type hints or inconsistent formatting.",
+  "faqItems": [
+    {
+      "q": "What is AGENTS.md?",
+      "a": "AGENTS.md is an open standard for AI coding assistant instructions, providing a set of guidelines for maintaining consistency and quality in Python projects."
+    },
+    {
+      "q": "How do I set up my Python environment according to AGENTS.md?",
+      "a": "Create a virtual environment with `python -m venv .venv`, then activate it and install requirements with `pip install -r requirements.txt` or `pip install -e .` for an editable install."
+    },
+    {
+      "q": "What formatting tools should I use in my Python project?",
+      "a": "Use `black` and `ruff` for formatting, and `mypy` for type hint checks to adhere to PEP 8 conventions."
+    },
+    {
+      "q": "Where should I place the AGENTS.md file in my Python project?",
+      "a": "Place the AGENTS.md file at the root of your project, alongside other key files like pyproject.toml and requirements.txt."
+    }
+  ],
+  "generatedAt": "2026-06-06T05:02:18.500Z"
+}

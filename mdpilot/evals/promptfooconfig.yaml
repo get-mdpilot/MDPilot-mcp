@@ -1,0 +1,170 @@
+# MDPilot — promptfoo eval harness
+# Runs across 3 fixtures × 3 file types = 9 test cases per prompt version
+#
+# Run locally:
+#   cd mdpilot && npx promptfoo eval
+#   npx promptfoo eval --watch   (re-run on file changes)
+#
+# Results:
+#   npx promptfoo view           (open local UI)
+#
+# CI gate: .github/workflows/eval.yml runs this on prompt-change PRs
+
+description: MDPilot generation quality eval
+
+# ── Providers ──────────────────────────────────────────────────────────────────
+providers:
+  - id: anthropic:messages:claude-haiku-4-5-20251001
+    label: haiku-4-5
+    config:
+      max_tokens: 4096
+  - id: anthropic:messages:claude-sonnet-4-6
+    label: sonnet-4-6
+    config:
+      max_tokens: 4096
+
+# ── Prompts ────────────────────────────────────────────────────────────────────
+# Each prompt is a system+user pair rendered from the actual fallback prompts.
+# The system prompt is loaded from a file; the user message is templated per fixture.
+prompts:
+  - label: agents-prompt
+    raw: |
+      {{agentsSystemPrompt}}
+
+      Project type: {{fixture.projectType}}
+      Audience: {{fixture.audience}}
+      Tech stack: {{fixture.rawStackInput}}
+      AI tools: {{fixture.aiTools | join(', ')}}
+
+      Generate a production-grade AGENTS.md for this project. Output raw markdown only.
+
+  - label: claude-prompt
+    raw: |
+      {{claudeSystemPrompt}}
+
+      Project type: {{fixture.projectType}}
+      Audience: {{fixture.audience}}
+      Tech stack: {{fixture.rawStackInput}}
+      AI tools: {{fixture.aiTools | join(', ')}}
+
+      Generate a production-grade CLAUDE.md for this project. Output raw markdown only.
+
+  - label: readme-prompt
+    raw: |
+      {{readmeSystemPrompt}}
+
+      Project type: {{fixture.projectType}}
+      Audience: {{fixture.audience}}
+      Tech stack: {{fixture.rawStackInput}}
+
+      Generate a production-grade README.md for this project. Output raw markdown only.
+
+# ── Test cases ─────────────────────────────────────────────────────────────────
+tests:
+  - description: Next.js SaaS — AGENTS.md
+    vars:
+      fileType: agents
+      fixture:
+        $ref: ./fixtures/nextjs-saas.json
+    assert:
+      - type: javascript
+        filePath: ./assertions/md-quality.js
+      - type: contains
+        value: "npm run"
+      - type: contains
+        value: "src/"
+      - type: not-contains
+        value: "TODO"
+
+  - description: Next.js SaaS — CLAUDE.md
+    vars:
+      fileType: claude
+      fixture:
+        $ref: ./fixtures/nextjs-saas.json
+    assert:
+      - type: javascript
+        filePath: ./assertions/md-quality.js
+      - type: not-contains
+        value: "TODO"
+
+  - description: Next.js SaaS — README.md
+    vars:
+      fileType: readme
+      fixture:
+        $ref: ./fixtures/nextjs-saas.json
+    assert:
+      - type: javascript
+        filePath: ./assertions/md-quality.js
+      - type: contains
+        value: "install"
+
+  - description: Python FastAPI — AGENTS.md
+    vars:
+      fileType: agents
+      fixture:
+        $ref: ./fixtures/python-fastapi.json
+    assert:
+      - type: javascript
+        filePath: ./assertions/md-quality.js
+      - type: not-contains
+        value: "npm run"
+      - type: not-contains
+        value: "TODO"
+
+  - description: Python FastAPI — CLAUDE.md
+    vars:
+      fileType: claude
+      fixture:
+        $ref: ./fixtures/python-fastapi.json
+    assert:
+      - type: javascript
+        filePath: ./assertions/md-quality.js
+
+  - description: Python FastAPI — README.md
+    vars:
+      fileType: readme
+      fixture:
+        $ref: ./fixtures/python-fastapi.json
+    assert:
+      - type: javascript
+        filePath: ./assertions/md-quality.js
+      - type: not-contains
+        value: "npm install"
+
+  - description: Go CLI — AGENTS.md
+    vars:
+      fileType: agents
+      fixture:
+        $ref: ./fixtures/go-cli.json
+    assert:
+      - type: javascript
+        filePath: ./assertions/md-quality.js
+      - type: not-contains
+        value: "npm"
+      - type: not-contains
+        value: "TODO"
+
+  - description: Go CLI — CLAUDE.md
+    vars:
+      fileType: claude
+      fixture:
+        $ref: ./fixtures/go-cli.json
+    assert:
+      - type: javascript
+        filePath: ./assertions/md-quality.js
+
+  - description: Go CLI — README.md
+    vars:
+      fileType: readme
+      fixture:
+        $ref: ./fixtures/go-cli.json
+    assert:
+      - type: javascript
+        filePath: ./assertions/md-quality.js
+      - type: not-contains
+        value: "npm install"
+
+# ── Eval options ───────────────────────────────────────────────────────────────
+evaluateOptions:
+  maxConcurrency: 3
+  showProgressBar: true

@@ -1,0 +1,14 @@
+{
+  "projectType": "saas",
+  "audience": "developer",
+  "detectedStack": ["Next.js", "TypeScript", "Tailwind CSS", "Supabase", "Prisma"],
+  "rawStackInput": "Next.js 14, TypeScript, Tailwind CSS, Supabase, Prisma, Stripe",
+  "aiTools": ["claude-code", "cursor"],
+  "mode": "generate",
+  "expectedKeywords": {
+    "agents": ["npm run", "npx", "src/", "AGENTS.md", "allowed_tools"],
+    "claude": ["CLAUDE.md", "gotcha", "constraint"],
+    "readme": ["install", "getting started", "features"]
+  },
+  "forbiddenContent": ["TODO", "placeholder", "your-project-name", "[INSERT", "example.com/your-repo"]
+}

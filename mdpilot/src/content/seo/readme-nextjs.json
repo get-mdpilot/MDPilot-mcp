@@ -1,0 +1,20 @@
+{
+  "example": "# Next.js Project Template\n## The best way to get started with Next.js\n[![npm](https://img.shields.io/npm/v/next.svg)](https://www.npmjs.com/package/next)\n[![Vercel](https://vercelbadge.vercel.app/api/nextjs-template/nextjs-template)](https://vercel.com/new?template=nextjs-template)\nThis is a production-ready Next.js project template using TypeScript, Tailwind CSS, and absolute imports.\nIt follows the App Router pattern and has examples for both server and client components.\n\n## Installation\nRun the following command to create a new project based on this template:\n```bash\nnpx create-next-app@latest --ts --example https://github.com/yourusername/nextjs-template\n```\nThen, install the required dependencies:\n```bash\nnpm install\n```\n## Quick Start\nTo get started, run the development server:\n```bash\nnpm run dev\n```\nThis will start the development server and open your default browser to http://localhost:3000.\n\n## Features\n* Uses the latest version of Next.js\n* Supports both App Router and Pages Router\n* Includes example server and client components\n* Uses TypeScript with strict mode enabled\n* Integrates with Tailwind CSS for styling\n* Uses absolute imports with the @/ prefix\n* Deployable to Vercel with a single click\n\n## Contributing\nFor more information on how to contribute to this project, please see the [contributing guide](https://github.com/yourusername/nextjs-template/blob/main/CONTRIBUTING.md).\n\n## License\nThis project is licensed under the MIT License - see the [LICENSE](https://github.com/yourusername/nextjs-template/blob/main/LICENSE) file for details.",
+  "tokenCount": 396,
+  "whySection": "Next.js projects often require careful consideration of routing, server vs client components, and deployment to Vercel. The `next dev` command is used for development, while `next build` and `next start` are used for production. Additionally, Next.js has specific naming conventions and guidelines for using the App Router vs Pages Router. By using a well-structured README.md file, developers can quickly get started with their project and avoid common pitfalls.",
+  "faqItems": [
+    {
+      "q": "What is README.md?",
+      "a": "A README.md file is a Markdown file that provides information about a project, including its purpose, features, and usage."
+    },
+    {
+      "q": "How do I use absolute imports with the @/ prefix in Next.js?",
+      "a": "To use absolute imports with the @/ prefix in Next.js, you need to configure your `next.config.js` file to include the `basePath` option and set it to the root directory of your project."
+    },
+    {
+      "q": "What is the difference between next dev, next build, and next start?",
+      "a": "The `next dev` command is used for development, `next build` is used to build the project for production, and `next start` is used to start the production server."
+    }
+  ],
+  "generatedAt": "2026-06-06T05:02:10.725Z"
+}

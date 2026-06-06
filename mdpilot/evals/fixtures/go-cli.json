@@ -1,0 +1,14 @@
+{
+  "projectType": "cli",
+  "audience": "developer",
+  "detectedStack": ["Go", "Cobra", "Viper"],
+  "rawStackInput": "Go, Cobra CLI framework, Viper config",
+  "aiTools": ["none"],
+  "mode": "generate",
+  "expectedKeywords": {
+    "agents": ["go build", "go test", "go run"],
+    "claude": ["Go", "go mod", "gotcha"],
+    "readme": ["go install", "go build", "./"]
+  },
+  "forbiddenContent": ["npm", "node", "pip", "TODO", "placeholder", "your-project-name"]
+}

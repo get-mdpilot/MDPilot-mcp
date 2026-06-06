@@ -1,0 +1,62 @@
+name: Prompt quality eval
+
+on:
+  pull_request:
+    paths:
+      - 'mdpilot/src/lib/prompts/**'
+      - 'mdpilot/evals/**'
+  workflow_dispatch:
+
+jobs:
+  eval:
+    name: promptfoo eval (haiku gate)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mdpilot
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: mdpilot/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run eval
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          npx promptfoo eval \
+            --config evals/promptfooconfig.yaml \
+            --no-cache \
+            --output evals/results.json \
+            --providers anthropic:messages:claude-haiku-4-5-20251001
+
+      - name: Check pass rate
+        run: |
+          node -e "
+            const r = require('./evals/results.json');
+            const results = r.results?.results ?? [];
+            const total = results.length;
+            const passed = results.filter(x => x.success).length;
+            const rate = total > 0 ? passed / total : 0;
+            console.log('Pass rate:', passed + '/' + total, '(' + (rate * 100).toFixed(1) + '%)');
+            if (rate < 0.8) {
+              console.error('FAIL: pass rate ' + (rate * 100).toFixed(1) + '% is below the 80% gate');
+              process.exit(1);
+            }
+            console.log('PASS: eval gate cleared');
+          "
+
+      - name: Upload eval results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-results
+          path: mdpilot/evals/results.json
+          retention-days: 30

@@ -1,0 +1,74 @@
+/**
+ * Custom promptfoo assertions for MDPilot generated markdown quality.
+ *
+ * Checks:
+ * 1. Minimum length (not a stub)
+ * 2. No forbidden placeholder strings
+ * 3. At least one code block (has runnable examples)
+ * 4. No hallucinated cross-stack commands (npm in a Python file, etc.)
+ * 5. Structured sections (at least 2 ## headings)
+ */
+
+module.exports = {
+  assertionTypes: ['md-quality'],
+
+  /**
+   * @param {string} output   - The LLM output (generated markdown)
+   * @param {object} context  - { vars, prompt, test } from promptfoo
+   * @returns {{ pass: boolean, score: number, reason: string }}
+   */
+  evaluate(output, context) {
+    const vars = context.vars ?? {};
+    const fileType = vars.fileType ?? 'unknown';
+    const fixture = vars.fixture ?? {};
+
+    const failures = [];
+    let score = 1.0;
+
+    // 1. Minimum length
+    if (output.length < 300) {
+      failures.push(`Output too short (${output.length} chars — minimum 300)`);
+      score -= 0.4;
+    }
+
+    // 2. No forbidden placeholder strings
+    const forbidden = fixture.forbiddenContent ?? ['TODO', 'placeholder', '[INSERT'];
+    for (const f of forbidden) {
+      if (output.includes(f)) {
+        failures.push(`Contains forbidden string: "${f}"`);
+        score -= 0.15;
+      }
+    }
+
+    // 3. At least one code block
+    if (!output.includes('```')) {
+      failures.push('No code blocks found — generated file must include at least one runnable example');
+      score -= 0.2;
+    }
+
+    // 4. At least 2 ## headings for structure
+    const headings = (output.match(/^##\s+.+/gm) ?? []).length;
+    if (headings < 2) {
+      failures.push(`Only ${headings} ## heading(s) — need at least 2 for proper structure`);
+      score -= 0.1;
+    }
+
+    // 5. Stack-specific keyword presence
+    const expectedKeywords = fixture.expectedKeywords?.[fileType] ?? [];
+    const missingKeywords = expectedKeywords.filter(kw => !output.includes(kw));
+    if (missingKeywords.length > 0) {
+      failures.push(`Missing expected keywords for ${fileType}: ${missingKeywords.join(', ')}`);
+      score -= 0.1 * missingKeywords.length;
+    }
+
+    score = Math.max(0, Math.min(1, score));
+
+    return {
+      pass: failures.length === 0,
+      score,
+      reason: failures.length === 0
+        ? `Quality check passed (score: ${score.toFixed(2)})`
+        : `Quality issues:\n  - ${failures.join('\n  - ')}`,
+    };
+  },
+};

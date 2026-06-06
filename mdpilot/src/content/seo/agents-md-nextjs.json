@@ -1,0 +1,24 @@
+{
+  "example": "# AGENTS.md: Coding Assistant Instructions for Next.js Project\nThis document outlines the guidelines for AI coding assistants to follow when contributing to this Next.js project.\n## Environment Setup\nTo ensure consistency, run the following commands in your terminal:\n```bash\nnpm install\nnpm run next lint --fix\n```\n## Build and Test Commands\nFor file-scoped builds and tests, use the following commands:\n```bash\nnpm run next build\nnpm run next test\n```\n## Code Style Rules\nThis project uses TypeScript in strict mode and Tailwind CSS for styling. Ensure all code is formatted according to the following rules:\n* Use absolute imports with the `@/` prefix\n* Adhere to TypeScript strict mode\n* Utilize Tailwind CSS classes for styling\n## Key Project Paths\n* `pages/`: Client-side routes\n* `app/`: Server-side routes\n* `components/`: Shared UI components\n* `public/`: Static assets\n## Permission Boundaries\nThe following boundaries are established for AI coding assistants:\n### Allowed\n* Automatically fixing linting errors\n* Generating new components in the `components/` directory\n* Updating existing component props\n### Approve\n* Renaming or removing existing components\n* Modifying server-side routes in `app/`\n* Updating `next.config.js` file\n### Never\n* Modifying `package.json` file\n* Running `npm install` or `npm update` commands\n## PR Format\nAll pull requests must follow the standard GitHub guidelines and include a clear description of changes made.",
+  "tokenCount": 365,
+  "whySection": "When working with Next.js projects, it's essential to consider the distinction between App Router and Pages Router, as well as the differences between server and client components. The `next dev`, `next build`, `next start`, and `next lint` scripts must also be used accordingly. To avoid common pitfalls, such as incorrectly configuring Vercel deployment or misusing TypeScript strict mode, AGENTS.md provides a clear set of guidelines for AI coding assistants to follow. By adhering to these guidelines, developers can ensure their Next.js projects are properly set up and maintainable.",
+  "faqItems": [
+    {
+      "q": "What is AGENTS.md?",
+      "a": "AGENTS.md is an open standard for AI coding assistant instructions that provides guidelines for contributing to a project."
+    },
+    {
+      "q": "How do I set up my Next.js project according to AGENTS.md?",
+      "a": "To set up your Next.js project, run the commands outlined in the Environment Setup section of AGENTS.md, such as `npm install` and `npm run next lint --fix`."
+    },
+    {
+      "q": "Can I use relative imports instead of absolute imports with the `@/` prefix?",
+      "a": "No, this project requires the use of absolute imports with the `@/` prefix to ensure consistency and avoid import errors."
+    },
+    {
+      "q": "How do I handle TypeScript strict mode warnings in my Next.js project?",
+      "a": "To handle TypeScript strict mode warnings, review the warnings and address them accordingly, ensuring that all code is properly typed and formatted."
+    }
+  ],
+  "generatedAt": "2026-06-06T05:01:54.009Z"
+}

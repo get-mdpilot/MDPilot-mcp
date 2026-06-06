@@ -88,6 +88,45 @@ create policy "insert feedback" on generation_feedback for insert with check (tr
 -- Samples: insert allowed only when consented = true
 create policy "insert samples"  on training_samples    for insert with check (consented = true);
 
+-- ── Agent Intelligence Upgrade ───────────────────────────────────────────────
+
+create table if not exists eval_runs (
+  id uuid primary key default gen_random_uuid(),
+  prompt_version int,
+  file_type text,
+  fixture text,
+  pass_rate numeric,
+  avg_judge_score numeric,
+  details jsonb,
+  run_at timestamptz default now()
+);
+
+create table if not exists gold_examples (
+  id uuid primary key default gen_random_uuid(),
+  file_type text not null,
+  role text not null default 'developer',
+  content text not null,
+  source_feedback_id uuid,
+  token_count int,
+  promoted_at timestamptz default now(),
+  unique (file_type, role)
+);
+
+create table if not exists repo_context_cache (
+  id uuid primary key default gen_random_uuid(),
+  repo_key text unique not null,
+  packed_summary text,
+  token_count int,
+  cached_at timestamptz default now()
+);
+
+alter table eval_runs          enable row level security;
+alter table gold_examples      enable row level security;
+alter table repo_context_cache enable row level security;
+
+create policy "read gold examples" on gold_examples for select using (true);
+create policy "insert eval runs"   on eval_runs     for insert with check (true);
+
 -- ════════════════════════════════════════════════════════════════════════════
 -- Prompt ranking view — run weekly to see which prompt versions perform best.
 -- Higher keep_rate / thumbs_up_rate = better. Higher regen_rate = worse.

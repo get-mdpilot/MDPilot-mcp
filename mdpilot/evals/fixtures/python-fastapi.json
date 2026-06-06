@@ -1,0 +1,14 @@
+{
+  "projectType": "api",
+  "audience": "developer",
+  "detectedStack": ["Python", "FastAPI", "SQLAlchemy", "PostgreSQL", "Redis"],
+  "rawStackInput": "Python, FastAPI, SQLAlchemy, PostgreSQL, Redis, Docker",
+  "aiTools": ["cursor", "none"],
+  "mode": "generate",
+  "expectedKeywords": {
+    "agents": ["uvicorn", "pip", "pytest", "alembic"],
+    "claude": ["virtual environment", "env", "gotcha"],
+    "readme": ["uvicorn main:app", "pip install", "python"]
+  },
+  "forbiddenContent": ["npm run", "node_modules", "package.json", "TODO", "placeholder"]
+}

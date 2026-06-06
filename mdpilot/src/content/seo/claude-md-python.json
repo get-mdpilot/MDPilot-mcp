@@ -1,0 +1,24 @@
+{
+  "example": "# Project\nPython package for data analysis\n\n# Current focus\nImplementing new feature for data visualization\n\n# Gotchas\n* Use `python -m venv .venv` for virtual environment setup\n* Requirements are specified in `pyproject.toml` and `requirements.txt`\n* Type hints are used with mypy for static type checking\n* Use `pip install -e .` for editable install\n* Formatting is done with black and ruff, following PEP 8 conventions\n* Testing is done with pytest\n\n# Hard constraints\n* Python version: 3.9+\n* Package manager: pip",
+  "tokenCount": 130,
+  "whySection": "Python projects often involve managing various dependencies, formatting, and testing tools, which can be error-prone if not properly documented. The CLAUDE.md file helps mitigate this by providing a centralized source of information for developers. For instance, specifying the use of `python -m venv .venv` for virtual environment setup and `pip install -e .` for editable install ensures that developers use the correct commands. Additionally, noting the use of type hints with mypy and formatting with black and ruff helps maintain consistency in the codebase.",
+  "faqItems": [
+    {
+      "q": "What is CLAUDE.md?",
+      "a": "A documentation file that provides essential information about a project, including setup, dependencies, and testing."
+    },
+    {
+      "q": "How does CLAUDE.md interact with Python tooling?",
+      "a": "CLAUDE.md provides information on the use of various Python tools, such as pip, pytest, mypy, black, and ruff, to ensure consistency and accuracy in the project."
+    },
+    {
+      "q": "What naming conventions should I follow in my Python project?",
+      "a": "Follow PEP 8 conventions, which are also enforced by tools like black and ruff, to maintain consistency in the codebase."
+    },
+    {
+      "q": "Where should I place the CLAUDE.md file in my Python project?",
+      "a": "The CLAUDE.md file should be placed in the root directory of the project, allowing it to be easily accessible and readable."
+    }
+  ],
+  "generatedAt": "2026-06-06T05:01:44.221Z"
+}
