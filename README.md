@@ -15,6 +15,8 @@ MDPilot solves three distinct markdown problems in one platform:
 | **Generate** | 3-question wizard + tech stack | README, AGENTS, CLAUDE, CONTRIBUTING, SECURITY, SKILL, DESIGN, CONTEXT |
 | **Task** | Paste a ticket / thread / spec | TASK.md + SPEC.md |
 | **Convert** | Drop any file (PDF, CSV, HTML, DOCX…) | Clean markdown |
+| **Explain** | Paste code, file, or directory path | WALKTHROUGH.md tuned to any audience (AI agent, team, learner, non-technical) |
+| **Interview primer** | Role + level + optional JD | Ready-to-paste AI coach prompt |
 
 Every output passes through a **5-pass token optimizer** that strips boilerplate, deduplicates cross-file content, and compresses verbose phrasing — cutting tokens by 20–40% without losing meaning.
 
@@ -43,12 +45,17 @@ mdpilot/
 │   │   ├── generate/page.tsx       # Generate mode: wizard + output
 │   │   ├── task/page.tsx           # Task mode: input + output
 │   │   ├── convert/page.tsx        # Convert mode: file drop + output
+│   │   ├── explain/page.tsx        # Explain mode: code → WALKTHROUGH.md
+│   │   ├── interview-primer/page.tsx  # Interview primer: role + JD → AI coach prompt
+│   │   ├── atmosphere/page.tsx     # 3D scroll-driven visual showcase (Three.js)
 │   │   ├── [fileType]/for/[stack]/page.tsx  # 120 SSG SEO pages — Server Component, JS-off safe
 │   │   ├── sitemap.ts              # Auto-served at /sitemap.xml (120 SEO + 5 static pages)
 │   │   ├── robots.ts               # /robots.txt — allows all, disallows /api/ /admin/
 │   │   └── api/
 │   │       ├── generate/route.ts   # Claude call per file (Node runtime)
 │   │       ├── convert/route.ts    # MarkItDown shell-out (Node runtime)
+│   │       ├── recommend-files/route.ts  # Goal-first file recommendation (non-technical path)
+│   │       ├── interview-primer/route.ts # Interview coach prompt generation
 │   │       ├── providers/route.ts  # AI provider health-check
 │   │       └── admin/
 │   │           └── prompts/route.ts # Prompt template admin (password-gated)
@@ -117,13 +124,14 @@ packages/mcp/
 └── dist/                  # Compiled output (tsc → ES2022, NodeNext)
 ```
 
-### 7 MCP tools
+### 8 MCP tools
 
 | Tool | Description |
 |---|---|
 | `analyze_project` | Scans a repo — detects stack, scripts, dependencies, package manager, file structure. Run before generating. |
 | `generate_md_file` | Generates readme / agents / claude / contributing / security / skill / design / context grounded in real repo data. `verified: true` enables self-verification loop. Optional `writeToDisk`. |
 | `generate_task_file` | Turns a ticket, Slack thread, or GitHub issue into a structured TASK.md with requirements, AC, and agent prompt block. |
+| `explain_code` | Analyzes a file or directory and generates a WALKTHROUGH.md tuned to any audience (AI agent, team member, learner, non-technical). |
 | `optimize_markdown` | Runs the 4-pass optimizer on any existing markdown — strips boilerplate, compresses verbose prose, tightens structure. |
 | `image_to_prompt` | Analyzes a local image and outputs a detailed recreation prompt for FLUX / SD / Midjourney / DALL-E / Gemini. |
 | `check_drift` | Detects stale docs — broken commands, broken paths, undocumented new scripts/dirs. Two methods: claim verification (no snapshot needed) + snapshot diff (catches additions/removals since last generate). |
@@ -259,12 +267,15 @@ MDPilot is provider-agnostic. The `ai-client.ts` wrapper supports:
 
 | Provider | Model | Notes |
 |---|---|---|
-| **Anthropic** | Claude Sonnet 4.6 | Primary — best instruction-file quality |
-| **OpenAI** | GPT-4o | Fallback option |
-| **Google** | Gemini 1.5 Flash | Fallback option |
-| **Groq** | Llama 3 70B | Fast + free tier |
+| **Anthropic** | claude-sonnet-4-6 | Primary — best instruction-file quality |
+| **OpenAI** | gpt-4o | Fallback option |
+| **Google** | gemini-2.0-flash | Fallback option |
+| **Groq** | llama-3.3-70b-versatile | Fast + free tier |
+| **NVIDIA NIM** | meta/llama-3.3-70b-instruct | Free tier, OpenAI-compatible endpoint (~4s) |
 
 Provider resolution: requests the chosen model, falls back to first available key. The MCP server always uses `claude-sonnet-4-6` via the user's own `ANTHROPIC_API_KEY`.
+
+NVIDIA NIM uses the `openai` npm package pointed at `https://integrate.api.nvidia.com/v1` — no extra dependency. Add `NVIDIA_API_KEY` to unlock the **◈ Llama 3.3** button in the model selector.
 
 ---
 
@@ -277,7 +288,7 @@ Provider resolution: requests the chosen model, falls back to first available ke
 | Framework | Next.js 16 (App Router) | Server components + API routes in one repo |
 | Language | TypeScript strict | Contract types between wizard and API |
 | Styling | Tailwind CSS v4 | Dark glassmorphism design system |
-| AI SDKs | `@anthropic-ai/sdk` + `openai` + `@google/generative-ai` + `groq-sdk` | Multi-provider |
+| AI SDKs | `@anthropic-ai/sdk` + `openai` + `@google/generative-ai` + `groq-sdk` | Multi-provider (NVIDIA NIM reuses `openai` with custom baseURL — no extra dep) |
 | Editor | CodeMirror 6 | Live editable markdown output |
 | Token counting | `js-tiktoken` | Browser-safe, no WASM |
 | File export | `jszip` + `file-saver` | .md download or .zip bundle |
@@ -361,6 +372,7 @@ ANTHROPIC_API_KEY=sk-ant-...
 OPENAI_API_KEY=sk-...         # optional
 GOOGLE_API_KEY=...             # optional
 GROQ_API_KEY=gsk_...           # optional
+NVIDIA_API_KEY=nvapi-...       # optional — free tier, get key at build.nvidia.com
 
 SUPABASE_URL=https://....supabase.co
 SUPABASE_ANON_KEY=...

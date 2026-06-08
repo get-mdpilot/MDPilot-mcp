@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { GradientWaveText } from '@/components/ui/gradient-wave-text';
 
 /* ─── Mini live preview for Generate card ───────────────────────────────── */
 function GeneratePreview() {
@@ -265,9 +266,18 @@ export default function ModesSection() {
     <section id="modes" className="max-w-6xl mx-auto px-5 sm:px-8 pb-12">
       <div className="text-center mb-12">
         <div className="section-label mb-5">MODES</div>
-        <h2 className="text-[clamp(1.8rem,4vw,2.8rem)] font-black text-white tracking-[-0.04em]">
+        <GradientWaveText
+          className="text-[clamp(1.8rem,4vw,2.8rem)] font-black tracking-[-0.04em] justify-center"
+          inView
+          once
+          speed={0.7}
+          repeat
+          radial
+          bandCount={6}
+          bandGap={5}
+        >
           Four modes. One platform.
-        </h2>
+        </GradientWaveText>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

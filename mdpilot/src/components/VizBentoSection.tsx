@@ -410,7 +410,7 @@ export default function VizBentoSection() {
   return (
     <section ref={ref} className="max-w-6xl mx-auto px-5 sm:px-8 pb-28">
       <div className="text-center mb-14">
-        <div className="section-label mb-5">FEA. [VIZ]</div>
+        <div className="section-label mb-5">Live Metrics</div>
         <h2 className="text-[clamp(1.8rem,4vw,2.8rem)] font-black text-white tracking-[-0.04em]">
           Under the hood.
           <span className="text-gradient-animated"> Live data.</span>

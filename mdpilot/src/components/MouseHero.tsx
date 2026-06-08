@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
 import StatsCounterClient from './StatsCounterClient';
+import HeroParticles from '@/components/ui/particles-bg';
+import HeroCircuitBg from '@/components/ui/hero-circuit-bg';
 
 /* ─── Types ──────────────────────────────────────────────────────────────── */
 interface MousePos { x: number; y: number }
@@ -176,6 +178,10 @@ export default function MouseHero() {
       ref={heroRef}
       className="relative min-h-[96vh] flex flex-col items-center justify-center px-5 sm:px-8 pt-4 pb-24 overflow-hidden"
     >
+      {/* Deepest background layers: particles + circuit (behind grid-bg) */}
+      <HeroParticles />
+      <HeroCircuitBg />
+
       {/* Grid texture */}
       <div className="absolute inset-0 grid-bg opacity-60" />
 
@@ -230,13 +236,13 @@ export default function MouseHero() {
           glow="shadow-[0_0_40px_rgba(45,212,191,0.14)]"
           lines={['70%','50%','85%','60%','45%']}
           baseTransform="perspective(900px) rotateY(16deg) rotateX(6deg)"
-          className="bottom-[24%] left-[8%] float-delay-2"
+          className="bottom-[6%] left-[5%] float-delay-2"
           mouse={mouse}
         />
       </div>
 
       {/* Hero content */}
-      <div className="relative z-20 text-center max-w-4xl mx-auto fade-up">
+      <div className="relative z-20 text-center max-w-4xl mx-auto fade-up mt-16 sm:mt-24">
         {/* Live badge */}
         <div className="inline-flex items-center gap-2.5 px-4 py-2 mb-10 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-xl text-[12px] text-white/50">
           <span className="relative flex h-2 w-2 shrink-0">
@@ -249,7 +255,7 @@ export default function MouseHero() {
         </div>
 
         {/* Headline */}
-        <h1 className="text-[clamp(2.6rem,7.5vw,5.5rem)] font-black leading-[1.04] tracking-[-0.04em] mb-6">
+        <h1 className="text-[clamp(2.6rem,7.5vw,5.5rem)] font-black leading-[1.04] tracking-[-0.04em] mb-10">
           <span className="text-white block">Docs that AI agents</span>
           <span className="text-gradient-animated block">actually read.</span>
         </h1>

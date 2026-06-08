@@ -5,9 +5,15 @@ import Stepper from '@/components/Stepper';
 import OutputView, { type OptimizerSummary } from '@/components/OutputView';
 import ModelSelector from '@/components/ModelSelector';
 import TemplateGallery, { type Template } from '@/components/TemplateGallery';
+import { WizardOptionCard } from '@/components/ui/wizard-option-card';
 import { countTokens } from '@/lib/tokenizer';
 import { optimizeFiles } from '@/lib/optimizer';
 import { trackGeneration } from '@/lib/telemetry';
+import {
+  Globe, Smartphone, Plug, Package, Palette, HelpCircle,
+  User, Users, Earth,
+  Bot, UserRound, Briefcase, GraduationCap,
+} from 'lucide-react';
 import type { AIProvider } from '@/lib/ai-client';
 import type {
   GenerationRequest, MDFileType, ProjectType, Audience, AITool, GeneratedFile,
@@ -128,18 +134,18 @@ function getRecommendedFiles(
 // ── Step options ──────────────────────────────────────────────────────────────
 
 const buildOptions: { id: ProjectType; icon: React.ReactNode; label: string; desc: string }[] = [
-  { id: 'webapp',  icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>, label: 'A website or web app',  desc: 'Something people use in a browser' },
-  { id: 'mobile',  icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>, label: 'A mobile app',          desc: 'iOS, Android, or both' },
-  { id: 'api',     icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>, label: 'A backend or API',      desc: 'A service other apps talk to' },
-  { id: 'library', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>, label: 'A tool or library',     desc: 'Code other developers will use' },
-  { id: 'design',  icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 20v-8.5"/><path d="M20 20H4"/></svg>, label: 'A design system',       desc: 'UI components, colours, styles' },
-  { id: 'other',   icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>, label: 'Something else',        desc: "I'll describe it myself" },
+  { id: 'webapp',  icon: <Globe size={17} />,      label: 'A website or web app',  desc: 'Something people use in a browser' },
+  { id: 'mobile',  icon: <Smartphone size={17} />, label: 'A mobile app',          desc: 'iOS, Android, or both' },
+  { id: 'api',     icon: <Plug size={17} />,       label: 'A backend or API',      desc: 'A service other apps talk to' },
+  { id: 'library', icon: <Package size={17} />,    label: 'A tool or library',     desc: 'Code other developers will use' },
+  { id: 'design',  icon: <Palette size={17} />,    label: 'A design system',       desc: 'UI components, colours, styles' },
+  { id: 'other',   icon: <HelpCircle size={17} />, label: 'Something else',        desc: "I'll describe it myself" },
 ];
 
 const audienceOptions: { id: Audience; icon: React.ReactNode; label: string; desc: string }[] = [
-  { id: 'me',     icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>, label: 'Just me',    desc: 'A personal project' },
-  { id: 'team',   icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, label: 'My team',    desc: 'People I work with' },
-  { id: 'public', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>, label: 'The public', desc: 'Open source or anyone' },
+  { id: 'me',     icon: <User size={17} />,  label: 'Just me',    desc: 'A personal project' },
+  { id: 'team',   icon: <Users size={17} />, label: 'My team',    desc: 'People I work with' },
+  { id: 'public', icon: <Earth size={17} />, label: 'The public', desc: 'Open source or anyone' },
 ];
 
 const aiToolOptions: { id: AITool; icon: React.ReactNode; label: string; desc: string }[] = [
@@ -154,26 +160,26 @@ const aiToolOptions: { id: AITool; icon: React.ReactNode; label: string; desc: s
 // ── Reader audience cards ─────────────────────────────────────────────────────
 
 const readerAudienceOptions: {
-  id: ReaderAudience; icon: string; label: string; desc: string;
+  id: ReaderAudience; icon: React.ReactNode; label: string; desc: string;
   defaultLevel: ReadingLevel; defaultReasoning: boolean;
 }[] = [
   {
-    id: 'ai_agent', icon: '🤖', label: 'AI coding agent',
+    id: 'ai_agent', icon: <Bot size={17} />, label: 'AI coding agent',
     desc: "Terse, machine-parseable output — today's default. Lean on commands and facts.",
     defaultLevel: 'expert', defaultReasoning: false,
   },
   {
-    id: 'team', icon: '👥', label: 'Developer joining the team',
+    id: 'team', icon: <UserRound size={17} />, label: 'Developer joining the team',
     desc: "Assume engineering skills, explain project-specific choices and conventions.",
     defaultLevel: 'standard', defaultReasoning: false,
   },
   {
-    id: 'non_technical', icon: '💼', label: 'Non-technical reader',
+    id: 'non_technical', icon: <Briefcase size={17} />, label: 'Non-technical reader',
     desc: "Founder, PM, investor, or client. Every term defined. Plain language throughout.",
     defaultLevel: 'plain', defaultReasoning: true,
   },
   {
-    id: 'learner', icon: '🎓', label: "I'm learning",
+    id: 'learner', icon: <GraduationCap size={17} />, label: "I'm learning",
     desc: "Explain reasoning behind each step, not just the step. Teach the why.",
     defaultLevel: 'plain', defaultReasoning: true,
   },
@@ -663,37 +669,16 @@ export default function GeneratePage() {
             <p className="text-[13px] text-white/40 mb-6">Pick the closest one. Don&apos;t worry about being exact.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {buildOptions.map(opt => (
-                <button key={opt.id} onClick={() => setProjectType(opt.id)}
-                  className="flex items-start gap-3.5 rounded-xl border p-4 text-left w-full transition-all duration-200 cursor-pointer"
-                  style={{
-                    borderColor: projectType === opt.id ? 'rgba(79,172,255,0.45)' : 'rgba(255,255,255,0.07)',
-                    background: projectType === opt.id ? 'rgba(79,172,255,0.08)' : 'rgba(255,255,255,0.03)',
-                    boxShadow: projectType === opt.id ? '0 0 20px rgba(79,172,255,0.1), inset 0 0 0 1px rgba(79,172,255,0.15)' : 'none',
-                  }}
-                >
-                  <div
-                    className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 transition-all duration-200"
-                    style={{
-                      background: projectType === opt.id ? 'rgba(79,172,255,0.18)' : 'rgba(255,255,255,0.05)',
-                      color: projectType === opt.id ? '#4FACFF' : 'rgba(255,255,255,0.35)',
-                    }}
-                  >
-                    {opt.icon}
-                  </div>
-                  <div>
-                    <p className={`text-[13px] font-semibold transition-colors ${projectType === opt.id ? 'text-white' : 'text-white/70'}`}>{opt.label}</p>
-                    <p className="text-[11px] text-white/35 mt-0.5">{opt.desc}</p>
-                  </div>
-                  {projectType === opt.id && (
-                    <div className="ml-auto shrink-0">
-                      <div className="w-5 h-5 rounded-full bg-[#4FACFF] flex items-center justify-center">
-                        <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
-                          <path d="m4.5 12.75 6 6 9-13.5" />
-                        </svg>
-                      </div>
-                    </div>
-                  )}
-                </button>
+                <WizardOptionCard
+                  key={opt.id}
+                  icon={opt.icon}
+                  label={opt.label}
+                  desc={opt.desc}
+                  selected={projectType === opt.id}
+                  onClick={() => setProjectType(opt.id)}
+                  indicatorType="multi"
+                  accentColor="#4FACFF"
+                />
               ))}
             </div>
             {projectType === 'other' && (
@@ -713,35 +698,16 @@ export default function GeneratePage() {
             <p className="text-[13px] text-white/40 mb-6">This decides which files matter.</p>
             <div className="flex flex-col gap-2.5">
               {audienceOptions.map(opt => (
-                <button key={opt.id} onClick={() => setAudience(opt.id)}
-                  className="flex items-center gap-4 rounded-xl border p-4 text-left w-full transition-all duration-200 cursor-pointer"
-                  style={{
-                    borderColor: audience === opt.id ? 'rgba(79,172,255,0.45)' : 'rgba(255,255,255,0.07)',
-                    background: audience === opt.id ? 'rgba(79,172,255,0.08)' : 'rgba(255,255,255,0.03)',
-                    boxShadow: audience === opt.id ? '0 0 20px rgba(79,172,255,0.1), inset 0 0 0 1px rgba(79,172,255,0.15)' : 'none',
-                  }}
-                >
-                  <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all duration-200"
-                    style={{
-                      background: audience === opt.id ? 'rgba(79,172,255,0.18)' : 'rgba(255,255,255,0.05)',
-                      color: audience === opt.id ? '#4FACFF' : 'rgba(255,255,255,0.35)',
-                    }}
-                  >
-                    {opt.icon}
-                  </div>
-                  <div className="flex-1">
-                    <p className={`text-[14px] font-semibold transition-colors ${audience === opt.id ? 'text-white' : 'text-white/70'}`}>{opt.label}</p>
-                    <p className="text-[12px] text-white/35">{opt.desc}</p>
-                  </div>
-                  {audience === opt.id && (
-                    <div className="w-5 h-5 rounded-full bg-[#4FACFF] flex items-center justify-center shrink-0">
-                      <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
-                        <path d="m4.5 12.75 6 6 9-13.5" />
-                      </svg>
-                    </div>
-                  )}
-                </button>
+                <WizardOptionCard
+                  key={opt.id}
+                  icon={opt.icon}
+                  label={opt.label}
+                  desc={opt.desc}
+                  selected={audience === opt.id}
+                  onClick={() => setAudience(opt.id)}
+                  indicatorType="single"
+                  accentColor="#4FACFF"
+                />
               ))}
             </div>
           </div>
@@ -753,40 +719,18 @@ export default function GeneratePage() {
             <h2 className="text-xl font-bold text-white mb-1" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Which AI tools do you use?</h2>
             <p className="text-[13px] text-white/40 mb-6">Pick any that apply. We&apos;ll generate files tuned for exactly these tools.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              {aiToolOptions.map(opt => {
-                const selected = aiTools.includes(opt.id);
-                return (
-                  <button key={opt.id} onClick={() => toggleAiTool(opt.id)}
-                    className="flex items-start gap-3.5 rounded-xl border p-4 text-left w-full transition-all duration-200 cursor-pointer"
-                    style={{
-                      borderColor: selected ? 'rgba(45,212,191,0.45)' : 'rgba(255,255,255,0.07)',
-                      background: selected ? 'rgba(45,212,191,0.08)' : 'rgba(255,255,255,0.03)',
-                      boxShadow: selected ? '0 0 20px rgba(45,212,191,0.1), inset 0 0 0 1px rgba(45,212,191,0.15)' : 'none',
-                    }}
-                  >
-                    <div
-                      className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 transition-all duration-200"
-                      style={{
-                        background: selected ? 'rgba(45,212,191,0.18)' : 'rgba(255,255,255,0.05)',
-                        color: selected ? '#2DD4BF' : 'rgba(255,255,255,0.35)',
-                      }}
-                    >
-                      {opt.icon}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-[13px] font-semibold transition-colors ${selected ? 'text-white' : 'text-white/70'}`}>{opt.label}</p>
-                      <p className="text-[11px] text-white/35">{opt.desc}</p>
-                    </div>
-                    {selected && (
-                      <div className="w-5 h-5 rounded-full bg-[#2DD4BF] flex items-center justify-center shrink-0 mt-0.5">
-                        <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
-                          <path d="m4.5 12.75 6 6 9-13.5" />
-                        </svg>
-                      </div>
-                    )}
-                  </button>
-                );
-              })}
+              {aiToolOptions.map(opt => (
+                <WizardOptionCard
+                  key={opt.id}
+                  icon={opt.icon}
+                  label={opt.label}
+                  desc={opt.desc}
+                  selected={aiTools.includes(opt.id)}
+                  onClick={() => toggleAiTool(opt.id)}
+                  indicatorType="multi"
+                  accentColor="#2DD4BF"
+                />
+              ))}
             </div>
           </div>
         )}
@@ -839,33 +783,24 @@ export default function GeneratePage() {
             </p>
 
             <div className="grid grid-cols-1 gap-2.5 mb-5">
-              {readerAudienceOptions.map(opt => {
-                const active = readerAudience === opt.id;
-                return (
-                  <button key={opt.id} onClick={() => handleSelectReaderAudience(opt.id)}
-                    className={`flex items-start gap-3.5 rounded-xl border p-4 text-left transition-all ${
-                      active ? 'border-[#4FACFF]/50 bg-[#4FACFF]/[0.07]' : 'border-white/8 bg-white/[0.02] hover:border-white/15 hover:bg-white/[0.04]'
-                    }`}
-                  >
-                    <div className={`mt-0.5 w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center transition-all ${
-                      active ? 'border-[#4FACFF] bg-[#4FACFF]' : 'border-white/20'
-                    }`}>
-                      {active && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <span className="text-base">{opt.icon}</span>
-                        <span className={`text-sm font-semibold ${active ? 'text-[var(--md-text)]' : 'text-[var(--md-text-secondary)]'}`}>{opt.label}</span>
-                        {opt.id === 'ai_agent' && <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/6 text-[var(--md-text-tertiary)] font-mono">default</span>}
-                        {opt.id === 'non_technical' && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#4FACFF]/10 text-[#4FACFF] font-mono">goal-guided →</span>
-                        )}
-                      </div>
-                      <p className={`text-xs leading-relaxed ${active ? 'text-[var(--md-text-secondary)]' : 'text-[var(--md-text-tertiary)]'}`}>{opt.desc}</p>
-                    </div>
-                  </button>
-                );
-              })}
+              {readerAudienceOptions.map(opt => (
+                <WizardOptionCard
+                  key={opt.id}
+                  icon={opt.icon}
+                  label={opt.label}
+                  desc={opt.desc}
+                  selected={readerAudience === opt.id}
+                  onClick={() => handleSelectReaderAudience(opt.id)}
+                  indicatorType="single"
+                  accentColor="#4FACFF"
+                  badge={
+                    opt.id === 'ai_agent' ? 'default' :
+                    opt.id === 'non_technical' ? 'goal-guided →' :
+                    undefined
+                  }
+                  badgeVariant={opt.id === 'non_technical' ? 'blue' : 'mono'}
+                />
+              ))}
             </div>
 
             {readerAudience !== 'ai_agent' && (

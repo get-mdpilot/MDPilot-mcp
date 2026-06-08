@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     const available = getAvailableProviders();
     if (available.length === 0) {
       return NextResponse.json(
-        { error: 'No model provider configured. Add an API key (ANTHROPIC_API_KEY, OPENAI_API_KEY, GOOGLE_AI_API_KEY, or GROQ_API_KEY) to .env.local.' },
+        { error: 'No model provider configured. Add an API key (ANTHROPIC_API_KEY, OPENAI_API_KEY, GOOGLE_AI_API_KEY, GROQ_API_KEY, or NVIDIA_API_KEY) to .env.local.' },
         { status: 503 },
       );
     }

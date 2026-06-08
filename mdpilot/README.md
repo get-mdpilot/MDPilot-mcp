@@ -36,8 +36,8 @@ Markdown intelligence platform at [mdpilot.in](https://mdpilot.in). Generates pr
 
 ## Stack
 
-- Next.js 14 App Router + TypeScript + Tailwind
-- Anthropic API (claude-sonnet-4-6), with multi-provider fallback (OpenAI, Gemini, Groq)
+- Next.js 16 App Router + TypeScript + Tailwind
+- Anthropic API (claude-sonnet-4-6), with multi-provider fallback (OpenAI, Gemini, Groq, NVIDIA NIM)
 - `js-tiktoken` for browser-side token counting
 - CodeMirror 6 for the markdown editor
 - MarkItDown CLI for Convert mode (installed separately)
@@ -59,6 +59,7 @@ ANTHROPIC_API_KEY=sk-ant-...
 OPENAI_API_KEY=sk-...
 GOOGLE_AI_API_KEY=...
 GROQ_API_KEY=gsk_...
+NVIDIA_API_KEY=nvapi-...        # free — get key at build.nvidia.com
 ```
 
 Optional (enables Supabase-backed prompt versioning and gold examples):

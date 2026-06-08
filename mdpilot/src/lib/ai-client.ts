@@ -3,7 +3,7 @@ import OpenAI from 'openai';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import Groq from 'groq-sdk';
 
-export type AIProvider = 'claude' | 'gpt' | 'gemini' | 'groq';
+export type AIProvider = 'claude' | 'gpt' | 'gemini' | 'groq' | 'nvidia';
 
 export interface AIClientConfig {
   provider: AIProvider;
@@ -11,10 +11,11 @@ export interface AIClientConfig {
 }
 
 const DEFAULT_MODELS: Record<AIProvider, string> = {
-  claude: 'claude-sonnet-4-6',
-  gpt:    'gpt-4o',
-  gemini: 'gemini-2.0-flash',
-  groq:   'llama-3.3-70b-versatile',
+  claude:  'claude-sonnet-4-6',
+  gpt:     'gpt-4o',
+  gemini:  'gemini-2.0-flash',
+  groq:    'llama-3.3-70b-versatile',
+  nvidia:  'meta/llama-3.3-70b-instruct',
 };
 
 export async function generateWithProvider(
@@ -26,11 +27,12 @@ export async function generateWithProvider(
   const modelId = config.model || DEFAULT_MODELS[provider];
 
   switch (provider) {
-    case 'claude': return generateClaude(systemPrompt, userMessage, modelId);
-    case 'gpt':    return generateGPT(systemPrompt, userMessage, modelId);
-    case 'gemini': return generateGemini(systemPrompt, userMessage, modelId);
-    case 'groq':   return generateGroq(systemPrompt, userMessage, modelId);
-    default:       throw new Error(`Unknown provider: ${provider}`);
+    case 'claude':  return generateClaude(systemPrompt, userMessage, modelId);
+    case 'gpt':     return generateGPT(systemPrompt, userMessage, modelId);
+    case 'gemini':  return generateGemini(systemPrompt, userMessage, modelId);
+    case 'groq':    return generateGroq(systemPrompt, userMessage, modelId);
+    case 'nvidia':  return generateNvidia(systemPrompt, userMessage, modelId);
+    default:        throw new Error(`Unknown provider: ${provider}`);
   }
 }
 
@@ -67,6 +69,21 @@ async function generateGroq(system: string, user: string, model: string): Promis
   const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
   const res = await client.chat.completions.create({
     model, max_tokens: 4096,
+    messages: [
+      { role: 'system', content: system },
+      { role: 'user', content: user },
+    ],
+  });
+  return res.choices[0]?.message?.content ?? '';
+}
+
+async function generateNvidia(system: string, user: string, model: string): Promise<string> {
+  const client = new OpenAI({
+    apiKey: process.env.NVIDIA_API_KEY ?? '',
+    baseURL: 'https://integrate.api.nvidia.com/v1',
+  });
+  const res = await client.chat.completions.create({
+    model, max_tokens: 8192,
     messages: [
       { role: 'system', content: system },
       { role: 'user', content: user },
@@ -141,6 +158,7 @@ export function getAvailableProviders(): AIProvider[] {
   if (process.env.OPENAI_API_KEY)    providers.push('gpt');
   if (process.env.GOOGLE_AI_API_KEY || process.env.GEMINI_API_KEY) providers.push('gemini');
   if (process.env.GROQ_API_KEY)      providers.push('groq');
+  if (process.env.NVIDIA_API_KEY)    providers.push('nvidia');
   return providers;
 }
 

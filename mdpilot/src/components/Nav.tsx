@@ -11,6 +11,8 @@ import {
   Layers,
   MenuIcon,
   XIcon,
+  ExternalLink,
+  Sparkles,
 } from 'lucide-react';
 import {
   NavigationMenu,
@@ -194,15 +196,25 @@ export default function Nav() {
                 </NavigationMenuItem>
 
                 <NavigationMenuItem>
-                  <NavigationMenuLink
-                    href="https://github.com"
+                  <a
+                    href="/#demo"
+                    className="flex flex-row items-center gap-1.5 px-4 py-2 text-[13.5px] font-medium text-white/60 hover:text-white cursor-pointer rounded-md hover:bg-white/[0.04] transition-colors"
+                  >
+                    <Sparkles size={12} className="opacity-60 shrink-0" />
+                    Demo
+                  </a>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                  <a
+                    href="https://github.com/mohanreddyt"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-4 py-2 text-[13.5px] font-medium text-white/60 hover:text-white cursor-pointer rounded-md hover:bg-white/[0.04] transition-colors inline-flex items-center gap-1"
+                    className="flex flex-row items-center gap-1.5 px-4 py-2 text-[13.5px] font-medium text-white/60 hover:text-white cursor-pointer rounded-md hover:bg-white/[0.04] transition-colors"
                   >
                     GitHub
-                    <span className="text-[11px] opacity-40">↗</span>
-                  </NavigationMenuLink>
+                    <ExternalLink size={11} className="opacity-40 shrink-0" />
+                  </a>
                 </NavigationMenuItem>
 
               </NavigationMenuList>
@@ -304,14 +316,23 @@ export default function Nav() {
                       >
                         Features
                       </a>
+                      <SheetClose asChild>
+                        <a
+                          href="/#demo"
+                          className="flex flex-row items-center gap-2 py-3 text-sm text-white/60 hover:text-white border-b border-white/[0.04] transition-colors"
+                        >
+                          <Sparkles size={13} className="opacity-50 shrink-0" />
+                          Demo
+                        </a>
+                      </SheetClose>
                       <a
-                        href="https://github.com"
+                        href="https://github.com/mohanreddyt"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center justify-between py-3 text-sm text-white/60 hover:text-white transition-colors"
                       >
                         GitHub
-                        <span className="text-white/20 text-xs">↗</span>
+                        <ExternalLink size={13} className="opacity-30" />
                       </a>
                     </div>
                   </div>

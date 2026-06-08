@@ -9,13 +9,14 @@ interface ModelSelectorProps {
 }
 
 const PROVIDER_INFO: Record<AIProvider, { label: string; icon: string; color: string; desc: string; model: string }> = {
-  claude: { label: 'Claude', icon: '✦', color: '#D97706', desc: 'Anthropic', model: 'claude-sonnet-4-6' },
-  gpt:    { label: 'GPT-4o', icon: '◉', color: '#10A37F', desc: 'OpenAI',    model: 'gpt-4o' },
-  gemini: { label: 'Gemini', icon: '✧', color: '#4285F4', desc: 'Google',    model: 'gemini-2.0-flash' },
-  groq:   { label: 'Llama',  icon: '⚡', color: '#F55036', desc: 'Groq',      model: 'llama-3.3-70b-versatile' },
+  claude:  { label: 'Claude',    icon: '✦', color: '#D97706', desc: 'Anthropic', model: 'claude-sonnet-4-6' },
+  gpt:     { label: 'GPT-4o',   icon: '◉', color: '#10A37F', desc: 'OpenAI',    model: 'gpt-4o' },
+  gemini:  { label: 'Gemini',   icon: '✧', color: '#4285F4', desc: 'Google',    model: 'gemini-2.0-flash' },
+  groq:    { label: 'Llama',    icon: '⚡', color: '#F55036', desc: 'Groq',      model: 'llama-3.3-70b-versatile' },
+  nvidia:  { label: 'Llama 3.3', icon: '◈', color: '#76B900', desc: 'NVIDIA NIM', model: 'meta/llama-3.3-70b-instruct' },
 };
 
-const ORDER: AIProvider[] = ['claude', 'gpt', 'gemini', 'groq'];
+const ORDER: AIProvider[] = ['claude', 'gpt', 'gemini', 'groq', 'nvidia'];
 
 export default function ModelSelector({ selected, onChange, available }: ModelSelectorProps) {
   const info = PROVIDER_INFO[selected];
