@@ -1,0 +1,183 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'Labs — MDPilot',
+  description: 'Additional and experimental MDPilot tools: Generate, Explain, Convert, Image-to-Prompt, and Interview Primer.',
+};
+
+const TOOLS = [
+  {
+    href: '/generate',
+    label: 'Generate',
+    accent: '#4FACFF',
+    borderColor: 'border-[#4FACFF]/[0.15]',
+    bgColor: 'bg-[#4FACFF]/[0.04]',
+    glowColor: 'bg-[#4FACFF]/20',
+    textColor: 'text-[#4FACFF]',
+    desc: 'AGENTS.md, CLAUDE.md, README & more from your project',
+    detail: '9 file types · 5-pass optimizer · multi-model',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+      </svg>
+    ),
+  },
+  {
+    href: '/explain',
+    label: 'Explain',
+    accent: '#A855F7',
+    borderColor: 'border-[#A855F7]/[0.15]',
+    bgColor: 'bg-[#A855F7]/[0.04]',
+    glowColor: 'bg-[#A855F7]/20',
+    textColor: 'text-[#A855F7]',
+    desc: 'Turn any code or repo into a plain-language walkthrough',
+    detail: 'Tuned to any audience — agent, team, learner, non-technical',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+      </svg>
+    ),
+  },
+  {
+    href: '/convert',
+    label: 'Convert',
+    accent: '#2DD4BF',
+    borderColor: 'border-[#2DD4BF]/[0.15]',
+    bgColor: 'bg-[#2DD4BF]/[0.04]',
+    glowColor: 'bg-[#2DD4BF]/20',
+    textColor: 'text-[#2DD4BF]',
+    desc: 'Any file (PDF, DOCX, CSV…) → clean markdown',
+    detail: 'Powered by MarkItDown · preserves structure',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/>
+        <line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>
+    ),
+  },
+  {
+    href: '/image-to-prompt',
+    label: 'Image → Prompt',
+    accent: '#F97316',
+    borderColor: 'border-[#F97316]/[0.15]',
+    bgColor: 'bg-[#F97316]/[0.04]',
+    glowColor: 'bg-[#F97316]/20',
+    textColor: 'text-[#F97316]',
+    desc: 'Recreate any image as a generation prompt',
+    detail: 'Outputs for FLUX, SD, Midjourney, DALL-E & Gemini',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <circle cx="8.5" cy="8.5" r="1.5"/>
+        <polyline points="21 15 16 10 5 21"/>
+      </svg>
+    ),
+  },
+  {
+    href: '/interview-primer',
+    label: 'Interview Primer',
+    accent: '#FBBF24',
+    borderColor: 'border-[#FBBF24]/[0.15]',
+    bgColor: 'bg-[#FBBF24]/[0.04]',
+    glowColor: 'bg-[#FBBF24]/20',
+    textColor: 'text-[#FBBF24]',
+    desc: 'Role + JD → a ready-to-paste AI coach prompt',
+    detail: 'Any level · custom JD · instant output',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+    ),
+  },
+] as const;
+
+export default function LabsPage() {
+  return (
+    <div className="min-h-screen bg-[var(--md-dark)]">
+      <div className="max-w-5xl mx-auto px-5 sm:px-8 py-20">
+
+        {/* Header */}
+        <div className="mb-16">
+          <div className="section-label mb-5 w-fit">Experimental</div>
+          <h1 className="text-[clamp(2.2rem,5vw,3.5rem)] font-black text-white tracking-[-0.04em] mb-4">
+            Labs
+          </h1>
+          <p className="text-[16px] text-white/40 max-w-lg leading-relaxed">
+            Additional and experimental MDPilot tools. All fully working — just not the main act.
+          </p>
+        </div>
+
+        {/* Tool grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {TOOLS.map((tool) => (
+            <Link
+              key={tool.href}
+              href={tool.href}
+              className={`group relative rounded-2xl border ${tool.borderColor} ${tool.bgColor} p-6 card-interactive overflow-hidden cursor-pointer transition-all duration-200 hover:border-opacity-60`}
+            >
+              {/* Hover glow blob */}
+              <div className={`absolute -top-8 -right-8 w-28 h-28 rounded-full ${tool.glowColor} blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none`} />
+
+              <div className="relative z-10 flex items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  {/* Icon + label row */}
+                  <div className="flex items-center gap-2.5 mb-3">
+                    <div className={`shrink-0 w-9 h-9 rounded-xl ${tool.bgColor} border ${tool.borderColor} flex items-center justify-center ${tool.textColor}`}>
+                      {tool.icon}
+                    </div>
+                    <span className={`text-[12px] font-mono font-bold ${tool.textColor} tracking-wide`}>
+                      {tool.label}
+                    </span>
+                  </div>
+
+                  <p className="text-[14px] font-semibold text-white/80 leading-snug mb-1.5">
+                    {tool.desc}
+                  </p>
+                  <p className="text-[12px] text-white/30 font-mono">
+                    {tool.detail}
+                  </p>
+                </div>
+
+                {/* Arrow */}
+                <svg
+                  width="16" height="16" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor" strokeWidth={2}
+                  className="shrink-0 mt-1 text-white/15 group-hover:text-white/40 group-hover:translate-x-0.5 transition-all duration-200"
+                  aria-hidden
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                </svg>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        {/* Back to hero */}
+        <div className="mt-14 pt-8 border-t border-white/[0.05] flex items-center justify-between gap-4 flex-wrap">
+          <div>
+            <p className="text-[13px] text-white/30 mb-1">Looking for the main tool?</p>
+            <Link
+              href="/task"
+              className="text-[13px] text-[#4FACFF]/80 hover:text-[#4FACFF] font-medium transition-colors"
+            >
+              Start with a task →
+            </Link>
+          </div>
+          <Link
+            href="/"
+            className="text-[11px] font-mono text-white/20 hover:text-white/40 transition-colors"
+          >
+            ← Home
+          </Link>
+        </div>
+
+      </div>
+    </div>
+  );
+}

@@ -1,16 +1,35 @@
 # MDPilot
 
-Markdown intelligence platform at [mdpilot.in](https://mdpilot.in). Generates production-grade AI instruction files, optimizes tokens, converts any file to markdown.
+Markdown intelligence platform at [mdpilot.in](https://mdpilot.in). Primary tool: Task mode — paste any ticket or thread to get a precise, expert-grade prompt for your AI agent. Also generates production-grade AI instruction files (AGENTS.md, CLAUDE.md, README), detects context drift, and converts any file to markdown.
 
-## Modes
+## Site structure
 
-| Mode | What it does |
-|------|-------------|
-| **Generate** | 7-step wizard → README, AGENTS, CLAUDE, SKILL, DESIGN, CONTRIBUTING, SECURITY, CONTEXT |
-| **Task** | Paste a ticket / Slack thread → structured TASK.md or SPEC.md |
-| **Convert** | Drop any file → clean markdown (via MarkItDown CLI) |
-| **Explain** | Paste code → WALKTHROUGH.md tuned to any audience |
-| **Interview primer** | Role + level + optional JD → ready-to-paste AI coach prompt |
+| Route | Description |
+|-------|-------------|
+| `/` | Landing page — 7-section narrative (Hero → Insight → Before/After → MCP → Drift → Trust → CTA) |
+| `/task` | Task mode — primary tool |
+| `/labs` | Labs hub — 5 secondary tools |
+| `/docs` | Documentation hub (sidebar layout) |
+| `/docs/mcp` | MCP server setup — full guide, all 8 tools (live) |
+| `/docs/getting-started` | Getting started (coming soon) |
+| `/blog` | Blog index (empty state pending first post) |
+| `/blog/[slug]` | Blog post template with `generateMetadata` + `generateStaticParams` |
+
+## Primary mode
+
+| Mode | Route | What it does |
+|------|-------|-------------|
+| **Task** | `/task` | Paste a ticket / Slack thread → structured TASK.md or SPEC.md — the landing page hero |
+
+## Labs (secondary — `/labs`)
+
+| Mode | Route | What it does |
+|------|-------|-------------|
+| **Generate** | `/generate` | 7-step wizard → README, AGENTS, CLAUDE, SKILL, DESIGN, CONTRIBUTING, SECURITY, CONTEXT |
+| **Convert** | `/convert` | Drop any file → clean markdown (via MarkItDown CLI) |
+| **Explain** | `/explain` | Paste code → WALKTHROUGH.md tuned to any audience |
+| **Image → Prompt** | `/image-to-prompt` | Analyze any image → recreation prompt for FLUX, SD, Midjourney, DALL-E, Gemini |
+| **Interview primer** | `/interview-primer` | Role + level + optional JD → ready-to-paste AI coach prompt |
 
 ## Generate mode — wizard steps
 

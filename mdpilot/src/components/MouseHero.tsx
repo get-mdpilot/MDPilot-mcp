@@ -119,17 +119,18 @@ function FloatingCard({
 /* ─── Terminal window ─────────────────────────────────────────────────────── */
 function TerminalWindow() {
   const lines = [
-    { tokens: [{ type: 'comment', text: '# Claude Code Project Memory' }] },
+    { tokens: [{ type: 'comment', text: '# TASK.md — Fix auth redirect loop' }] },
     { tokens: [] },
-    { tokens: [{ type: 'keyword', text: '## Stack' }] },
-    { tokens: [{ type: 'string', text: 'Next.js 14 · TypeScript · Tailwind · Prisma' }] },
+    { tokens: [{ type: 'keyword', text: '## Goal' }] },
+    { tokens: [{ type: 'string', text: 'After OAuth callback, redirect to /dashboard' }] },
+    { indent: 1, tokens: [{ type: 'string', text: 'not back to /login. Regression in v3.1.' }] },
     { tokens: [] },
-    { tokens: [{ type: 'keyword', text: '## Gotchas' }] },
-    { tokens: [{ type: 'function', text: '- ' }, { type: 'string', text: 'Never call API from client' }] },
-    { indent: 1, tokens: [{ type: 'function', text: '- ' }, { type: 'string', text: "runtime = 'nodejs'" }] },
+    { tokens: [{ type: 'keyword', text: '## Constraints' }] },
+    { tokens: [{ type: 'function', text: '- ' }, { type: 'string', text: 'No changes to auth provider config' }] },
+    { indent: 1, tokens: [{ type: 'function', text: '- ' }, { type: 'string', text: 'Preserve existing session TTL' }] },
     { tokens: [] },
-    { tokens: [{ type: 'keyword', text: '## Commands' }] },
-    { tokens: [{ type: 'comment', text: '$ npm run dev' }] },
+    { tokens: [{ type: 'keyword', text: '## Done when' }] },
+    { tokens: [{ type: 'comment', text: '- [ ] /auth/callback → /dashboard' }] },
   ];
   return (
     <div className="terminal-chrome shadow-[0_0_60px_rgba(0,0,0,0.6)] w-full">
@@ -137,7 +138,7 @@ function TerminalWindow() {
         <span className="terminal-dot bg-[#FF5F57]" />
         <span className="terminal-dot bg-[#FEBC2E]" />
         <span className="terminal-dot bg-[#28C840]" />
-        <span className="ml-3 text-[11px] font-mono text-white/25">CLAUDE.md — MDPilot</span>
+        <span className="ml-3 text-[11px] font-mono text-white/25">TASK.md — MDPilot</span>
       </div>
       <div className="px-5 py-4 space-y-1 text-[12.5px] font-mono leading-relaxed">
         {lines.map((line, i) => (
@@ -232,7 +233,7 @@ export default function MouseHero() {
           mouse={mouse}
         />
         <FloatingCard
-          filename="CLAUDE.md" accent="text-[#2DD4BF]"
+          filename="TASK.md" accent="text-[#2DD4BF]"
           glow="shadow-[0_0_40px_rgba(45,212,191,0.14)]"
           lines={['70%','50%','85%','60%','45%']}
           baseTransform="perspective(900px) rotateY(16deg) rotateX(6deg)"
@@ -249,49 +250,40 @@ export default function MouseHero() {
             <span className="pulse-green absolute inline-flex h-full w-full rounded-full bg-[#34D399]" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-[#34D399]" />
           </span>
-          Generate mode live — no account needed
+          Task mode · no account needed
           <span className="hidden sm:inline text-white/20">·</span>
           <span className="hidden sm:inline font-mono text-[#34D399]/70">try it →</span>
         </div>
 
         {/* Headline */}
         <h1 className="text-[clamp(2.6rem,7.5vw,5.5rem)] font-black leading-[1.04] tracking-[-0.04em] mb-10">
-          <span className="text-white block">Docs that AI agents</span>
-          <span className="text-gradient-animated block">actually read.</span>
+          <span className="text-white block">Give your AI agent</span>
+          <span className="text-gradient-animated block">the perfect starting point.</span>
         </h1>
 
-        <p className="text-[17px] sm:text-[18px] text-white/40 max-w-[540px] mx-auto leading-relaxed mb-10">
-          3 questions → production-grade{' '}
-          <span className="font-mono text-[15px] text-white/70 bg-white/[0.06] px-2 py-0.5 rounded-md">AGENTS.md</span>
-          {' '}/{' '}
-          <span className="font-mono text-[15px] text-white/70 bg-white/[0.06] px-2 py-0.5 rounded-md">CLAUDE.md</span>
-          {' '}/{' '}
-          <span className="font-mono text-[15px] text-white/70 bg-white/[0.06] px-2 py-0.5 rounded-md">README.md</span>
-          {' '}— token-optimized.
+        <p className="text-[17px] sm:text-[18px] text-white/40 max-w-[560px] mx-auto leading-relaxed mb-10">
+          Paste a ticket, thread, or half-formed idea — MDPilot turns it into a precise, expert-grade prompt: structured, gap-checked, and tuned to how you work, so the whole AI conversation starts right.
         </p>
 
         {/* CTAs */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-16">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10">
           <Link
-            href="/generate"
+            href="/task"
             className="btn-shine relative inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-[#4FACFF] to-[#38D9A9] text-[#07070f] text-[15px] font-black shadow-[0_0_30px_rgba(79,172,255,0.30)] hover:shadow-[0_0_50px_rgba(79,172,255,0.50)] hover:scale-[1.03] active:scale-[0.98] transition-all duration-200"
             style={{ fontFamily: 'Space Grotesk, sans-serif' }}
           >
-            Generate my files
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-            </svg>
+            Start with a task →
           </Link>
-          <a
-            href="https://github.com" target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-white/[0.04] border border-white/[0.08] text-white/60 text-[15px] font-medium hover:text-white hover:border-white/[0.14] hover:bg-white/[0.06] transition-all duration-200"
-          >
-            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
-            </svg>
-            View on GitHub
-          </a>
         </div>
+
+        {/* MCP teaser */}
+        <p className="text-[12px] text-white/25 mb-16">
+          Prefer to work in your editor?{' '}
+          <Link href="/labs" className="text-white/40 hover:text-[#4FACFF]/70 transition-colors underline underline-offset-2 decoration-white/15 hover:decoration-[#4FACFF]/30">
+            MDPilot runs as an MCP server
+          </Link>
+          {' '}inside Claude Code, Cursor &amp; Windsurf.
+        </p>
 
         {/* Stats */}
         <StatsCounterClient />

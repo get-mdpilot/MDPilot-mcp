@@ -1,65 +1,36 @@
+import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import TokenVizClient from '@/components/TokenVizClient';
-import VizBentoSection from '@/components/VizBentoSection';
 import MouseHero from '@/components/MouseHero';
-import StreamingDemo from '@/components/StreamingDemo';
-import ModesSection from '@/components/ModesSection';
-import { ScannerCardStream } from '@/components/ui/scanner-card-stream';
-import { ShimmerText } from '@/components/ui/shimmer-text';
 
+/* ─── Metadata / OG ─────────────────────────────────────────────────────── */
+export const metadata: Metadata = {
+  title: 'MDPilot — Give your AI agent the perfect starting point',
+  description:
+    'Turn any task into a precise, expert-grade prompt for your AI coding agent. Generate AGENTS.md & CLAUDE.md from your real repo, and keep them accurate as your code changes. Works in Claude Code, Cursor, Windsurf & Goose via MCP.',
+  openGraph: {
+    title: 'MDPilot — Give your AI agent the perfect starting point',
+    description:
+      'Turn any task into a precise, expert-grade prompt for your AI coding agent. Generate AGENTS.md & CLAUDE.md from your real repo, and keep them accurate as your code changes. Works in Claude Code, Cursor, Windsurf & Goose via MCP.',
+    type: 'website',
+    url: 'https://mdpilot.in',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'MDPilot — Give your AI agent the perfect starting point',
+    description:
+      'Turn any task into a precise, expert-grade prompt for your AI coding agent. Generate AGENTS.md & CLAUDE.md from your real repo.',
+  },
+};
 
-/* ─── Feature card (Magic MCP: gradient-border + glow hover) ────────────────  */
-function FeatureCard({ num, filename, accent, borderColor, glowColor, bgColor, icon, title, desc, tags }: {
-  num: string; filename: string; accent: string; borderColor: string; glowColor: string; bgColor: string;
-  icon: ReactNode; title: string; desc: string; tags: string[];
-}) {
-  return (
-    <div className={`group relative rounded-2xl border ${borderColor} ${bgColor} p-6 cursor-default card-interactive gradient-border overflow-hidden`}>
-      {/* Background glow blob */}
-      <div className={`absolute -top-10 -right-10 w-32 h-32 rounded-full ${glowColor} blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-
-      <div className="relative z-10">
-        <div className="flex items-start justify-between mb-5">
-          <div className={`w-10 h-10 rounded-xl ${bgColor} border ${borderColor} flex items-center justify-center ${accent}`}>
-            {icon}
-          </div>
-          <span className="font-mono text-[10px] text-white/20 font-medium">{num}</span>
-        </div>
-
-        <p className={`text-[11px] font-mono font-bold ${accent} mb-1 tracking-wider`}>{filename}</p>
-        <h3 className="text-[15px] font-semibold text-white mb-2 leading-snug" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
-          {title}
-        </h3>
-        <p className="text-[13px] text-white/45 leading-relaxed mb-4">{desc}</p>
-
-        <div className="flex flex-wrap gap-1.5">
-          {tags.map(t => (
-            <span key={t} className={`text-[10px] font-mono px-2.5 py-1 rounded-full border ${borderColor} ${accent} opacity-70 group-hover:opacity-100 transition-opacity`}>
-              {t}
-            </span>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ─── Open-with pill (vivid solid brand color — intentionally not dark-themed) */
-function OpenWithPill({
-  name, bg, fg, glow, icon,
-}: {
+/* ─── Open-with pill ─────────────────────────────────────────────────────── */
+function OpenWithPill({ name, bg, fg, glow, icon }: {
   name: string; bg: string; fg: string; glow: string; icon: ReactNode;
 }) {
   return (
     <div
       className="flex items-center gap-2.5 px-4 py-2.5 rounded-full shrink-0 select-none"
-      style={{
-        backgroundColor: bg,
-        color: fg,
-        boxShadow: `0 0 18px ${glow}, 0 2px 10px rgba(0,0,0,0.35)`,
-      }}
+      style={{ backgroundColor: bg, color: fg, boxShadow: `0 0 18px ${glow}, 0 2px 10px rgba(0,0,0,0.35)` }}
     >
       <span className="shrink-0 flex items-center">{icon}</span>
       <span
@@ -216,49 +187,25 @@ function OpenWithMarquee() {
     },
   ];
 
-  // Quadruple each row for seamless loop at all screen widths
   const row1 = [...ROW1, ...ROW1, ...ROW1, ...ROW1];
   const row2 = [...ROW2, ...ROW2, ...ROW2, ...ROW2];
 
   return (
     <section className="relative border-y border-white/[0.05] bg-[var(--md-dark-2)] py-10 overflow-hidden">
       <p className="text-center text-[10px] font-mono text-white/20 uppercase tracking-[0.14em] mb-6">
-        Open with
+        Works with
       </p>
-
-      {/* Row 1 — scrolls left */}
       <div className="marquee-container mb-3">
         <div className="marquee-track gap-3 px-2">
-          {row1.map((tool, i) => (
-            <OpenWithPill key={i} {...tool} />
-          ))}
+          {row1.map((tool, i) => <OpenWithPill key={i} {...tool} />)}
         </div>
       </div>
-
-      {/* Row 2 — scrolls right */}
       <div className="marquee-container">
         <div className="marquee-track-right gap-3 px-2">
-          {row2.map((tool, i) => (
-            <OpenWithPill key={i} {...tool} />
-          ))}
+          {row2.map((tool, i) => <OpenWithPill key={i} {...tool} />)}
         </div>
       </div>
     </section>
-  );
-}
-
-/* ─── Optimizer pass row ─────────────────────────────────────────────────── */
-function PassRow({ n, label, desc, color }: { n: string; label: string; desc: string; color: string }) {
-  return (
-    <div className="flex items-start gap-4 p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.05] hover:border-white/[0.10] transition-all duration-200 group">
-      <span className={`text-[11px] font-mono font-bold ${color} shrink-0 mt-0.5 opacity-70 group-hover:opacity-100 transition-opacity`}>
-        PASS {n}
-      </span>
-      <div>
-        <p className="text-[13px] font-semibold text-white mb-0.5">{label}</p>
-        <p className="text-[12px] text-white/35">{desc}</p>
-      </div>
-    </div>
   );
 }
 
@@ -268,392 +215,328 @@ export default function Home() {
     <div className="bg-[var(--md-dark)] overflow-x-hidden">
 
       {/* ═══════════════════════════════════════════════════════════════
-          HERO — cursor-reactive 3D cards (MouseHero client component)
+          1. HERO — cursor-reactive, Task-focused (MouseHero client component)
       ══════════════════════════════════════════════════════════════════ */}
       <MouseHero />
 
+      {/* Works-with marquee */}
       <OpenWithMarquee />
 
       {/* ═══════════════════════════════════════════════════════════════
-          FILE FEATURES — numbered sections (readme.com/ai style)
-          Skill: Glassmorphism + gradient-border + glow hover
+          2. THE INSIGHT — why starting right matters
       ══════════════════════════════════════════════════════════════════ */}
-      <section id="features" className="max-w-6xl mx-auto px-5 sm:px-8 py-28">
-        <div className="text-center mb-20 fade-up">
-          <div className="section-label mb-5">Core Files</div>
-          <h2 className="text-[clamp(2rem,5vw,3.5rem)] font-black text-white tracking-[-0.04em] mb-4">
-            Three files. All your AI tools.<br />
-            <span className="text-gradient-animated">Zero guesswork.</span>
-          </h2>
-          <p className="text-white/40 text-[16px] max-w-xl mx-auto leading-relaxed">
-            AI agents work best when they have context. MDPilot generates the exact instruction files each tool expects.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <FeatureCard
-            num="[01]" filename="README.md"
-            icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>}
-            accent="text-[#4FACFF]"
-            borderColor="border-[#4FACFF]/[0.15]"
-            glowColor="bg-[#4FACFF]/20"
-            bgColor="bg-[#4FACFF]/[0.04]"
-            title="Project homepage"
-            desc="GitHub, npm, and PyPI render this first. The difference between adoption and being ignored."
-            tags={['All platforms', 'Public repos', 'Indexed by GitHub']}
-          />
-          <FeatureCard
-            num="[02]" filename="AGENTS.md"
-            icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg>}
-            accent="text-[#A855F7]"
-            borderColor="border-[#A855F7]/[0.15]"
-            glowColor="bg-[#A855F7]/20"
-            bgColor="bg-[#A855F7]/[0.04]"
-            title="Universal AI instructions"
-            desc="Read by Copilot, Cursor, Claude, Windsurf, Zed. Tells every agent your conventions."
-            tags={['6 AI tools', 'Universal format', 'AGENTS.md spec']}
-          />
-          <FeatureCard
-            num="[03]" filename="CLAUDE.md"
-            icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/><path d="M21.17 8H12V2.05"/></svg>}
-            accent="text-[#2DD4BF]"
-            borderColor="border-[#2DD4BF]/[0.15]"
-            glowColor="bg-[#2DD4BF]/20"
-            bgColor="bg-[#2DD4BF]/[0.04]"
-            title="Claude Code memory"
-            desc="Loads every session. Prevents repeated mistakes. Saves ~200 tokens per message."
-            tags={['Claude Code only', 'Auto-loads', 'Persistent context']}
-          />
-        </div>
+      <section className="max-w-3xl mx-auto px-5 sm:px-8 py-20 text-center">
+        <div className="section-label mb-5 mx-auto w-fit">The insight</div>
+        <h2 className="text-[clamp(1.7rem,4vw,2.6rem)] font-black text-white tracking-[-0.04em] mb-5 leading-tight">
+          Your AI is only as good as<br className="hidden sm:block" /> how you start the conversation.
+        </h2>
+        <p className="text-white/45 text-[16px] leading-relaxed max-w-2xl mx-auto">
+          Most developers open their AI tool and type a vague first message — no context,
+          no structure, no acceptance criteria — and get generic help back. MDPilot fixes
+          the one moment that sets the trajectory: the entry point. Get the prompt right,
+          and the whole conversation follows.
+        </p>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          MODES — four ways to generate markdown (live animated previews)
+          3. BEFORE / AFTER — the persuasive core
       ══════════════════════════════════════════════════════════════════ */}
-      <ModesSection />
+      <section id="features" className="bg-[var(--md-dark-2)] border-y border-white/[0.05] py-20 px-5 sm:px-8">
+        <div className="max-w-5xl mx-auto">
 
-      {/* ═══════════════════════════════════════════════════════════════
-          WHAT'S NEW IN V2
-      ══════════════════════════════════════════════════════════════════ */}
-      <section className="max-w-4xl mx-auto px-5 sm:px-8 pb-16">
-        <div className="relative rounded-2xl overflow-hidden border border-white/[0.07] bg-white/[0.02]">
-          {/* Top accent */}
-          <div className="h-px bg-gradient-to-r from-transparent via-[#4FACFF]/50 to-transparent" />
-
-          <div className="p-7 sm:p-9">
-            {/* Header */}
-            <div className="flex items-center gap-3 mb-7">
-              <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full bg-gradient-to-r from-[#4FACFF] to-[#A855F7] text-white tracking-wide shrink-0">
-                v2.0
-              </span>
-              <h2
-                className="text-lg font-bold text-white tracking-tight"
-                style={{ fontFamily: 'Space Grotesk, sans-serif' }}
-              >
-                <ShimmerText
-                  className="text-lg font-bold text-white"
-                  shimmerColor="rgba(79,172,255,0.9)"
-                  duration={2.5}
-                  delay={1.2}
-                >
-                  What shipped
-                </ShimmerText>
-              </h2>
-              <div className="flex-1 h-px bg-gradient-to-r from-white/10 to-transparent mx-1" />
-              <span className="text-[10px] font-mono text-white/15 hidden sm:block shrink-0">Jun 2025</span>
-            </div>
-
-            {/* Feature grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-              {[
-                { dot: 'bg-[#E05E3A]', title: 'Task mode',         sub: ' — paste any ticket, get TASK.md' },
-                { dot: 'bg-[#2DD4BF]', title: 'Convert mode',      sub: ' — drop files, get markdown' },
-                { dot: 'bg-[#4FACFF]', title: 'Multi-model',        sub: ' — Claude, GPT-4o, or Gemini' },
-                { dot: 'bg-[#A855F7]', title: '9 file types',       sub: ' — SKILL.md, DESIGN.md, and more' },
-                { dot: 'bg-[#FBBF24]', title: 'Badge generator',    sub: ' + templates + auto-TOC' },
-                { dot: 'bg-[#34D399]', title: '5-pass optimizer',   sub: ' — the moat' },
-              ].map(f => (
-                <div
-                  key={f.title}
-                  className="flex items-start gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.03] transition-colors group cursor-default"
-                >
-                  <div className={`w-1.5 h-1.5 rounded-full ${f.dot} mt-[5px] shrink-0 group-hover:scale-125 transition-transform duration-200`} />
-                  <p className="text-[13px] leading-snug">
-                    <span className="font-semibold text-white/70 group-hover:text-white/90 transition-colors">{f.title}</span>
-                    <span className="text-white/30">{f.sub}</span>
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════
-          TOKEN OPTIMIZER — dark section
-          Skill: Data-dense + heat-map + progress indicators
-      ══════════════════════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden bg-[var(--md-dark-2)] border-y border-white/[0.05] py-28 px-5 sm:px-8">
-        <div className="blob w-[450px] h-[450px] bg-[#FBBF24]/[0.06] -top-32 left-1/2 -translate-x-1/2" />
-
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* Text */}
-          <div>
-            <div className="section-label mb-5">Token Optimizer</div>
-            <h2 className="text-[clamp(2rem,4vw,3rem)] font-black text-white tracking-[-0.04em] leading-tight mb-2">
-              5-pass token optimizer.
+          {/* Header */}
+          <div className="text-center mb-12">
+            <div className="section-label mb-4 mx-auto w-fit">How Task works</div>
+            <h2 className="text-[clamp(1.8rem,4vw,2.8rem)] font-black text-white tracking-[-0.04em] mb-3 leading-tight">
+              Same task. One is a shrug;<br className="hidden sm:block" />
+              <span className="text-gradient-animated">one is a spec.</span>
             </h2>
-            <div className="text-[clamp(2rem,4vw,3rem)] font-black tracking-[-0.04em] mb-4 text-[#FBBF24]">
-              <ShimmerText
-                className="text-[clamp(2rem,4vw,3rem)] font-black tracking-[-0.04em] text-[#FBBF24]"
-                shimmerColor="rgba(255,255,255,0.75)"
-                duration={2.2}
-                delay={0.8}
-              >
-                No one else has this.
-              </ShimmerText>
-            </div>
-            <p className="text-white/40 leading-relaxed mb-8 text-[15px]">
-              Every file runs through our optimizer before you see it. Filler stripped, duplicates merged, structure compressed — down to precision tokens.
-            </p>
-
-            <div className="space-y-2.5">
-              <PassRow n="01" label="Boilerplate strip" color="text-[#FBBF24]"
-                desc="10 regex patterns remove zero-meaning filler phrases" />
-              <PassRow n="02" label="Cross-file dedup" color="text-[#FF6B6B]"
-                desc="Bigram Jaccard similarity detects duplicate sections across files" />
-              <PassRow n="03" label="Structure compression" color="text-[#A855F7]"
-                desc="Cleans code blocks, collapses blank lines, strips trailing whitespace" />
-              <PassRow n="04" label="Verbose compression" color="text-[#2DD4BF]"
-                desc="Rewrites verbose prose patterns into dense, agent-readable equivalents" />
-              <PassRow n="05" label="Line compression" color="text-[#4FACFF]"
-                desc="Final pass trims whitespace, normalises spacing, removes empty wrappers" />
-            </div>
-          </div>
-
-          {/* Visual — animated token viz */}
-          <TokenVizClient />
-        </div>
-
-        {/* ── Token scanner — live demo strip ──────────────────────────── */}
-        <div className="mt-20 -mx-5 sm:-mx-8">
-          <div className="h-px bg-gradient-to-r from-transparent via-violet-500/20 to-transparent mb-10" />
-
-          <div className="text-center mb-7 px-5">
-            <p className="text-[9px] font-mono tracking-[0.2em] text-violet-400/40 uppercase mb-3">
-              ░ LIVE PREVIEW
-            </p>
-            <p className="text-[15px] font-semibold text-white/45 max-w-[18rem] mx-auto leading-snug">
-              Every file enters.<br />
-              Only tokens leave.
+            <p className="text-white/40 text-[15px] max-w-md mx-auto">
+              Paste anything raw. Get a structured prompt an expert would hand an AI agent.
             </p>
           </div>
 
-          <ScannerCardStream containerHeight={248} cardWidth={328} initialSpeed={95} />
+          {/* Two panels */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
 
-          {/* 3-node legend */}
-          <div className="flex items-center justify-center mt-7 px-5 gap-0">
-            {/* Node: input */}
-            <div className="flex flex-col items-center gap-1.5">
-              <div className="w-9 h-9 rounded-xl border border-white/10 bg-white/[0.04] flex items-center justify-center">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.28)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="3" width="18" height="18" rx="2"/>
-                  <circle cx="8.5" cy="8.5" r="1.5"/>
-                  <polyline points="21 15 16 10 5 21"/>
-                </svg>
+            {/* Before */}
+            <div className="rounded-2xl border border-[#FF6B6B]/[0.18] bg-[#FF6B6B]/[0.03] overflow-hidden">
+              <div className="flex items-center gap-2 px-4 py-2.5 border-b border-[#FF6B6B]/[0.12] bg-[#FF6B6B]/[0.04]">
+                <span className="w-2 h-2 rounded-full bg-[#FF6B6B]/50 shrink-0" />
+                <span className="text-[11px] font-mono text-[#FF6B6B]/55 tracking-wide">raw input</span>
               </div>
-              <span className="text-[9px] font-mono text-white/20 tracking-wide">Input</span>
-            </div>
-
-            {/* Connector */}
-            <div className="flex items-center pb-[18px] mx-3">
-              <div className="w-6 h-px bg-gradient-to-r from-white/10 to-violet-500/30" />
-              <div className="w-1 h-1 rounded-full bg-violet-500/40" />
-              <div className="w-6 h-px bg-gradient-to-r from-violet-500/30 to-violet-500/60" />
-            </div>
-
-            {/* Node: scanner */}
-            <div className="flex flex-col items-center gap-1.5">
-              <div className="w-9 h-9 rounded-xl border border-violet-500/30 bg-violet-500/10 flex items-center justify-center">
-                <div
-                  className="w-px h-5 bg-violet-400 rounded-full"
-                  style={{ boxShadow: '0 0 8px #a78bfa, 0 0 16px #8b5cf6' }}
-                />
-              </div>
-              <span className="text-[9px] font-mono text-violet-400/45 tracking-wide">5-pass</span>
-            </div>
-
-            {/* Connector */}
-            <div className="flex items-center pb-[18px] mx-3">
-              <div className="w-6 h-px bg-gradient-to-r from-violet-500/60 to-violet-500/30" />
-              <div className="w-1 h-1 rounded-full bg-violet-500/40" />
-              <div className="w-6 h-px bg-gradient-to-r from-violet-500/30 to-white/10" />
-            </div>
-
-            {/* Node: tokens */}
-            <div className="flex flex-col items-center gap-1.5">
-              <div className="w-9 h-9 rounded-xl border border-violet-500/20 bg-[#07070F] flex items-center justify-center">
-                <span className="font-mono text-[11px] text-violet-300/50 font-bold">∑</span>
-              </div>
-              <span className="text-[9px] font-mono text-white/20 tracking-wide">Tokens</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════
-          STREAMING GENERATION DEMO
-      ══════════════════════════════════════════════════════════════════ */}
-      <section id="demo">
-        <StreamingDemo />
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════
-          BENTO DATA VISUALIZATION
-      ══════════════════════════════════════════════════════════════════ */}
-      <VizBentoSection />
-
-      {/* ═══════════════════════════════════════════════════════════════
-          HOW IT WORKS — 3 steps with connector line
-      ══════════════════════════════════════════════════════════════════ */}
-      <section id="how-it-works" className="max-w-5xl mx-auto px-5 sm:px-8 py-28">
-        <div className="text-center mb-16">
-          <div className="section-label mb-5">How It Works</div>
-          <h2 className="text-[clamp(2rem,4.5vw,3rem)] font-black text-white tracking-[-0.04em]">
-            Under 30 seconds,<br />
-            <span className="text-gradient-animated">start to download.</span>
-          </h2>
-        </div>
-
-        <div className="relative space-y-4">
-          {/* Connector line */}
-          <div className="absolute left-[19px] top-12 bottom-12 w-px bg-gradient-to-b from-[#4FACFF]/50 via-[#A855F7]/40 to-[#2DD4BF]/30 hidden sm:block" />
-
-          {[
-            {
-              n: '01', color: 'bg-[#4FACFF] shadow-[0_0_16px_rgba(79,172,255,0.5)]', textColor: 'text-[#4FACFF]',
-              icon: (
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#4FACFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                </svg>
-              ),
-              title: 'Answer 3 questions',
-              desc: 'Project type · Who it\'s for · Which AI tools. 30 seconds maximum.',
-              mono: 'webapp · public · claude + cursor',
-            },
-            {
-              n: '02', color: 'bg-[#A855F7] shadow-[0_0_16px_rgba(168,85,247,0.5)]', textColor: 'text-[#A855F7]',
-              icon: (
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#A855F7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                  <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                </svg>
-              ),
-              title: 'Paste your stack (optional)',
-              desc: 'Drop in package.json or type "Next.js + Supabase". 27 frameworks detected automatically.',
-              mono: 'detected: Next.js · TypeScript · Tailwind · Prisma',
-            },
-            {
-              n: '03', color: 'bg-[#2DD4BF] shadow-[0_0_16px_rgba(45,212,191,0.5)]', textColor: 'text-[#2DD4BF]',
-              icon: (
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2DD4BF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                  <polyline points="7 10 12 15 17 10"/>
-                  <line x1="12" y1="15" x2="12" y2="3"/>
-                </svg>
-              ),
-              title: 'Edit & download optimized files',
-              desc: 'Split-pane editor with live preview. Copy, download .md, or grab all as .zip.',
-              mono: '$ download mdpilot.zip  # 3 files, 1,764 tokens',
-            },
-          ].map(step => (
-            <div key={step.n} className="flex gap-5 sm:gap-8 items-start">
-              <div className={`shrink-0 w-10 h-10 rounded-full ${step.color} flex items-center justify-center text-[#07070f] font-black text-[12px] font-mono`}>
-                {step.n}
-              </div>
-              <div className="flex-1 bg-white/[0.03] border border-white/[0.06] rounded-xl p-5 hover:bg-white/[0.05] hover:border-white/[0.10] transition-all duration-200 group">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="shrink-0">{step.icon}</span>
-                  <h3 className="text-[14px] font-bold text-white" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
-                    {step.title}
-                  </h3>
+              <div className="p-5 font-mono text-[12px] leading-relaxed space-y-3">
+                <div>
+                  <span className="text-[10px] tracking-[0.1em] text-white/20 uppercase">TASK-2847 · High · Unassigned</span>
+                  <p className="text-white/65 font-semibold text-[13px] mt-1">&quot;fix auth redirect&quot;</p>
                 </div>
-                <p className="text-[13px] text-white/40 leading-relaxed mb-3 ml-[25px]">{step.desc}</p>
-                <code className={`text-[11px] font-mono ${step.textColor}/60 group-hover:${step.textColor}/80 ml-[25px] block transition-colors`}>
-                  {step.mono}
-                </code>
+                <div className="border-l-2 border-white/[0.08] pl-3 space-y-0.5 text-white/35">
+                  <p><span className="text-[#4FACFF]/40">slack › </span>engineering-bugs</p>
+                  <p className="text-white/45">hey so after oauth the user keeps going</p>
+                  <p className="text-white/45">back to login instead of dashboard, been</p>
+                  <p className="text-white/45">happening since the v3.1 deploy. can someone</p>
+                  <p className="text-white/45">look at it? we got a complaint</p>
+                </div>
               </div>
             </div>
-          ))}
-        </div>
-      </section>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          STANDARDS — mini section
-      ══════════════════════════════════════════════════════════════════ */}
-      <section className="bg-[var(--md-dark-2)] border-y border-white/[0.05] py-12 px-5 sm:px-8">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-[10px] font-mono text-white/20 uppercase tracking-[0.12em] mb-5 text-center">Standards supported</p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {/* After */}
+            <div className="rounded-2xl border border-[#34D399]/[0.20] bg-[#34D399]/[0.03] overflow-hidden">
+              <div className="flex items-center gap-2 px-4 py-2.5 border-b border-[#34D399]/[0.14] bg-[#34D399]/[0.04]">
+                <span className="w-2 h-2 rounded-full bg-[#34D399]/70 shrink-0" />
+                <span className="text-[11px] font-mono text-[#34D399]/70 tracking-wide">TASK.md — MDPilot output</span>
+              </div>
+              <div className="p-5 font-mono text-[12px] leading-relaxed space-y-2">
+                <p className="text-[#4FACFF]/80 font-bold text-[13px]"># Fix OAuth post-auth redirect loop</p>
+                <p className="text-[#A855F7]/65 font-semibold mt-2">## Goal</p>
+                <p className="text-white/50 text-[11px] leading-relaxed">Authenticated users land on /login after OAuth instead of /dashboard. Regression from v3.1.0.</p>
+                <p className="text-[#A855F7]/65 font-semibold mt-1">## Acceptance criteria</p>
+                <p className="text-[#34D399]/55 text-[11px]">- [ ] /auth/callback → /dashboard (first-time OAuth)</p>
+                <p className="text-[#34D399]/55 text-[11px]">- [ ] /auth/callback → /dashboard (returning user)</p>
+                <p className="text-[#34D399]/55 text-[11px]">- [ ] /login does not render for authenticated users</p>
+                <p className="text-[#A855F7]/65 font-semibold mt-1">## Watch-outs</p>
+                <p className="text-white/40 text-[11px]">- middleware.ts may contain a redirect loop</p>
+                <p className="text-white/40 text-[11px]">- Verify session cookie is set before redirect fires</p>
+                <p className="text-[#A855F7]/65 font-semibold mt-1">## Constraints</p>
+                <p className="text-white/40 text-[11px]">- Do not modify OAuth provider config</p>
+                <p className="text-white/40 text-[11px]">- Preserve existing session TTL</p>
+              </div>
+            </div>
+          </div>
+
+          {/* 3-step strip */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center sm:divide-x sm:divide-white/[0.07] mb-10 rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
             {[
-              { file: 'AGENTS.md', org: 'Linux Foundation draft', accent: 'text-[#4FACFF]', border: 'border-[#4FACFF]/[0.15]', bg: 'bg-[#4FACFF]/[0.04]' },
-              { file: 'CLAUDE.md', org: 'Anthropic standard',     accent: 'text-[#A855F7]', border: 'border-[#A855F7]/[0.15]', bg: 'bg-[#A855F7]/[0.04]' },
-              { file: 'DESIGN.md', org: 'Google Labs proposal',   accent: 'text-[#2DD4BF]', border: 'border-[#2DD4BF]/[0.15]', bg: 'bg-[#2DD4BF]/[0.04]' },
-            ].map(s => (
-              <div key={s.file} className={`rounded-xl border ${s.border} ${s.bg} px-5 py-4 card-interactive`}>
-                <p className={`text-[13px] font-mono font-bold ${s.accent} mb-1`}>{s.file}</p>
-                <p className="text-[11px] text-white/30">{s.org}</p>
+              { n: '1', title: 'Paste your task', sub: 'Ticket · Slack thread · GitHub issue' },
+              { n: '2', title: 'Choose how you want to work', sub: 'Guide · AI Exec · Context mode' },
+              { n: '3', title: 'Get a prompt your agent nails', sub: 'Structured · gap-checked · ready to paste' },
+            ].map(step => (
+              <div key={step.n} className="flex-1 flex items-start gap-3 px-5 py-4 sm:py-5">
+                <span className="shrink-0 w-6 h-6 mt-0.5 rounded-full bg-[#4FACFF]/12 border border-[#4FACFF]/25 flex items-center justify-center text-[10px] font-mono font-bold text-[#4FACFF]/70">
+                  {step.n}
+                </span>
+                <div>
+                  <p className="text-[13px] font-semibold text-white/80 leading-snug">{step.title}</p>
+                  <p className="text-[11px] text-white/30 font-mono mt-0.5">{step.sub}</p>
+                </div>
               </div>
             ))}
           </div>
+
+          {/* CTA */}
+          <div className="text-center">
+            <Link
+              href="/task"
+              className="btn-shine inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-gradient-to-r from-[#4FACFF] to-[#38D9A9] text-[#07070f] text-[14px] font-bold shadow-[0_0_24px_rgba(79,172,255,0.25)] hover:shadow-[0_0_40px_rgba(79,172,255,0.42)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+              style={{ fontFamily: 'Space Grotesk, sans-serif' }}
+            >
+              Start with a task →
+            </Link>
+          </div>
+
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          QUOTE + IMAGE BREAK
+          4. MCP — use it right inside your editor
       ══════════════════════════════════════════════════════════════════ */}
-      <section className="relative h-52 sm:h-64 overflow-hidden mx-5 sm:mx-8 my-16 rounded-3xl max-w-5xl lg:mx-auto">
-        <Image
-          src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1400&auto=format&fit=crop&q=60"
-          alt="" fill className="object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#07070f]/90 via-[#07070f]/55 to-transparent" />
-        <div className="absolute inset-0 flex flex-col justify-center px-8 sm:px-12">
-          <p className="text-[10px] font-mono text-white/25 uppercase tracking-[0.12em] mb-3">The insight</p>
-          <blockquote className="text-white text-[20px] sm:text-[24px] font-black max-w-md leading-snug tracking-[-0.03em]" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
-            "AI agents are only as good as their context files."
-          </blockquote>
+      <section className="max-w-5xl mx-auto px-5 sm:px-8 py-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+          {/* Text */}
+          <div>
+            <div className="section-label mb-5 w-fit">MCP server</div>
+            <h2 className="text-[clamp(1.8rem,4vw,2.8rem)] font-black text-white tracking-[-0.04em] leading-tight mb-4">
+              Use it right inside your editor.
+            </h2>
+            <p className="text-white/45 text-[15px] leading-relaxed mb-8">
+              MDPilot runs as an MCP server — call it from Claude Code, Cursor, Windsurf,
+              and Goose without leaving your IDE. It reads your real repo, so prompts and
+              docs reference actual files and commands, never guesses.
+            </p>
+            <Link
+              href="/docs/mcp"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-white/[0.12] bg-white/[0.04] text-[13px] font-medium text-white/65 hover:text-white hover:border-white/[0.20] hover:bg-white/[0.07] transition-all duration-200"
+            >
+              MCP setup
+              <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+              </svg>
+            </Link>
+          </div>
+
+          {/* Works-with grid */}
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              {
+                name: 'Claude Code', color: '#CC785C',
+                icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M13.827 3.45L21.5 19.5h-3.895l-1.65-3.8H8.03l-1.648 3.8H2.5l7.674-16.05h3.653zm-1.824 4.282-2.48 5.718h4.959l-2.48-5.718z" /></svg>,
+              },
+              {
+                name: 'Cursor', color: '#CDD6F4',
+                icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M4 2.5v18.4l5.1-5.1 3.1 7.2 2.6-1.1-3.1-7.2H18L4 2.5z" /></svg>,
+              },
+              {
+                name: 'Windsurf', color: '#06B6D4',
+                icon: <svg width="18" height="15" viewBox="0 0 26 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden><path d="M1 9c3-6 8-9 13-6s9 9 11 6" /><path d="M3 15c2-4 7-7 10-5s8 6 10 5" /></svg>,
+              },
+              {
+                name: 'Goose', color: '#F59E0B',
+                icon: <svg width="18" height="16" viewBox="0 0 26 20" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M4 14c0 0 2-5 8-5s8 4 8 4" /><path d="M20 13c1-3 2-6 4-8" /><circle cx="23.5" cy="4.5" r="1.8" fill="currentColor" stroke="none" /></svg>,
+              },
+            ].map(tool => (
+              <div
+                key={tool.name}
+                className="flex items-center gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/[0.07] hover:bg-white/[0.06] hover:border-white/[0.12] transition-all duration-200 group cursor-default"
+              >
+                <span className="shrink-0 flex items-center" style={{ color: tool.color }}>
+                  {tool.icon}
+                </span>
+                <span className="text-[13px] font-medium text-white/60 group-hover:text-white/85 transition-colors">
+                  {tool.name}
+                </span>
+              </div>
+            ))}
+          </div>
+
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          FINAL CTA — Skill: Large CTA hover + glow (Micro SaaS #2)
+          5. DRIFT DIFFERENTIATOR — context that stays accurate
       ══════════════════════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden bg-[var(--md-dark-2)] border-t border-white/[0.05] py-28 px-5 sm:px-8 text-center">
-        <div className="blob w-[500px] h-[500px] bg-[#4FACFF]/[0.08] -top-20 left-1/2 -translate-x-1/2" />
-        <div className="blob w-[300px] h-[300px] bg-[#A855F7]/[0.07] bottom-0 right-1/4" />
+      <section className="bg-[var(--md-dark-2)] border-y border-white/[0.05] py-20 px-5 sm:px-8">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+          {/* Visual: drift indicator */}
+          <div className="order-2 lg:order-1 space-y-3">
+            {[
+              { file: 'AGENTS.md', status: 'current', label: 'Up to date', color: '#34D399', border: 'border-[#34D399]/[0.18]', bg: 'bg-[#34D399]/[0.04]' },
+              { file: 'CLAUDE.md', status: 'drift', label: '3 sections drifted', color: '#FBBF24', border: 'border-[#FBBF24]/[0.20]', bg: 'bg-[#FBBF24]/[0.04]' },
+              { file: 'README.md', status: 'current', label: 'Up to date', color: '#34D399', border: 'border-[#34D399]/[0.18]', bg: 'bg-[#34D399]/[0.04]' },
+            ].map(row => (
+              <div
+                key={row.file}
+                className={`flex items-center justify-between gap-4 px-5 py-3.5 rounded-xl border ${row.border} ${row.bg}`}
+              >
+                <div className="flex items-center gap-3">
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: row.color, opacity: row.status === 'drift' ? 1 : 0.6 }} />
+                  <span className="text-[13px] font-mono font-semibold text-white/70">{row.file}</span>
+                </div>
+                <span className="text-[11px] font-mono" style={{ color: row.color, opacity: 0.75 }}>
+                  {row.label}
+                </span>
+              </div>
+            ))}
+            <p className="text-[11px] font-mono text-white/20 pl-1 pt-1">
+              mdpilot check-drift · 2 files checked · 1 drift detected
+            </p>
+          </div>
+
+          {/* Text */}
+          <div className="order-1 lg:order-2">
+            <div className="section-label mb-5 w-fit">Drift detection</div>
+            <h2 className="text-[clamp(1.8rem,4vw,2.8rem)] font-black text-white tracking-[-0.04em] leading-tight mb-4">
+              Context that stays accurate.
+            </h2>
+            <p className="text-white/45 text-[15px] leading-relaxed">
+              Code changes, docs go stale, and your agent starts running commands that no longer
+              exist. MDPilot generates AGENTS.md and CLAUDE.md from your real repo and flags them
+              the moment they drift — so your agent&apos;s context keeps matching reality, not a
+              snapshot from last month.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          6. TRUST / ECOSYSTEM SIGNAL + LABS (secondary)
+      ══════════════════════════════════════════════════════════════════ */}
+      <section className="max-w-5xl mx-auto px-5 sm:px-8 py-16">
+
+        {/* Trust line */}
+        <div className="text-center mb-12 pb-12 border-b border-white/[0.05]">
+          <p className="text-[12px] font-mono text-white/25 leading-relaxed max-w-xl mx-auto">
+            Built on open standards — generates{' '}
+            <span className="text-white/40 font-semibold">AGENTS.md</span>, now a{' '}
+            <span className="text-white/40">Linux Foundation (AAIF)</span> standard alongside MCP.
+          </p>
+        </div>
+
+        {/* Labs — visually secondary, lower weight */}
+        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
+          <div className="flex items-start sm:items-center justify-between gap-4 flex-wrap mb-5">
+            <div>
+              <div className="section-label mb-2 w-fit" style={{ fontSize: '9px' }}>Labs</div>
+              <p className="text-[14px] font-medium text-white/50">
+                More tools: generate docs, explain code, convert files, and more.
+              </p>
+            </div>
+            <Link
+              href="/labs"
+              className="text-[12px] font-mono text-white/30 hover:text-[#4FACFF]/70 transition-colors shrink-0"
+            >
+              See all in Labs →
+            </Link>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {[
+              { label: 'Generate', accent: '#4FACFF', href: '/generate' },
+              { label: 'Convert', accent: '#2DD4BF', href: '/convert' },
+              { label: 'Explain', accent: '#A855F7', href: '/explain' },
+              { label: 'Image → Prompt', accent: '#F97316', href: '/image-to-prompt' },
+              { label: 'Interview Primer', accent: '#FBBF24', href: '/interview-primer' },
+            ].map(tool => (
+              <Link
+                key={tool.href}
+                href={tool.href}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.06] hover:border-white/[0.10] hover:bg-white/[0.05] transition-all duration-200 group"
+              >
+                <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: tool.accent, opacity: 0.55 }} />
+                <span className="text-[12px] text-white/35 group-hover:text-white/65 transition-colors">{tool.label}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          7. FINAL CTA
+      ══════════════════════════════════════════════════════════════════ */}
+      <section className="relative overflow-hidden bg-[var(--md-dark-2)] border-t border-white/[0.05] py-24 px-5 sm:px-8 text-center">
+        <div className="blob w-[500px] h-[500px] bg-[#4FACFF]/[0.07] -top-20 left-1/2 -translate-x-1/2" />
+        <div className="blob w-[300px] h-[300px] bg-[#A855F7]/[0.06] bottom-0 right-1/4" />
 
         <div className="relative z-10 max-w-xl mx-auto">
-          <div className="section-label mb-6 mx-auto w-fit">Get Started</div>
-          <h2 className="text-[clamp(2.2rem,5vw,3.5rem)] font-black text-white tracking-[-0.04em] mb-5">
-            Ready to generate?
+          <div className="section-label mb-6 mx-auto w-fit">Get started</div>
+          <h2 className="text-[clamp(2rem,5vw,3.2rem)] font-black text-white tracking-[-0.04em] mb-5 leading-tight">
+            Start with a task.<br />The rest follows.
           </h2>
-          <p className="text-white/40 text-[17px] mb-10 leading-relaxed">
-            3 questions. 30 seconds. Files your AI agents will actually read and follow.
+          <p className="text-white/40 text-[16px] mb-10 leading-relaxed">
+            Paste anything. Get a prompt your AI agent nails. No account, no credit card.
           </p>
 
-          <Link
-            href="/generate"
-            className="btn-shine relative inline-flex items-center gap-2 px-10 py-5 rounded-full bg-gradient-to-r from-[#4FACFF] to-[#38D9A9] text-[#07070f] text-[16px] font-black shadow-[0_0_40px_rgba(79,172,255,0.3)] hover:shadow-[0_0_60px_rgba(79,172,255,0.5)] hover:scale-[1.04] active:scale-[0.98] transition-all duration-200"
-            style={{ fontFamily: 'Space Grotesk, sans-serif' }}
-          >
-            Start generating — it's free
-            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-            </svg>
-          </Link>
-          <p className="mt-5 text-[11px] font-mono text-white/20">No account. No credit card. No database. Open source.</p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
+            <Link
+              href="/task"
+              className="btn-shine relative inline-flex items-center gap-2 px-9 py-4 rounded-full bg-gradient-to-r from-[#4FACFF] to-[#38D9A9] text-[#07070f] text-[15px] font-black shadow-[0_0_36px_rgba(79,172,255,0.28)] hover:shadow-[0_0_56px_rgba(79,172,255,0.45)] hover:scale-[1.03] active:scale-[0.98] transition-all duration-200"
+              style={{ fontFamily: 'Space Grotesk, sans-serif' }}
+            >
+              Start with a task →
+            </Link>
+            <Link
+              href="/docs/mcp"
+              className="text-[14px] text-white/30 hover:text-white/55 transition-colors"
+            >
+              or use it in your editor →
+            </Link>
+          </div>
+          <p className="text-[11px] font-mono text-white/20">No account. No credit card. No database.</p>
         </div>
       </section>
+
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { ReaderAudience } from '@/types';
+import { LabsBreadcrumb } from '@/components/ui/labs-breadcrumb';
 
 // ── Audience card data ────────────────────────────────────────────────────────
 
@@ -112,7 +113,7 @@ export default function ExplainPage() {
                 Download
               </button>
               <button
-                onClick={void handleCopy}
+                onClick={() => void handleCopy()}
                 className="text-sm bg-[#4FACFF]/80 text-white rounded-lg px-4 py-1.5 hover:bg-[#4FACFF] transition-colors"
               >
                 {copied ? 'Copied!' : 'Copy'}
@@ -142,6 +143,7 @@ export default function ExplainPage() {
 
   return (
     <div className="min-h-screen bg-[var(--md-dark-2)] px-4 sm:px-8 py-12">
+      <LabsBreadcrumb page="Explain" />
       <div className="max-w-2xl mx-auto">
 
         {/* Header */}
@@ -211,7 +213,7 @@ export default function ExplainPage() {
 
         {/* Generate button */}
         <button
-          onClick={void handleGenerate}
+          onClick={() => void handleGenerate()}
           disabled={!canGenerate || isGenerating}
           className={`w-full rounded-xl py-3 text-sm font-semibold transition-all ${
             canGenerate && !isGenerating

@@ -3,28 +3,16 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
-  FileText,
-  ListTodo,
-  FileInput,
-  ImageIcon,
-  Brain,
-  Layers,
   MenuIcon,
   XIcon,
   ExternalLink,
-  Sparkles,
+  FlaskConical,
 } from 'lucide-react';
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuList,
   NavigationMenuItem,
-  NavigationMenuTrigger,
   NavigationMenuLink,
-  NavGridCard,
-  NavSmallItem,
-  NavItemMobile,
-  type NavItemType,
 } from '@/components/ui/navigation-menu';
 import {
   Sheet,
@@ -32,54 +20,6 @@ import {
   SheetContent,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
-
-const toolLinks: NavItemType[] = [
-  {
-    title: 'Generate',
-    href: '/generate',
-    description: 'README, AGENTS & CLAUDE.md in seconds',
-    icon: FileText as React.ComponentType<React.SVGProps<SVGSVGElement>>,
-  },
-  {
-    title: 'Task',
-    href: '/task',
-    description: 'Turn any ticket into a structured TASK.md',
-    icon: ListTodo as React.ComponentType<React.SVGProps<SVGSVGElement>>,
-  },
-  {
-    title: 'Convert',
-    href: '/convert',
-    description: 'Any file or paste → clean Markdown',
-    icon: FileInput as React.ComponentType<React.SVGProps<SVGSVGElement>>,
-  },
-  {
-    title: 'Image→Prompt',
-    href: '/image-to-prompt',
-    description: 'Extract AI prompts from screenshots',
-    icon: ImageIcon as React.ComponentType<React.SVGProps<SVGSVGElement>>,
-  },
-  {
-    title: 'Interview Primer',
-    href: '/interview-primer',
-    description: 'Instant prep docs for any role',
-    icon: Brain as React.ComponentType<React.SVGProps<SVGSVGElement>>,
-  },
-];
-
-const comingSoonLinks: NavItemType[] = [
-  {
-    title: 'Explain',
-    href: '/explain',
-    description: 'Understand any codebase instantly',
-    icon: Layers as React.ComponentType<React.SVGProps<SVGSVGElement>>,
-  },
-];
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
@@ -141,68 +81,45 @@ export default function Nav() {
             <NavigationMenu className="hidden md:flex">
               <NavigationMenuList>
 
-                {/* Tools dropdown */}
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger className="bg-transparent text-white/60 hover:text-white data-[state=open]:text-white text-[13.5px] font-medium h-auto py-2">
-                    Tools
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <div className="grid w-full md:w-[580px] md:grid-cols-[1fr_.32fr]">
-                      {/* Primary tool grid */}
-                      <ul className="grid grow gap-3 p-4 md:grid-cols-2 md:border-r border-white/[0.07]">
-                        {toolLinks.slice(0, 4).map((link) => (
-                          <li key={link.href}>
-                            <NavGridCard link={link} />
-                          </li>
-                        ))}
-                      </ul>
-                      {/* Side: extra tools + coming soon */}
-                      <ul className="p-4 space-y-1 flex flex-col">
-                        {toolLinks.slice(4).map((link) => (
-                          <li key={link.href}>
-                            <NavSmallItem
-                              item={link}
-                              href={link.href}
-                              className="text-white/60 hover:text-white"
-                            />
-                          </li>
-                        ))}
-                        <li className="mt-auto pt-4 border-t border-white/[0.06]">
-                          <p className="text-[10px] text-white/25 font-mono uppercase tracking-widest px-2 mb-1">
-                            Coming soon
-                          </p>
-                          {comingSoonLinks.map((link) => (
-                            <NavSmallItem
-                              key={link.href}
-                              item={link}
-                              href={link.href}
-                              className="opacity-40 pointer-events-none text-white/40"
-                            />
-                          ))}
-                        </li>
-                      </ul>
-                    </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-
-                {/* Simple links */}
+                {/* Task — primary emphasis */}
                 <NavigationMenuItem>
                   <NavigationMenuLink
-                    href="/#features"
-                    className="px-4 py-2 text-[13.5px] font-medium text-white/60 hover:text-white cursor-pointer rounded-md hover:bg-white/[0.04] transition-colors"
+                    href="/task"
+                    className="px-4 py-2 text-[13.5px] font-semibold text-white/80 hover:text-white cursor-pointer rounded-md hover:bg-white/[0.04] transition-colors"
                   >
-                    Features
+                    Task
                   </NavigationMenuLink>
                 </NavigationMenuItem>
 
+                {/* Labs */}
                 <NavigationMenuItem>
-                  <a
-                    href="/#demo"
-                    className="flex flex-row items-center gap-1.5 px-4 py-2 text-[13.5px] font-medium text-white/60 hover:text-white cursor-pointer rounded-md hover:bg-white/[0.04] transition-colors"
+                  <NavigationMenuLink
+                    href="/labs"
+                    className="flex items-center gap-1.5 px-4 py-2 text-[13.5px] font-medium text-white/55 hover:text-white cursor-pointer rounded-md hover:bg-white/[0.04] transition-colors"
                   >
-                    <Sparkles size={12} className="opacity-60 shrink-0" />
-                    Demo
-                  </a>
+                    <FlaskConical size={13} className="opacity-50 shrink-0" />
+                    Labs
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+
+                {/* Docs */}
+                <NavigationMenuItem>
+                  <NavigationMenuLink
+                    href="/docs"
+                    className="px-4 py-2 text-[13.5px] font-medium text-white/50 hover:text-white cursor-pointer rounded-md hover:bg-white/[0.04] transition-colors"
+                  >
+                    Docs
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+
+                {/* Blog */}
+                <NavigationMenuItem>
+                  <NavigationMenuLink
+                    href="/blog"
+                    className="px-4 py-2 text-[13.5px] font-medium text-white/50 hover:text-white cursor-pointer rounded-md hover:bg-white/[0.04] transition-colors"
+                  >
+                    Blog
+                  </NavigationMenuLink>
                 </NavigationMenuItem>
 
                 <NavigationMenuItem>
@@ -210,7 +127,7 @@ export default function Nav() {
                     href="https://github.com/mohanreddyt"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex flex-row items-center gap-1.5 px-4 py-2 text-[13.5px] font-medium text-white/60 hover:text-white cursor-pointer rounded-md hover:bg-white/[0.04] transition-colors"
+                    className="flex flex-row items-center gap-1.5 px-4 py-2 text-[13.5px] font-medium text-white/45 hover:text-white cursor-pointer rounded-md hover:bg-white/[0.04] transition-colors"
                   >
                     GitHub
                     <ExternalLink size={11} className="opacity-40 shrink-0" />
@@ -231,11 +148,11 @@ export default function Nav() {
               </div>
 
               <Link
-                href="/generate"
+                href="/task"
                 className="btn-shine relative inline-flex items-center gap-1.5 px-5 py-[9px] rounded-full text-[13px] font-bold text-[#07070f] bg-gradient-to-r from-[#4FACFF] to-[#38D9A9] hover:from-[#6FBFFF] hover:to-[#5FEAD9] shadow-[0_0_20px_rgba(79,172,255,0.28)] hover:shadow-[0_0_30px_rgba(79,172,255,0.45)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
                 style={{ fontFamily: 'Space Grotesk, sans-serif' }}
               >
-                Get started free
+                Start for free
                 <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                 </svg>
@@ -287,49 +204,53 @@ export default function Nav() {
                 {/* Scrollable content */}
                 <div className="flex flex-col h-[calc(100%-56px)] overflow-y-auto">
                   <div className="px-5 pt-4 pb-4 flex-1">
-                    <Accordion type="single" collapsible defaultValue="tools">
-                      <AccordionItem
-                        value="tools"
-                        className="border-white/[0.08]"
-                      >
-                        <AccordionTrigger className="text-white/70 hover:text-white hover:no-underline text-sm font-medium py-3">
-                          Tools
-                        </AccordionTrigger>
-                        <AccordionContent className="pt-0 pb-2">
-                          <ul className="grid gap-1">
-                            {toolLinks.map((link) => (
-                              <li key={link.href}>
-                                <SheetClose asChild>
-                                  <NavItemMobile item={link} href={link.href} />
-                                </SheetClose>
-                              </li>
-                            ))}
-                          </ul>
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-
-                    <div className="mt-2 space-y-0">
-                      <a
-                        href="/#features"
-                        className="flex items-center py-3 text-sm text-white/60 hover:text-white border-b border-white/[0.04] transition-colors"
-                      >
-                        Features
-                      </a>
+                    <div className="space-y-0">
+                      {/* Task — primary */}
                       <SheetClose asChild>
-                        <a
-                          href="/#demo"
-                          className="flex flex-row items-center gap-2 py-3 text-sm text-white/60 hover:text-white border-b border-white/[0.04] transition-colors"
+                        <Link
+                          href="/task"
+                          className="flex items-center py-3.5 text-[15px] font-semibold text-white/85 hover:text-white border-b border-white/[0.05] transition-colors"
                         >
-                          <Sparkles size={13} className="opacity-50 shrink-0" />
-                          Demo
-                        </a>
+                          Task
+                        </Link>
                       </SheetClose>
+
+                      {/* Labs */}
+                      <SheetClose asChild>
+                        <Link
+                          href="/labs"
+                          className="flex items-center gap-2 py-3.5 text-[14px] font-medium text-white/55 hover:text-white border-b border-white/[0.05] transition-colors"
+                        >
+                          <FlaskConical size={14} className="opacity-50 shrink-0" />
+                          Labs
+                        </Link>
+                      </SheetClose>
+
+                      {/* Docs */}
+                      <SheetClose asChild>
+                        <Link
+                          href="/docs"
+                          className="flex items-center py-3.5 text-[14px] font-medium text-white/50 hover:text-white border-b border-white/[0.05] transition-colors"
+                        >
+                          Docs
+                        </Link>
+                      </SheetClose>
+
+                      {/* Blog */}
+                      <SheetClose asChild>
+                        <Link
+                          href="/blog"
+                          className="flex items-center py-3.5 text-[14px] font-medium text-white/50 hover:text-white border-b border-white/[0.05] transition-colors"
+                        >
+                          Blog
+                        </Link>
+                      </SheetClose>
+
                       <a
                         href="https://github.com/mohanreddyt"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-between py-3 text-sm text-white/60 hover:text-white transition-colors"
+                        className="flex items-center justify-between py-3.5 text-[14px] text-white/40 hover:text-white transition-colors"
                       >
                         GitHub
                         <ExternalLink size={13} className="opacity-30" />
@@ -341,11 +262,11 @@ export default function Nav() {
                   <div className="p-5 border-t border-white/[0.06] bg-[rgba(7,7,15,0.97)]">
                     <SheetClose asChild>
                       <Link
-                        href="/generate"
+                        href="/task"
                         className="btn-shine flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gradient-to-r from-[#4FACFF] to-[#38D9A9] text-[#07070f] text-sm font-bold shadow-[0_0_20px_rgba(79,172,255,0.3)] transition-transform active:scale-[0.98]"
                         style={{ fontFamily: 'Space Grotesk, sans-serif' }}
                       >
-                        Get started free →
+                        Start for free →
                       </Link>
                     </SheetClose>
                   </div>

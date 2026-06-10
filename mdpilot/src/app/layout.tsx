@@ -79,11 +79,37 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div>
                 <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-4">Product</p>
                 <ul className="space-y-2.5">
-                  {[['Generate', '/generate'], ['Token Optimizer', '/generate'], ['How It Works', '/#how-it-works']].map(([label, href]) => (
-                    <li key={label}>
-                      <a href={href} className="text-sm text-white/50 hover:text-white transition-colors">{label}</a>
-                    </li>
-                  ))}
+                  <li>
+                    <a href="/task" className="text-sm text-white/70 hover:text-white font-medium transition-colors">Task</a>
+                  </li>
+                  <li>
+                    <a href="/labs" className="text-sm text-white/50 hover:text-white transition-colors">Labs</a>
+                  </li>
+                  {/* Labs tools */}
+                  <li className="pl-3 border-l border-white/[0.06]">
+                    <a href="/generate" className="text-xs text-white/30 hover:text-white/60 transition-colors">Generate</a>
+                  </li>
+                  <li className="pl-3 border-l border-white/[0.06]">
+                    <a href="/convert" className="text-xs text-white/30 hover:text-white/60 transition-colors">Convert</a>
+                  </li>
+                  <li className="pl-3 border-l border-white/[0.06]">
+                    <a href="/explain" className="text-xs text-white/30 hover:text-white/60 transition-colors">Explain</a>
+                  </li>
+                  <li className="pl-3 border-l border-white/[0.06]">
+                    <a href="/image-to-prompt" className="text-xs text-white/30 hover:text-white/60 transition-colors">Image → Prompt</a>
+                  </li>
+                  <li className="pl-3 border-l border-white/[0.06]">
+                    <a href="/interview-primer" className="text-xs text-white/30 hover:text-white/60 transition-colors">Interview Primer</a>
+                  </li>
+                  <li className="pt-1">
+                    <a href="/docs" className="text-sm text-white/50 hover:text-white transition-colors">Docs</a>
+                  </li>
+                  <li className="pl-3 border-l border-white/[0.06]">
+                    <a href="/docs/mcp" className="text-xs text-white/30 hover:text-white/60 transition-colors">MCP server</a>
+                  </li>
+                  <li>
+                    <a href="/blog" className="text-sm text-white/50 hover:text-white transition-colors">Blog</a>
+                  </li>
                 </ul>
               </div>
 
@@ -99,7 +125,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </ul>
               </div>
 
-              {/* Company */}
+              {/* Company + Legal */}
               <div>
                 <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-4">Company</p>
                 <ul className="space-y-2.5">
@@ -109,6 +135,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     </li>
                   ))}
                 </ul>
+                <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mt-6 mb-4">Support</p>
+                <ul className="space-y-2.5">
+                  <li>
+                    <a href="https://github.com/adgenie1434-glitch/md-pilot/issues/new/choose" target="_blank" rel="noopener noreferrer" className="text-sm text-white/50 hover:text-white transition-colors">Feedback</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/adgenie1434-glitch/md-pilot/issues/new/choose" target="_blank" rel="noopener noreferrer" className="text-sm text-white/50 hover:text-white transition-colors">Report a bug</a>
+                  </li>
+                </ul>
+                <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mt-6 mb-4">Legal</p>
+                <ul className="space-y-2.5">
+                  <li><a href="/privacy" className="text-sm text-white/50 hover:text-white transition-colors">Privacy Policy</a></li>
+                  <li><a href="/terms" className="text-sm text-white/50 hover:text-white transition-colors">Terms of Service</a></li>
+                </ul>
               </div>
             </div>
 
@@ -117,6 +157,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 © 2026 MDPilot. Ship better markdown files, faster.
                 <span className="mx-2 text-white/15">·</span>
                 <a href="/privacy" className="hover:text-white/50 transition-colors">Privacy</a>
+                <span className="mx-2 text-white/15">·</span>
+                <a href="/terms" className="hover:text-white/50 transition-colors">Terms</a>
               </p>
               <div className="flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-[var(--md-green)] animate-pulse" />

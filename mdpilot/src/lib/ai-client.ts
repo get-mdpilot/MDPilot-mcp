@@ -151,14 +151,14 @@ export function getAvailableVisionProviders(): VisionProvider[] {
   return out;
 }
 
-// Which providers have a configured API key
+// Which providers have a configured API key — Groq first so it is the default
 export function getAvailableProviders(): AIProvider[] {
   const providers: AIProvider[] = [];
+  if (process.env.GROQ_API_KEY)      providers.push('groq');
+  if (process.env.NVIDIA_API_KEY)    providers.push('nvidia');
   if (process.env.ANTHROPIC_API_KEY) providers.push('claude');
   if (process.env.OPENAI_API_KEY)    providers.push('gpt');
   if (process.env.GOOGLE_AI_API_KEY || process.env.GEMINI_API_KEY) providers.push('gemini');
-  if (process.env.GROQ_API_KEY)      providers.push('groq');
-  if (process.env.NVIDIA_API_KEY)    providers.push('nvidia');
   return providers;
 }
 

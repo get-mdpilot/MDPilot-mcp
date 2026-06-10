@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import OutputView, { type OptimizerSummary } from '@/components/OutputView';
+import { LabsBreadcrumb } from '@/components/ui/labs-breadcrumb';
 import { countTokens } from '@/lib/tokenizer';
 import { optimizeFiles } from '@/lib/optimizer';
 import type { GeneratedFile, MDFileType } from '@/types';
@@ -184,6 +185,7 @@ export default function ConvertPage() {
   // ════════════════════════════════════════════════════════════════════════
   return (
     <div className="min-h-screen bg-[var(--md-dark-2)] px-4 sm:px-8 py-12">
+      <LabsBreadcrumb page="Convert" />
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">

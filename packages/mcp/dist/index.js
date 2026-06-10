@@ -2,11 +2,11 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
-import { writeFileSync } from 'fs';
+import { writeFileSync, readFileSync } from 'fs';
 import { resolve, join } from 'path';
 import { analyzeProject } from './analyze.js';
 import { buildDeepContext } from './repo-context.js';
-import { generateFile, generateTaskFile, imageToPrompt } from './generate.js';
+import { generateFile, generateTaskFile, generateWalkthrough, imageToPrompt } from './generate.js';
 import { generateVerified } from './verify-generate.js';
 import { optimizeMarkdown } from './optimizer.js';
 import { FILE_NAMES } from './prompts.js';
@@ -129,22 +129,79 @@ server.registerTool('generate_task_file', {
             .string()
             .optional()
             .describe('Absolute path to the project root — used to auto-detect stack if stack not provided.'),
+        executionMode: z
+            .enum(['guide', 'ai_exec', 'context'])
+            .default('guide')
+            .describe('Output mode: "guide" = full TASK.md for a human; "ai_exec" = prescriptive output an AI agent executes directly; "context" = compact context-only drop for a chat window.'),
+        experienceLevel: z
+            .enum(['experienced', 'new'])
+            .default('experienced')
+            .describe('Developer experience level. "new" adds "why" explanations; "experienced" keeps output terse.'),
     },
-}, async ({ taskInput, stack, rootDir }) => {
+}, async ({ taskInput, stack, rootDir, executionMode, experienceLevel }) => {
     try {
         let resolvedStack = stack ?? '';
         if (!resolvedStack && rootDir) {
             const ctx = analyzeProject(rootDir);
             resolvedStack = ctx.detectedStack.join(', ');
         }
-        const content = await generateTaskFile(taskInput, resolvedStack);
+        const content = await generateTaskFile(taskInput, resolvedStack, (executionMode ?? 'guide'), (experienceLevel ?? 'experienced'));
         return { content: [{ type: 'text', text: content }] };
     }
     catch (err) {
         return { content: [{ type: 'text', text: `Error: ${String(err)}` }], isError: true };
     }
 });
-// ── Tool 4: optimize_markdown ─────────────────────────────────────────────────
+// ── Tool 4: explain_code ──────────────────────────────────────────────────────
+server.registerTool('explain_code', {
+    title: 'Explain code as WALKTHROUGH.md',
+    description: 'Explain a file or directory of code to any audience — AI agent, new team member, non-technical stakeholder, or learner. Reads a single file or uses repo context for a directory, then generates a structured WALKTHROUGH.md.',
+    inputSchema: {
+        filePath: z
+            .string()
+            .optional()
+            .describe('Absolute path to a single file to explain. Use this for a focused explanation of one module.'),
+        rootDir: z
+            .string()
+            .optional()
+            .describe('Absolute path to a directory — uses repomix to gather repo context. Prefer filePath for single files.'),
+        audience: z
+            .enum(['ai_agent', 'team', 'non_technical', 'learner'])
+            .default('non_technical')
+            .describe('Who will read the explanation. "ai_agent" = terse, machine-parseable; "team" = new engineer; "non_technical" = founder/PM; "learner" = teaching mode.'),
+        writeToDisk: z
+            .boolean()
+            .default(false)
+            .describe('If true, write WALKTHROUGH.md to the project root (rootDir or filePath directory).'),
+    },
+}, async ({ filePath, rootDir, audience, writeToDisk }) => {
+    try {
+        let code = '';
+        let outputDir = rootDir ?? process.cwd();
+        if (filePath) {
+            code = readFileSync(filePath, 'utf-8');
+            outputDir = filePath.substring(0, filePath.lastIndexOf('/')) || process.cwd();
+        }
+        else if (rootDir) {
+            const deep = await buildDeepContext(rootDir);
+            code = deep.packedSummary ?? JSON.stringify({ stack: deep.detectedStack, structure: deep.structure }, null, 2);
+            outputDir = rootDir;
+        }
+        else {
+            return { content: [{ type: 'text', text: 'Error: Provide filePath or rootDir.' }], isError: true };
+        }
+        const walkthrough = await generateWalkthrough(code, (audience ?? 'non_technical'));
+        if (writeToDisk) {
+            writeFileSync(resolve(outputDir, 'WALKTHROUGH.md'), walkthrough, 'utf-8');
+        }
+        const suffix = writeToDisk ? '\n\n---\nWritten to WALKTHROUGH.md' : '';
+        return { content: [{ type: 'text', text: walkthrough + suffix }] };
+    }
+    catch (err) {
+        return { content: [{ type: 'text', text: `Error: ${String(err)}` }], isError: true };
+    }
+});
+// ── Tool 5: optimize_markdown ─────────────────────────────────────────────────
 server.registerTool('optimize_markdown', {
     title: 'Optimize markdown for tokens',
     description: 'Run the MDPilot 4-pass token optimizer on existing markdown content. Strips boilerplate, removes redundant phrasing, compresses structure, and tightens prose. Returns the leaner version with token savings.',
@@ -169,7 +226,7 @@ server.registerTool('optimize_markdown', {
         return { content: [{ type: 'text', text: `Error: ${String(err)}` }], isError: true };
     }
 });
-// ── Tool 5: image_to_prompt ───────────────────────────────────────────────────
+// ── Tool 6: image_to_prompt ───────────────────────────────────────────────────
 server.registerTool('image_to_prompt', {
     title: 'Image to generation prompt',
     description: 'Analyze a local image file (PNG, JPG, WEBP) and generate a detailed recreation prompt for image generation models (FLUX, Stable Diffusion, Midjourney, DALL-E, Gemini). Covers subject, composition, lighting, colors, style, camera angle, and mood.',
@@ -187,7 +244,7 @@ server.registerTool('image_to_prompt', {
         return { content: [{ type: 'text', text: `Error: ${String(err)}` }], isError: true };
     }
 });
-// ── Tool 6: check_drift ───────────────────────────────────────────────────────
+// ── Tool 7: check_drift ───────────────────────────────────────────────────────
 server.registerTool('check_drift', {
     title: 'Check docs for drift',
     description: 'Scan the repo and detect where docs (README.md, AGENTS.md, CLAUDE.md, CONTRIBUTING.md) have gone stale — broken commands, missing paths, undocumented scripts or directories. Uses two detection methods: claim verification (parses the doc and checks every command/path against the real repo) and snapshot diff (compares against the state when docs were last generated).',
@@ -225,7 +282,7 @@ server.registerTool('check_drift', {
         return { content: [{ type: 'text', text: `Error: ${String(err)}` }], isError: true };
     }
 });
-// ── Tool 7: update_docs ───────────────────────────────────────────────────────
+// ── Tool 8: update_docs ───────────────────────────────────────────────────────
 server.registerTool('update_docs', {
     title: 'Update stale docs',
     description: 'Fix drift in a specific doc — patches ONLY the stale sections (broken commands, missing paths) and preserves everything else exactly. Uses Claude to apply the minimal fix. Optionally writes the corrected file to disk and updates the manifest.',
@@ -275,6 +332,11 @@ server.registerTool('update_docs', {
 });
 // ── Start ─────────────────────────────────────────────────────────────────────
 async function main() {
+    if (process.argv[2] === 'setup') {
+        const { runSetup } = await import('./setup.js');
+        await runSetup();
+        return;
+    }
     const transport = new StdioServerTransport();
     await server.connect(transport);
     console.error('MDPilot MCP server running (stdio)');

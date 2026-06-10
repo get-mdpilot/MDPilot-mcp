@@ -123,19 +123,47 @@ If any are missing, infer from context or mark as "—".
 Why this task exists. What breaks if it's wrong. Business or user impact.
 2-3 sentences. Synthesize from the input — do not copy verbatim.
 
+MULTI-HOP ARCHITECTURE — if the task involves a CDN, reverse proxy, load balancer, or any chain between browser and origin (e.g. CloudFront → ALB → nginx → backend), add one line in Context:
+  "Request chain: Browser → [each hop with service/ID] → Origin"
+  Omitting this line forces the agent to discover the architecture by debugging each layer in sequence.
+
 ## Requirements
 Numbered list. Each requirement: testable, specific, no implementation details.
 If the input is vague, infer the most reasonable specific interpretation and mark with [INFERRED].
 Flag blocking uncertainty with [NEEDS CONFIRMATION].
+
+MULTI-ENVIRONMENT / MULTI-DOMAIN — if the task mentions more than one hostname, subdomain, or environment (e.g. www vs cdn-test, prod vs staging, v1 vs v2 API), add an explicit scoping note:
+  "In scope: [hostname or env]. Out of scope: [other hostname or env] — it uses [different routing path or architecture]."
+  Failing to disambiguate causes the agent to debug the wrong environment.
 
 ## Acceptance criteria
 Format each as: Given [state] → When [action] → Then [outcome]
 Minimum 3 criteria. Must cover: happy path, error state, edge case.
 Derive from requirements if not stated in the input.
 
+HTTP ENDPOINTS — when any criterion covers an HTTP endpoint, require all three:
+  1. Expected HTTP status code (200, 201, 400, 404, 502…)
+  2. Expected Content-Type (application/json, text/html…)
+  3. A body assertion ("body contains [element]", "response.data.items.length > 0")
+  "Search results are displayed correctly" or "the page works" are NOT valid HTTP criteria — a 200 response with an error page satisfies them.
+
 ## Implementation plan
 Ordered steps. Each step: a single concrete action (create file, modify function, run command).
 Reference file paths, function names, and commands where known.
+
+DATE/TIME-RANGE VALIDATION — if any step contains a CLI command with date or time-range parameters (--time-period, Start=, End=, --start-date, --since, --until, --from, --to, --start, --end):
+  1. Verify the year is consistent with the task description. If unspecified, use the current year — never silently inherit a year from an example command.
+  2. Note the end-date semantics for the specific API. APIs that use EXCLUSIVE end dates (e.g. AWS Cost Explorer) require End=[first day of next month] to include the full last month. Add a [DATE_EXCLUSIVE] comment when this applies.
+  3. Verify the output metric or format (e.g. --metrics UnblendedCost vs AmortizedCost, --output json vs text) matches what the user will compare against. If unclear, flag with [METRIC_VERIFY].
+
+PREREQUISITE CHECKS — for any step that depends on a service being enabled (access logging, distributed tracing, CloudWatch metrics, APM, audit logs, feature flags), add a Step 0 before it:
+  "Step 0: Verify [service] is enabled — [check command or console location, e.g. aws cloudfront get-distribution --id X | jq .Logging.Enabled]. If disabled, skip to [alternative path]."
+  Never write "Check the logs for errors" if logging might be disabled — a dead-end step wastes the entire session.
+
+INVESTIGATION TASKS — if the task is explaining or comparing a metric change ("increase", "decrease", "spike", "dropped", "higher than", "lower than", "compare"):
+  - Fetch ≥ 3 comparison periods (e.g. 3 months), not just the affected period — single-period comparisons cannot distinguish a new trend from an existing one.
+  - Add a final verification step: "Verify the totals match [console / dashboard / expected source] before reporting findings." Investigation tasks that produce wrong numbers are worse than no analysis.
+
 Omit if output mode is "context".
 
 ## Watch-outs
@@ -149,6 +177,12 @@ Extract decisions, conclusions, or agreements from the input.
 Format: "[Source] Decision: X — Rationale: Y"
 Source = Slack, comment, description, ticket, etc.
 If none found: "No prior decisions captured."
+
+SETUP / CONFIG / INTEGRATION TASKS — if the task type is setup, migration, wiring, or configuration (CDN origin, routing rules, cache policies, service integration), actively prompt for prior choices even if not stated in the input:
+  "Origin/target chosen: [hostname or service] — Reason: [why this was chosen]"
+  "Config choice: [setting, policy, or routing rule] — Reason: [constraint or requirement]"
+  These rationale captures are the most valuable debugging context — missing them forces re-investigation of every choice.
+
 Omit if output mode is "context".
 
 ## Out of scope
@@ -184,10 +218,16 @@ Start by [first concrete step].
 <quality_bar>
 - An AI agent reads this and asks 0 clarifying questions
 - Every requirement is independently testable
-- Watch-outs reference domain/language pitfalls from the expertise block — not generic advice
+- Watch-outs reference domain/language pitfalls from the expertise block that actually apply to THIS task — not every watch-out in the lens
 - Agent prompt is ≤ 150 tokens
 - Acceptance criteria covers error state, not just happy path
 - Out of scope prevents at least 3 scope-creep patterns
+- CLI commands with date parameters: year matches task context; end-date semantics are noted ([DATE_EXCLUSIVE] where relevant); metric matches the user's comparison source
+- Investigation tasks (cost, metrics, anomalies): covers ≥ 3 comparison periods; final step is "verify totals against [source] before reporting"
+- HTTP acceptance criteria: include status code, Content-Type, and a body assertion — "displays correctly" is not a criterion
+- Implementation plan steps that consume a service (logs, traces, metrics): preceded by a Step 0 that verifies the service is enabled and gives the fallback if it is not
+- Tasks involving CDN/proxy/multi-hop architecture: Context includes a one-line request chain (Browser → each hop → Origin)
+- Setup/config tasks: Decision log captures the origin/target hostname and the reason it was chosen
 </quality_bar>
 
 <anti_patterns>
@@ -198,6 +238,15 @@ DO NOT:
 - Generate an agent prompt longer than 150 tokens
 - Assume context the input doesn't provide — use [INFERRED] or [NEEDS CONFIRMATION]
 - Add sections that the output mode says to omit
+- Generate CLI date parameters without verifying the year (silently inheriting a wrong year from an example is the most common CLI command bug)
+- Use exclusive end dates for "full month" coverage — End=2026-05-31 silently excludes May 31 for APIs with exclusive end dates; use End=2026-06-01
+- Specify a CLI metric without confirming it matches the user's comparison source — AmortizedCost ≠ UnblendedCost ≠ AWS console view
+- Include a domain watch-out (e.g. NAT Gateway cost trap) when the task evidence points to a different cause (e.g. Public IPv4 charges) — pull watch-outs that fit the specific scenario, not all watch-outs in the lens
+- Write "Check the logs for errors" as a step without first verifying logging is enabled — add a Step 0 prerequisite check with the command to verify and the fallback path if disabled
+- Write "displays correctly", "search results shown", or "page works" as acceptance criteria for HTTP endpoints — always require status code + Content-Type + body assertion
+- Omit the request chain when the task involves CDN, reverse proxy, or multi-hop routing — one line (Browser → CloudFront → ALB → nginx → Origin) prevents the agent from debugging the wrong layer
+- List something as out of scope only to avoid it — out of scope means "related but explicitly excluded"; do not use it as a "we won't touch this" list for things that were never candidates
+- Leave the decision log empty on setup/config tasks — capture the origin/target choice and rationale even if not stated in the input; missing this is the most costly gap on debug tasks
 </anti_patterns>`;
 
 // ── Public API ─────────────────────────────────────────────────────────────────

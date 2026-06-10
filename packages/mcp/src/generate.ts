@@ -1,10 +1,8 @@
-import Anthropic from '@anthropic-ai/sdk';
 import { readFileSync } from 'fs';
 import { SYSTEM_PROMPTS } from './prompts.js';
+import { generateText, generateVision } from './ai-provider.js';
 import type { ProjectContext } from './analyze.js';
 import type { DeepRepoContext } from './repo-context.js';
-
-const client = new Anthropic();
 
 function buildGroundedUserMessage(fileType: string, ctx: ProjectContext | DeepRepoContext): string {
   const scriptLines = Object.entries(ctx.scripts)
@@ -46,16 +44,7 @@ export async function generateFile(
 ): Promise<string> {
   const system = SYSTEM_PROMPTS[fileType];
   if (!system) throw new Error(`Unknown file type: ${fileType}`);
-
-  const res = await client.messages.create({
-    model: 'claude-sonnet-4-6',
-    max_tokens: 4096,
-    system,
-    messages: [{ role: 'user', content: buildGroundedUserMessage(fileType, ctx) }],
-  });
-
-  const text = res.content.find((b) => b.type === 'text');
-  return text?.text ?? '';
+  return generateText(system, buildGroundedUserMessage(fileType, ctx), 4096);
 }
 
 export type McpExecutionMode = 'guide' | 'ai_exec' | 'context';
@@ -96,16 +85,7 @@ export async function generateTaskFile(
     `<output_config execution_mode="${executionMode}" experience="${experienceLevel}" />`,
     `Generate a production-grade TASK.md from this task input. Output raw markdown only.`,
   ].join('\n');
-
-  const res = await client.messages.create({
-    model: 'claude-sonnet-4-6',
-    max_tokens: 4096,
-    system,
-    messages: [{ role: 'user', content: userMessage }],
-  });
-
-  const text = res.content.find((b) => b.type === 'text');
-  return text?.text ?? '';
+  return generateText(system, userMessage, 4096);
 }
 
 const EXPLAIN_SYSTEM_PROMPT = `<role>
@@ -176,14 +156,7 @@ export async function generateWalkthrough(
   code: string,
   audience: McpReaderAudience = 'non_technical',
 ): Promise<string> {
-  const res = await client.messages.create({
-    model: 'claude-sonnet-4-6',
-    max_tokens: 4096,
-    system: EXPLAIN_SYSTEM_PROMPT,
-    messages: [{ role: 'user', content: buildExplainUserMessage(code, audience) }],
-  });
-  const text = res.content.find((b) => b.type === 'text');
-  return text?.text ?? '';
+  return generateText(EXPLAIN_SYSTEM_PROMPT, buildExplainUserMessage(code, audience), 4096);
 }
 
 const IMAGE_ANALYSIS_PROMPT = `You are an expert at reverse-engineering images into precise AI image generation prompts.
@@ -205,35 +178,9 @@ export async function imageToPrompt(imagePath: string): Promise<string> {
   const base64 = data.toString('base64');
   const ext = imagePath.split('.').pop()?.toLowerCase();
   const mimeMap: Record<string, string> = {
-    png: 'image/png',
-    webp: 'image/webp',
-    jpg: 'image/jpeg',
-    jpeg: 'image/jpeg',
-    gif: 'image/gif',
+    png: 'image/png', webp: 'image/webp',
+    jpg: 'image/jpeg', jpeg: 'image/jpeg', gif: 'image/gif',
   };
-  const mediaType = (mimeMap[ext ?? ''] ?? 'image/jpeg') as
-    | 'image/png'
-    | 'image/jpeg'
-    | 'image/webp'
-    | 'image/gif';
-
-  const res = await client.messages.create({
-    model: 'claude-sonnet-4-6',
-    max_tokens: 1024,
-    messages: [
-      {
-        role: 'user',
-        content: [
-          {
-            type: 'image',
-            source: { type: 'base64', media_type: mediaType, data: base64 },
-          },
-          { type: 'text', text: IMAGE_ANALYSIS_PROMPT },
-        ],
-      },
-    ],
-  });
-
-  const text = res.content.find((b) => b.type === 'text');
-  return text?.text ?? '';
+  const mediaType = mimeMap[ext ?? ''] ?? 'image/jpeg';
+  return generateVision(base64, mediaType, IMAGE_ANALYSIS_PROMPT);
 }

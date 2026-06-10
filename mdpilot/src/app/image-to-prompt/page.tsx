@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { countTokens } from '@/lib/tokenizer';
+import { LabsBreadcrumb } from '@/components/ui/labs-breadcrumb';
 
 interface AnalysisResult {
   provider: string;
@@ -149,6 +150,7 @@ export default function ImageToPromptPage() {
     const activePrompt = String(result.formatted[activeFormat] ?? '');
     return (
       <div className="min-h-screen bg-[var(--md-dark-2)] px-4 sm:px-8 py-12">
+        <LabsBreadcrumb page="Image → Prompt" />
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -267,6 +269,7 @@ export default function ImageToPromptPage() {
   // ════════════════════════════════════════════════════════════════════════
   return (
     <div className="min-h-screen bg-[var(--md-dark-2)] px-4 sm:px-8 py-12">
+      <LabsBreadcrumb page="Image → Prompt" />
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
           <div className="section-label mb-4 mx-auto w-fit" style={{ color: 'var(--md-purple)', borderColor: 'rgba(124,58,237,0.3)', background: 'rgba(124,58,237,0.08)' }}>

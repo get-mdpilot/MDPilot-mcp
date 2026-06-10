@@ -25,6 +25,9 @@ export const DOMAIN_LENSES: DomainLens[] = [
       /\bECS\b/, /\bEKS\b/, /\bRDS\b/, /\bDynamoDB\b/i, /\bSQS\b/,
       /\bSNS\b/, /\bIAM\b/, /\bCloudWatch\b/i, /\bAPI Gateway\b/i,
       /\bCognito\b/i, /\bRoute 53\b/i, /\bElastiCache\b/i, /\bSageMaker\b/i,
+      /\bcost explorer\b/i, /\bce get-cost\b/i, /\bbilling\b/i,
+      /\bcost increase\b/i, /\bcost anomaly\b/i, /\baws cost\b/i,
+      /--profile\s+\w+/i, /AdministratorAccess/i,
     ],
     expertiseNote: `AWS-specific watch-outs:
 - IAM least-privilege: never use * in Action or Resource on new policies. Scope to specific ARNs and add a deny-override for sensitive actions.
@@ -33,6 +36,7 @@ export const DOMAIN_LENSES: DomainLens[] = [
 - CloudFront cache invalidation: /* invalidations cost $0.005/path after 1k/month free — use versioned paths instead (e.g. /assets/v2/) and set appropriate Cache-Control headers at origin.
 - RDS: enable deletion protection and automated backups; use parameter groups to version DB config changes. Avoid changing instance class in prod during peak. Use RDS Proxy for serverless connections.
 - SQS: set dead-letter queue before going live; visibility timeout must be ≥ function timeout or messages re-appear mid-process. Use FIFO queues only when ordering is truly required — they're slower and more expensive.
+- Cost Explorer — CRITICAL date/metric traps: (1) End dates are EXCLUSIVE — End=2026-05-31 silently excludes May 31st; to include all of May use End=2026-06-01 (first day of the next month). (2) Always use --metrics UnblendedCost to match the AWS console view — AmortizedCost spreads Reserved Instance charges over time and will not match console totals. (3) For cost increase investigations, always fetch ≥ 3 months in one query so you can distinguish a new trend from a one-month anomaly. (4) New Public IPv4 address charges ($0.005/hr/IP, rolled out 2024) appear under the VPC service line — not NAT Gateway — and are a common surprise cost in accounts that haven't audited their EIPs and load balancers.
 - Cost traps: NAT Gateway charges per GB — route S3/DynamoDB traffic through VPC endpoints. Reserved Instances/Savings Plans save 30-60% for steady workloads. Enable Cost Anomaly Detection.
 - CloudFormation/CDK drift: always use change sets before applying; never make manual console changes to managed resources or the stack drifts silently.`,
   },

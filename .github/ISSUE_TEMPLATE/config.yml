@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: General question or non-issue contact
+    url: mailto:privacy@mdpilot.in
+    about: For questions that don't fit a bug report or feature idea — reach us by email.

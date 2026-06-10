@@ -1,11 +1,9 @@
-import Anthropic from '@anthropic-ai/sdk';
 import type { ProjectContext } from './analyze.js';
 import type { DeepRepoContext } from './repo-context.js';
 import { generateFile } from './generate.js';
+import { generateText } from './ai-provider.js';
 import { verifyClaimsOnContent, type DriftIssue } from './drift.js';
 import { SYSTEM_PROMPTS } from './prompts.js';
-
-const client = new Anthropic();
 
 const MAX_ATTEMPTS = 2;
 
@@ -48,15 +46,7 @@ async function reviseContent(
     `Output the full corrected file, raw markdown only.`,
   ].join('\n');
 
-  const res = await client.messages.create({
-    model: 'claude-sonnet-4-6',
-    max_tokens: 8096,
-    system: SYSTEM_PROMPTS.agents, // grounding prompt — conservative, factual
-    messages: [{ role: 'user', content: userMessage }],
-  });
-
-  const text = res.content.find(b => b.type === 'text');
-  return text?.text ?? content;
+  return generateText(SYSTEM_PROMPTS.agents, userMessage, 8096);
 }
 
 export async function generateVerified(

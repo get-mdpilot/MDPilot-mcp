@@ -14,6 +14,7 @@ import {
   User, Users, Earth,
   Bot, UserRound, Briefcase, GraduationCap,
 } from 'lucide-react';
+import { LabsBreadcrumb } from '@/components/ui/labs-breadcrumb';
 import type { AIProvider } from '@/lib/ai-client';
 import type {
   GenerationRequest, MDFileType, ProjectType, Audience, AITool, GeneratedFile,
@@ -624,6 +625,7 @@ export default function GeneratePage() {
 
   return (
     <div className="min-h-screen bg-[var(--md-dark-2)] relative overflow-hidden">
+      <LabsBreadcrumb page="Generate" />
       {/* Background ambience */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#4FACFF]/[0.04] blur-3xl rounded-full" />
@@ -879,7 +881,7 @@ export default function GeneratePage() {
                     />
                     <div className="flex items-center gap-3 mt-3">
                       <button
-                        onClick={void handleGetRecommendations}
+                        onClick={() => void handleGetRecommendations()}
                         disabled={goal.trim().length < 10 || isRecommending}
                         className={`flex-1 rounded-xl py-2.5 text-sm font-semibold transition-all ${
                           goal.trim().length >= 10 && !isRecommending
@@ -907,7 +909,7 @@ export default function GeneratePage() {
                     {recommendError && (
                       <div className="mt-3 rounded-xl border border-[var(--md-coral)]/30 bg-[var(--md-coral-light)] px-4 py-3">
                         <p className="text-xs text-[var(--md-coral)]">{recommendError}</p>
-                        <button onClick={void handleGetRecommendations} className="text-xs text-[var(--md-coral)] underline mt-1">Try again</button>
+                        <button onClick={() => void handleGetRecommendations()} className="text-xs text-[var(--md-coral)] underline mt-1">Try again</button>
                       </div>
                     )}
                   </>

@@ -1,0 +1,44 @@
+name: Feedback / feature idea
+description: Something MDPilot could do better, or an idea for a new capability
+labels: ["feedback"]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: What were you trying to do?
+      description: Describe the real task — not the tool, the goal.
+      placeholder: "I was setting up a new Next.js project and wanted to generate AGENTS.md and CLAUDE.md..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: gap
+    attributes:
+      label: What would make MDPilot more useful here?
+      description: Be specific — the more concrete, the more actionable.
+      placeholder: "The generated AGENTS.md didn't include the deploy command from my package.json..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: importance
+    attributes:
+      label: How important is this to you?
+      options:
+        - "Nice to have — I worked around it"
+        - "Moderate — it slowed me down"
+        - "High — it blocked what I was trying to do"
+        - "Critical — I can't use MDPilot without it"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Which surface does this relate to?
+      options:
+        - "Web app (any mode)"
+        - "MCP server"
+        - "Both"
+        - "Docs"
+        - "Not sure"

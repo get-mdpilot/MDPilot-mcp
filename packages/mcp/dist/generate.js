@@ -1,7 +1,6 @@
-import Anthropic from '@anthropic-ai/sdk';
 import { readFileSync } from 'fs';
 import { SYSTEM_PROMPTS } from './prompts.js';
-const client = new Anthropic();
+import { generateText, generateVision } from './ai-provider.js';
 function buildGroundedUserMessage(fileType, ctx) {
     const scriptLines = Object.entries(ctx.scripts)
         .map(([k, v]) => `  ${k}: ${v}`)
@@ -35,30 +34,99 @@ export async function generateFile(fileType, ctx) {
     const system = SYSTEM_PROMPTS[fileType];
     if (!system)
         throw new Error(`Unknown file type: ${fileType}`);
-    const res = await client.messages.create({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 4096,
-        system,
-        messages: [{ role: 'user', content: buildGroundedUserMessage(fileType, ctx) }],
-    });
-    const text = res.content.find((b) => b.type === 'text');
-    return text?.text ?? '';
+    return generateText(system, buildGroundedUserMessage(fileType, ctx), 4096);
 }
-export async function generateTaskFile(taskInput, stack) {
-    const system = SYSTEM_PROMPTS.task;
+function buildTaskSystemPrompt(executionMode, experienceLevel) {
+    const modeBlock = {
+        guide: `Output mode: Guide. Generate a complete TASK.md for a human developer. Include all sections: Task, Context, Requirements, Acceptance criteria, Implementation plan, Watch-outs, Decision log, Out of scope, Open questions (if any), Agent prompt.`,
+        ai_exec: `Output mode: AI execution. Generate a TASK.md optimized for a coding agent to execute directly with zero clarifying questions. All sections required. Implementation plan must be prescriptive: exact files, function signatures, command sequences. Flag every assumption with [ASSUMED]. Agent prompt must be ≤ 150 tokens.`,
+        context: `Output mode: Context drop. Generate a compact TASK.md for pasting into a chat window. Include only: Task, Context, Requirements, Acceptance criteria. Skip all other sections.`,
+    }[executionMode];
+    const experienceBlock = experienceLevel === 'new'
+        ? `Experience level: New to this stack/domain. Include a "why" sentence for each requirement. In Watch-outs, explain what breaks if the pitfall is hit.`
+        : `Experience level: Experienced. Be terse — state constraints and steps without explanation.`;
+    return `${SYSTEM_PROMPTS.task}
+
+<output_mode>
+${modeBlock}
+</output_mode>
+
+<experience>
+${experienceBlock}
+</experience>`;
+}
+export async function generateTaskFile(taskInput, stack, executionMode = 'guide', experienceLevel = 'experienced') {
+    const system = buildTaskSystemPrompt(executionMode, experienceLevel);
     const userMessage = [
         `<raw_task_input>${taskInput}</raw_task_input>`,
         `<tech_stack>${stack || 'not specified'}</tech_stack>`,
+        `<output_config execution_mode="${executionMode}" experience="${experienceLevel}" />`,
         `Generate a production-grade TASK.md from this task input. Output raw markdown only.`,
     ].join('\n');
-    const res = await client.messages.create({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 4096,
-        system,
-        messages: [{ role: 'user', content: userMessage }],
-    });
-    const text = res.content.find((b) => b.type === 'text');
-    return text?.text ?? '';
+    return generateText(system, userMessage, 4096);
+}
+const EXPLAIN_SYSTEM_PROMPT = `<role>
+You are a senior technical writer who explains code to humans and AI agents at exactly the right level.
+</role>
+<task>
+Given code, generate a WALKTHROUGH.md with these sections in order:
+
+## What this is
+One short paragraph. Plain English. No jargon without definition.
+
+## The big picture
+How the pieces fit together. Architecture, data flow, major decisions.
+Use a simple list or diagram if it helps. Keep it concrete.
+
+## Walkthrough
+Step-by-step through the most important code paths. Reference real function names.
+Skip boilerplate. Focus on the logic that actually matters.
+
+## Where things live
+A file/directory map — what each important file or folder does.
+Skip test fixtures, generated files, and node_modules.
+
+## If you want to change X
+The 3-5 most common edits someone would need to make and exactly where to make them.
+Format: "To change [X]: edit [file] at [location]."
+
+## Glossary
+Every technical term used in this walkthrough, defined in plain English.
+Only include terms a reader at the stated audience level would not already know.
+Omit for ai_agent audience.
+</task>
+<quality_bar>
+- A person who has never seen this code can understand it from your walkthrough alone
+- Every "where to change X" points to a real file path or function
+- Glossary covers every term that might trip up the audience
+- No unnecessary preamble — start with the first section heading
+</quality_bar>
+<anti_patterns>
+DO NOT:
+- Explain obvious things (what a for-loop is, what JSON is) for technical audiences
+- Use jargon without definition for non-technical audiences
+- Invent file paths or function names not present in the code
+- Add a section not listed above
+</anti_patterns>`;
+function buildExplainUserMessage(code, audience) {
+    const audienceDesc = {
+        ai_agent: 'AI coding agent — terse, machine-parseable, expert level.',
+        team: 'New team member with engineering skills — explain project-specific choices, not fundamentals.',
+        non_technical: 'Non-technical reader (founder, PM, investor) — define every term, plain language throughout.',
+        learner: 'Developer learning this codebase — explain the why behind each decision, not just the what.',
+    };
+    return [
+        '<code_to_explain>',
+        code,
+        '</code_to_explain>',
+        '',
+        `<reader_audience>${audienceDesc[audience]}</reader_audience>`,
+        '',
+        'Produce WALKTHROUGH.md for this audience. Output raw markdown only — no preamble.',
+    ].join('\n');
+}
+export async function generateWalkthrough(code, audience = 'non_technical') {
+    return generateText(EXPLAIN_SYSTEM_PROMPT, buildExplainUserMessage(code, audience), 4096);
 }
 const IMAGE_ANALYSIS_PROMPT = `You are an expert at reverse-engineering images into precise AI image generation prompts.
 
@@ -78,30 +146,10 @@ export async function imageToPrompt(imagePath) {
     const base64 = data.toString('base64');
     const ext = imagePath.split('.').pop()?.toLowerCase();
     const mimeMap = {
-        png: 'image/png',
-        webp: 'image/webp',
-        jpg: 'image/jpeg',
-        jpeg: 'image/jpeg',
-        gif: 'image/gif',
+        png: 'image/png', webp: 'image/webp',
+        jpg: 'image/jpeg', jpeg: 'image/jpeg', gif: 'image/gif',
     };
-    const mediaType = (mimeMap[ext ?? ''] ?? 'image/jpeg');
-    const res = await client.messages.create({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1024,
-        messages: [
-            {
-                role: 'user',
-                content: [
-                    {
-                        type: 'image',
-                        source: { type: 'base64', media_type: mediaType, data: base64 },
-                    },
-                    { type: 'text', text: IMAGE_ANALYSIS_PROMPT },
-                ],
-            },
-        ],
-    });
-    const text = res.content.find((b) => b.type === 'text');
-    return text?.text ?? '';
+    const mediaType = mimeMap[ext ?? ''] ?? 'image/jpeg';
+    return generateVision(base64, mediaType, IMAGE_ANALYSIS_PROMPT);
 }
 //# sourceMappingURL=generate.js.map

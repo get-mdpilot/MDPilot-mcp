@@ -1,0 +1,87 @@
+name: Bug report
+description: Something broke or behaved unexpectedly
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Where did this happen?
+      options:
+        - "Web — Task mode"
+        - "Web — Generate mode (Labs)"
+        - "Web — Explain mode (Labs)"
+        - "Web — Convert mode (Labs)"
+        - "Web — Image → Prompt (Labs)"
+        - "Web — Interview Primer (Labs)"
+        - "MCP — analyze_project"
+        - "MCP — generate_md_file"
+        - "MCP — generate_task_file"
+        - "MCP — explain_code"
+        - "MCP — optimize_markdown"
+        - "MCP — check_drift"
+        - "MCP — update_docs"
+        - "MCP — image_to_prompt"
+        - "Docs site"
+        - "Other"
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-you-did
+    attributes:
+      label: What did you do?
+      description: Steps to reproduce — the more specific the better.
+      placeholder: "1. Opened /task\n2. Pasted a ticket description\n3. Clicked Generate\n4. ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+      placeholder: "Expected to see a TASK.md with structured requirements."
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What actually happened?
+      placeholder: "Got a 500 error / blank output / wrong file type / ..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: client
+    attributes:
+      label: MCP client (if MCP bug)
+      description: Skip if this is a web app bug.
+      options:
+        - "N/A — web app bug"
+        - "Claude Code (CLI)"
+        - "Claude Code (VS Code extension)"
+        - "Cursor"
+        - "Windsurf"
+        - "Goose"
+        - "MCP Inspector"
+        - "Other"
+
+  - type: input
+    id: package-version
+    attributes:
+      label: mdpilot-mcp version (if MCP bug)
+      description: Run `npx mdpilot-mcp --version` or check package.json.
+      placeholder: "0.1.0"
+
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      placeholder: "macOS 15 / Ubuntu 24.04 / Windows 11"
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or output (if any)
+      description: Paste error messages, console output, or the MCP tool response.
+      render: text
