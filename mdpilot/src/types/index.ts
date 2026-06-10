@@ -5,6 +5,9 @@ export type MDFileType     = 'readme' | 'agents' | 'claude' | 'skill' | 'design'
 export type AppMode        = 'generate' | 'task';
 export type ExecutionMode  = 'guide' | 'ai_exec' | 'context';
 export type ExperienceLevel = 'new' | 'experienced';
+// Human voice writing style — applies only to human-facing files (readme, walkthrough, contributing, design).
+// Hard-ignored for agent-facing files (agents, claude, task, skill, context).
+export type WritingStyle   = 'default' | 'human';
 
 // Reader audience — who will READ the generated output (distinct from Audience = project scope)
 export type ReaderAudience  = 'ai_agent' | 'team' | 'non_technical' | 'learner';
@@ -21,6 +24,8 @@ export interface TaskOptions {
   experienceLevel:     ExperienceLevel;
   includeVerification?: boolean;
   showAlternatives?:   boolean;
+  // When true (ai_exec only): appends "check your plan against Watch-outs" to the agent prompt block.
+  riskCheck?:          boolean;
 }
 
 export interface GenerationRequest {
@@ -46,6 +51,15 @@ export interface GenerationRequest {
 
   // Role for role-specific prompt selection (Supabase prompt library)
   role?:      string;
+
+  // Token discipline: when true, append a terse-response "Response style" section
+  // to AGENTS.md and CLAUDE.md outputs. Cuts agent chat tokens by ~20%.
+  tokenDiscipline?: boolean;
+
+  // Writing style: 'human' appends a natural-voice directive for human-facing files
+  // (readme, walkthrough, contributing, design). Ignored for agent-facing files.
+  // Auto-enabled for non_technical and learner audiences.
+  writingStyle?: WritingStyle;
 }
 
 export interface GeneratedFile {

@@ -19,11 +19,18 @@
 
 Every output runs through a **5-pass token optimizer** (20–40% reduction) and a **self-verification loop** that checks generated commands against your real repo before writing anything.
 
+**DESIGN.md** follows the [getdesign.md / awesome-design-md ecosystem spec](https://github.com/VoltAgent/awesome-design-md) — 9 sections in fixed order (Visual Theme → Agent Prompt Guide) so any design tool or AI agent that reads DESIGN.md files gets exact tokens, not guessed values.
+
+**Agent behavior directives** (v0.3.1):
+- **Human voice** (`writingStyle: 'human'`) — natural prose for README, CONTRIBUTING, DESIGN; auto-enabled for non-technical and learner audiences; hard-ignored for agent files (AGENTS.md, CLAUDE.md, SKILL.md).
+- **Plan-first** (ai_exec mode) — generated agent prompts now always open with "Before executing: write a 3-5 line plan" + step-verify gates before the Response style line.
+- **Agent risk check** (ai_exec + riskCheck toggle) — appends "check your plan against the Watch-outs above" to the agent prompt block when Watch-outs are present.
+
 ---
 
 ## MCP server — use MDPilot from inside your IDE
 
-The `mdpilot-mcp` npm package exposes all 8 tools directly to Claude Code, Cursor, Windsurf, and Goose. The server reads your actual repo on disk — generated files reference real scripts and paths, never guesses.
+The `mdpilot-mcp` npm package exposes all 10 tools directly to Claude Code, Cursor, Windsurf, and Goose. The server reads your actual repo on disk — generated files reference real scripts and paths, never guesses.
 
 **One-command setup** (gets you a free key + writes the config):
 ```bash
@@ -53,18 +60,29 @@ Accepted keys (tried in order — Groq and NVIDIA are free):
 
 ---
 
-## 8 MCP tools
+## 10 MCP tools
 
 | Tool | What it does |
 |---|---|
-| `analyze_project` | Scan repo — detects stack, scripts, package manager, structure |
+| `analyze_project` | Scan repo — detects stack, scripts, package manager, structure, MCP servers |
 | `generate_md_file` | Generate any instruction file grounded in real repo data |
 | `generate_task_file` | Turn a ticket or thread into a structured TASK.md |
 | `explain_code` | Generate WALKTHROUGH.md for any file or directory |
-| `optimize_markdown` | Run the 5-pass token optimizer on any markdown |
+| `optimize_markdown` | Run the 5-pass optimizer (+ opt-in aggressive 6th pass) on any markdown |
 | `image_to_prompt` | Analyze an image → recreation prompt |
-| `check_drift` | Detect stale docs — broken commands, broken paths |
+| `check_drift` | Detect stale docs — broken commands, broken paths, removed MCP servers |
 | `update_docs` | Patch only the stale sections, preserve everything else |
+| `save_context` | Persist session state to CONTEXT.md (last 5 sessions, secret-redacted) |
+| `load_context` | Load prior session context + annotate stale references inline |
+
+**Session memory quick-start** — your data never leaves your machine:
+```
+# End of session:
+"Use mdpilot to save our session context — decisions: X, next steps: Y"
+
+# Start of next session:
+"Load the project context via mdpilot"
+```
 
 ---
 
@@ -83,7 +101,7 @@ Accepted keys (tried in order — Groq and NVIDIA are free):
 ## Quick local setup
 
 ```bash
-git clone https://github.com/adgenie1434-glitch/md-pilot
+git clone https://github.com/get-mdpilot/md-pilot
 cd md-pilot/mdpilot
 npm install
 cp .env.example .env.local   # add at least one AI key
@@ -109,7 +127,7 @@ Next.js 16 · TypeScript · Tailwind CSS v4 · Supabase · `@modelcontextprotoco
 
 ## Legal
 
-Operated by [Mores and Technologies](https://mdpilot.in) · Bengaluru, India  
-[Privacy Policy](https://mdpilot.in/privacy) · [Terms of Service](https://mdpilot.in/terms) · [Report an issue](https://github.com/adgenie1434-glitch/md-pilot/issues/new/choose)
+Operated by [Viveon Gizit Pvt Ltd](https://mdpilot.in) · Bengaluru, India — Product Owner: Mohan  
+[Privacy Policy](https://mdpilot.in/privacy) · [Terms of Service](https://mdpilot.in/terms) · [Report an issue](https://github.com/get-mdpilot/md-pilot/issues/new/choose)
 
 MIT license

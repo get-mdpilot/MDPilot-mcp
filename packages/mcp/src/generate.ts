@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs';
-import { SYSTEM_PROMPTS } from './prompts.js';
+import { SYSTEM_PROMPTS, buildAgentsPrompt, buildClaudePrompt, HUMAN_VOICE_DIRECTIVE, HUMAN_FACING_FILE_TYPES, type PromptOptions, type WritingStyle } from './prompts.js';
 import { generateText, generateVision } from './ai-provider.js';
 import type { ProjectContext } from './analyze.js';
 import type { DeepRepoContext } from './repo-context.js';
@@ -18,8 +18,18 @@ function buildGroundedUserMessage(fileType: string, ctx: ProjectContext | DeepRe
     `Scripts:\n${scriptLines || '  (none)'}`,
     `Top-level structure: ${ctx.structure.join(', ')}`,
     `Existing docs: README=${ctx.hasExistingDocs.readme}, AGENTS=${ctx.hasExistingDocs.agents}, CLAUDE=${ctx.hasExistingDocs.claude}`,
-    `</project>`,
   ];
+
+  // Inject MCP server info (names + commands only — env values excluded)
+  const mcpList = ctx.mcpServers ?? [];
+  if (mcpList.length > 0) {
+    const lines = mcpList.map(
+      (s) => `  ${s.name}: ${s.command} [${s.configFile}]${s.envKeys.length ? ` env: ${s.envKeys.join(', ')}` : ''}`,
+    );
+    parts.push(`MCP servers:\n${lines.join('\n')}`);
+  }
+
+  parts.push(`</project>`);
 
   // Inject full repo source when deep context is available
   const deep = ctx as DeepRepoContext;
@@ -41,19 +51,42 @@ function buildGroundedUserMessage(fileType: string, ctx: ProjectContext | DeepRe
 export async function generateFile(
   fileType: string,
   ctx: ProjectContext | DeepRepoContext,
+  opts?: PromptOptions,
 ): Promise<string> {
-  const system = SYSTEM_PROMPTS[fileType];
+  let system: string;
+  if (fileType === 'agents') {
+    system = buildAgentsPrompt({ ...opts, mcpServers: ctx.mcpServers ?? [] });
+  } else if (fileType === 'claude') {
+    system = buildClaudePrompt(opts);
+  } else {
+    system = SYSTEM_PROMPTS[fileType];
+  }
   if (!system) throw new Error(`Unknown file type: ${fileType}`);
+  // Human voice — human-facing types only; agent-facing types (agents, claude, skill, context) are never modified
+  if (opts?.writingStyle === 'human' && HUMAN_FACING_FILE_TYPES.has(fileType)) {
+    system += `\n\n${HUMAN_VOICE_DIRECTIVE}`;
+  }
   return generateText(system, buildGroundedUserMessage(fileType, ctx), 4096);
 }
 
 export type McpExecutionMode = 'guide' | 'ai_exec' | 'context';
 export type McpExperienceLevel = 'new' | 'experienced';
 
-function buildTaskSystemPrompt(executionMode: McpExecutionMode, experienceLevel: McpExperienceLevel): string {
+function buildTaskSystemPrompt(
+  executionMode: McpExecutionMode,
+  experienceLevel: McpExperienceLevel,
+  riskCheck = false,
+): string {
+  const riskLine = riskCheck && executionMode === 'ai_exec'
+    ? '\n- If the TASK.md has a Watch-outs section: also append ONE final line to the agent prompt block, after the Response style line:\n  Before starting, check your plan against the Watch-outs above and adjust.'
+    : '';
+
   const modeBlock = {
     guide: `Output mode: Guide. Generate a complete TASK.md for a human developer. Include all sections: Task, Context, Requirements, Acceptance criteria, Implementation plan, Watch-outs, Decision log, Out of scope, Open questions (if any), Agent prompt.`,
-    ai_exec: `Output mode: AI execution. Generate a TASK.md optimized for a coding agent to execute directly with zero clarifying questions. All sections required. Implementation plan must be prescriptive: exact files, function signatures, command sequences. Flag every assumption with [ASSUMED]. Agent prompt must be ≤ 150 tokens.`,
+    ai_exec: `Output mode: AI execution. Generate a TASK.md optimized for a coding agent to execute directly with zero clarifying questions. All sections required. Implementation plan must be prescriptive: exact files, function signatures, command sequences. Flag every assumption with [ASSUMED]. Agent prompt must be ≤ 150 tokens. At the END of the generated agent prompt block, append these lines exactly:
+  Before executing: write a 3-5 line plan of your steps.
+  After each step: verify it succeeded before continuing (gates below).
+  Response style: terse. No preamble, no restating. Code over prose. Ask only blocking questions.${riskLine}`,
     context: `Output mode: Context drop. Generate a compact TASK.md for pasting into a chat window. Include only: Task, Context, Requirements, Acceptance criteria. Skip all other sections.`,
   }[executionMode];
 
@@ -77,8 +110,9 @@ export async function generateTaskFile(
   stack: string,
   executionMode: McpExecutionMode = 'guide',
   experienceLevel: McpExperienceLevel = 'experienced',
+  riskCheck = false,
 ): Promise<string> {
-  const system = buildTaskSystemPrompt(executionMode, experienceLevel);
+  const system = buildTaskSystemPrompt(executionMode, experienceLevel, riskCheck);
   const userMessage = [
     `<raw_task_input>${taskInput}</raw_task_input>`,
     `<tech_stack>${stack || 'not specified'}</tech_stack>`,
@@ -155,8 +189,14 @@ function buildExplainUserMessage(code: string, audience: McpReaderAudience): str
 export async function generateWalkthrough(
   code: string,
   audience: McpReaderAudience = 'non_technical',
+  writingStyle: WritingStyle = 'default',
 ): Promise<string> {
-  return generateText(EXPLAIN_SYSTEM_PROMPT, buildExplainUserMessage(code, audience), 4096);
+  // Auto-enable human voice for non_technical and learner — they already expect natural prose
+  const wantHumanVoice = writingStyle === 'human' || audience === 'non_technical' || audience === 'learner';
+  const system = wantHumanVoice
+    ? `${EXPLAIN_SYSTEM_PROMPT}\n\n${HUMAN_VOICE_DIRECTIVE}`
+    : EXPLAIN_SYSTEM_PROMPT;
+  return generateText(system, buildExplainUserMessage(code, audience), 4096);
 }
 
 const IMAGE_ANALYSIS_PROMPT = `You are an expert at reverse-engineering images into precise AI image generation prompts.

@@ -1,5 +1,23 @@
-import type { ReaderAudience, ReadingLevel, GenerationRequest } from '@/types';
+import type { ReaderAudience, ReadingLevel, GenerationRequest, MDFileType } from '@/types';
 import { detectDomain, getLens } from '@/lib/task/domains';
+
+// Human-facing file types that can receive the natural writing style directive.
+// Agent-facing types (agents, claude, task, skill, context) are explicitly excluded — they need
+// parseable structure over personality and must never receive this directive.
+export const HUMAN_FACING_FILE_TYPES = new Set<MDFileType>(['readme', 'walkthrough', 'contributing', 'design']);
+
+export const AGENT_FILE_TYPES = new Set<MDFileType>(['agents', 'claude', 'task', 'skill', 'context']);
+
+export const HUMAN_VOICE_DIRECTIVE = `<writing_style>
+Write in a natural human voice:
+- No em dashes. Use commas, periods, or parentheses instead.
+- Use contractions (it's, you'll, don't).
+- Vary sentence length. Short ones are fine.
+- Plain words over formal ones (use, not utilize; help, not facilitate).
+- No AI-isms: never "delve", "leverage", "robust", "seamless", "comprehensive",
+  "it's important to note", "in conclusion".
+- Write like a person explaining to a colleague, not a report.
+</writing_style>`;
 
 export const AUDIENCE_INSTRUCTIONS: Record<ReaderAudience, string> = {
   ai_agent: `Reader is an AI coding agent. Be terse, structured, and machine-parseable.

@@ -13,24 +13,59 @@ import { FILE_NAMES } from './prompts.js';
 import { recordDoc } from './manifest.js';
 import { detectDrift } from './drift.js';
 import { patchDoc } from './patch.js';
+import { saveContext, loadContext } from './context.js';
 const server = new McpServer({
     name: 'mdpilot',
     version: '1.0.0',
 });
+// ── Compact formatting helpers ────────────────────────────────────────────────
+function compactFooter(file, tokensBefore, tokensAfter, extra = '') {
+    const saved = tokensBefore - tokensAfter;
+    const pct = tokensBefore > 0 ? Math.round((saved / tokensBefore) * 100) : 0;
+    return `✓ ${file} | ${tokensAfter} tokens (saved ${saved}, ${pct}%) ${extra}`.trimEnd();
+}
 // ── Tool 1: analyze_project ───────────────────────────────────────────────────
 server.registerTool('analyze_project', {
     title: 'Analyze project',
-    description: 'Scan a repo and detect its tech stack, scripts, package manager, and structure. Run this before generate_md_file so output is grounded in real project data instead of guesses.',
+    description: 'Scan a repo and detect its tech stack, scripts, package manager, structure, and MCP servers. Run this before generate_md_file so output is grounded in real project data instead of guesses.',
     inputSchema: {
         rootDir: z
             .string()
             .optional()
             .describe('Absolute path to the project root. Defaults to cwd.'),
+        verbose: z
+            .boolean()
+            .default(false)
+            .describe('Return full JSON instead of compact summary.'),
     },
-}, async ({ rootDir }) => {
+}, async ({ rootDir, verbose }) => {
     try {
         const ctx = analyzeProject(rootDir ?? process.cwd());
-        return { content: [{ type: 'text', text: JSON.stringify(ctx, null, 2) }] };
+        if (verbose) {
+            return { content: [{ type: 'text', text: JSON.stringify(ctx, null, 2) }] };
+        }
+        // Compact format: dense structured block, no narrative sentences
+        const scriptLines = Object.entries(ctx.scripts)
+            .map(([k, v]) => `  ${k} → ${v}`)
+            .join('\n') || '  (none)';
+        const mcpLine = ctx.mcpServers.length > 0
+            ? `mcp: ${ctx.mcpServers.map((s) => `${s.name} (${s.configFile})`).join(', ')}`
+            : 'mcp: none';
+        const docsLine = [
+            ctx.hasExistingDocs.readme ? 'README ✓' : 'README ✗',
+            ctx.hasExistingDocs.agents ? 'AGENTS ✓' : 'AGENTS ✗',
+            ctx.hasExistingDocs.claude ? 'CLAUDE ✓' : 'CLAUDE ✗',
+        ].join(' · ');
+        const text = [
+            `${ctx.projectName} | ${ctx.detectedStack.join(' · ') || 'stack: unknown'}`,
+            `manager: ${ctx.packageManager} | language: ${ctx.language}`,
+            `scripts:\n${scriptLines}`,
+            `structure: ${ctx.structure.join(', ')}`,
+            `deps: ${ctx.dependencies.length} total`,
+            `docs: ${docsLine}`,
+            mcpLine,
+        ].join('\n');
+        return { content: [{ type: 'text', text }] };
     }
     catch (err) {
         return { content: [{ type: 'text', text: `Error: ${String(err)}` }], isError: true };
@@ -56,11 +91,22 @@ server.registerTool('generate_md_file', {
             .boolean()
             .default(false)
             .describe('If true, run the self-verification loop — generate, verify commands/paths against the real repo, revise if needed (max 2 attempts). Recommended for AGENTS.md and CLAUDE.md.'),
+        tokenDiscipline: z
+            .boolean()
+            .default(false)
+            .describe('If true, append a "Response style" section to AGENTS.md/CLAUDE.md instructing the AI to be terse. Cuts agent chat tokens by ~20%.'),
+        writingStyle: z
+            .enum(['default', 'human'])
+            .default('default')
+            .describe('When "human", appends a natural writing style directive for human-facing file types (readme, contributing, design). No effect on agent-facing files (agents, claude, skill, context).'),
+        verbose: z
+            .boolean()
+            .default(false)
+            .describe('Return verbose output with full commentary instead of the compact single-line footer.'),
     },
-}, async ({ fileType, rootDir, writeToDisk, verified }) => {
+}, async ({ fileType, rootDir, writeToDisk, verified, tokenDiscipline, writingStyle, verbose }) => {
     try {
         const dir = rootDir ?? process.cwd();
-        // Attempt deep context (repomix + Secretlint); fall back to basic analysis
         let ctx;
         let secretWarning = '';
         let deepTokens = '';
@@ -68,10 +114,10 @@ server.registerTool('generate_md_file', {
             const deep = await buildDeepContext(dir);
             ctx = deep;
             if (deep.suspiciousFiles.length > 0) {
-                secretWarning = `\n⚠️  Secretlint flagged ${deep.suspiciousFiles.length} file(s) — excluded from context: ${deep.suspiciousFiles.slice(0, 5).join(', ')}`;
+                secretWarning = ` · ⚠️ ${deep.suspiciousFiles.length} secret file(s) excluded`;
             }
             if (deep.packedTokens > 0) {
-                deepTokens = ` · Repo context: ${deep.packedTokens} tokens`;
+                deepTokens = ` · repo: ${deep.packedTokens} tokens`;
             }
         }
         catch {
@@ -79,22 +125,22 @@ server.registerTool('generate_md_file', {
         }
         let raw;
         let verifyNote = '';
+        const opts = { tokenDiscipline: tokenDiscipline ?? false, mcpServers: ctx.mcpServers, writingStyle: (writingStyle ?? 'default') };
         if (verified) {
             const result = await generateVerified(fileType, ctx, dir);
             raw = result.content;
+            const fixed = result.issuesFound.length - result.issuesRemaining.length;
             if (result.issuesFound.length > 0) {
-                const fixed = result.issuesFound.length - result.issuesRemaining.length;
-                verifyNote = `\n🔍 Self-verification: found ${result.issuesFound.length} issue(s), fixed ${fixed} in ${result.attemptCount} attempt(s)`;
-                if (result.issuesRemaining.length > 0) {
-                    verifyNote += ` — ${result.issuesRemaining.length} could not be auto-fixed`;
-                }
+                verifyNote = verified
+                    ? ` · verified: ${result.attemptCount} pass(es), ${fixed} fixed${result.issuesRemaining.length > 0 ? `, ${result.issuesRemaining.length} unfixed` : ''}`
+                    : '';
             }
             else {
-                verifyNote = `\n✅ Self-verification: passed on first attempt`;
+                verifyNote = ' · verified: ✓';
             }
         }
         else {
-            raw = await generateFile(fileType, ctx);
+            raw = await generateFile(fileType, ctx, opts);
         }
         const { optimized, tokensBefore, tokensAfter } = optimizeMarkdown(raw);
         if (writeToDisk) {
@@ -102,13 +148,14 @@ server.registerTool('generate_md_file', {
             writeFileSync(resolve(dir, filename), optimized, 'utf-8');
             recordDoc(dir, filename, optimized, ctx);
         }
-        const saved = tokensBefore - tokensAfter;
-        const pct = tokensBefore > 0 ? Math.round((saved / tokensBefore) * 100) : 0;
-        const footer = [
-            '',
-            '---',
-            `Tokens: ${tokensBefore} → ${tokensAfter} (saved ${saved}, ${pct}% reduction)${deepTokens}${writeToDisk ? ` · Written to ${FILE_NAMES[fileType]}` : ''}${verifyNote}${secretWarning}`,
-        ].join('\n');
+        const filename = FILE_NAMES[fileType];
+        const footer = verbose
+            ? [
+                '',
+                '---',
+                `Tokens: ${tokensBefore} → ${tokensAfter} (saved ${tokensBefore - tokensAfter})${deepTokens}${writeToDisk ? ` · Written to ${filename}` : ''}${verifyNote}${secretWarning}`,
+            ].join('\n')
+            : '\n\n' + compactFooter(filename, tokensBefore, tokensAfter, `${writeToDisk ? `· written` : ''}${verifyNote}${secretWarning}${deepTokens}`);
         return { content: [{ type: 'text', text: optimized + footer }] };
     }
     catch (err) {
@@ -137,15 +184,26 @@ server.registerTool('generate_task_file', {
             .enum(['experienced', 'new'])
             .default('experienced')
             .describe('Developer experience level. "new" adds "why" explanations; "experienced" keeps output terse.'),
+        riskCheck: z
+            .boolean()
+            .default(false)
+            .describe('When true (ai_exec mode only): if the TASK.md has a Watch-outs section, appends "check your plan against the Watch-outs" to the agent prompt block before execution.'),
+        verbose: z
+            .boolean()
+            .default(false)
+            .describe('Return verbose output with token stats. Default: compact (content only).'),
     },
-}, async ({ taskInput, stack, rootDir, executionMode, experienceLevel }) => {
+}, async ({ taskInput, stack, rootDir, executionMode, experienceLevel, riskCheck, verbose }) => {
     try {
         let resolvedStack = stack ?? '';
         if (!resolvedStack && rootDir) {
             const ctx = analyzeProject(rootDir);
             resolvedStack = ctx.detectedStack.join(', ');
         }
-        const content = await generateTaskFile(taskInput, resolvedStack, (executionMode ?? 'guide'), (experienceLevel ?? 'experienced'));
+        const content = await generateTaskFile(taskInput, resolvedStack, (executionMode ?? 'guide'), (experienceLevel ?? 'experienced'), riskCheck ?? false);
+        if (verbose) {
+            return { content: [{ type: 'text', text: content + `\n\n---\nGenerated TASK.md (${content.split(' ').length} words)` }] };
+        }
         return { content: [{ type: 'text', text: content }] };
     }
     catch (err) {
@@ -173,8 +231,16 @@ server.registerTool('explain_code', {
             .boolean()
             .default(false)
             .describe('If true, write WALKTHROUGH.md to the project root (rootDir or filePath directory).'),
+        writingStyle: z
+            .enum(['default', 'human'])
+            .default('default')
+            .describe('When "human", appends a natural writing style directive for a more conversational walkthrough. Auto-enabled for non_technical and learner audiences regardless of this setting.'),
+        verbose: z
+            .boolean()
+            .default(false)
+            .describe('Return verbose output with write confirmation. Default: compact (content + single-line footer).'),
     },
-}, async ({ filePath, rootDir, audience, writeToDisk }) => {
+}, async ({ filePath, rootDir, audience, writeToDisk, writingStyle, verbose }) => {
     try {
         let code = '';
         let outputDir = rootDir ?? process.cwd();
@@ -190,12 +256,16 @@ server.registerTool('explain_code', {
         else {
             return { content: [{ type: 'text', text: 'Error: Provide filePath or rootDir.' }], isError: true };
         }
-        const walkthrough = await generateWalkthrough(code, (audience ?? 'non_technical'));
+        const walkthrough = await generateWalkthrough(code, (audience ?? 'non_technical'), (writingStyle ?? 'default'));
         if (writeToDisk) {
             writeFileSync(resolve(outputDir, 'WALKTHROUGH.md'), walkthrough, 'utf-8');
         }
-        const suffix = writeToDisk ? '\n\n---\nWritten to WALKTHROUGH.md' : '';
-        return { content: [{ type: 'text', text: walkthrough + suffix }] };
+        const footer = writeToDisk
+            ? verbose
+                ? '\n\n---\nWritten to WALKTHROUGH.md'
+                : '\n\n✓ WALKTHROUGH.md · written'
+            : '';
+        return { content: [{ type: 'text', text: walkthrough + footer }] };
     }
     catch (err) {
         return { content: [{ type: 'text', text: `Error: ${String(err)}` }], isError: true };
@@ -207,20 +277,24 @@ server.registerTool('optimize_markdown', {
     description: 'Run the MDPilot 4-pass token optimizer on existing markdown content. Strips boilerplate, removes redundant phrasing, compresses structure, and tightens prose. Returns the leaner version with token savings.',
     inputSchema: {
         content: z.string().describe('Markdown content to optimize'),
+        aggressive: z
+            .boolean()
+            .default(false)
+            .describe('Enable the aggressive 5th pass — collapses soft hedges and filler phrases. Never alters code blocks, commands, paths, or numbers. Default: off.'),
+        verbose: z
+            .boolean()
+            .default(false)
+            .describe('Return verbose output with per-pass breakdown. Default: compact single-line footer.'),
     },
-}, async ({ content }) => {
+}, async ({ content, aggressive, verbose }) => {
     try {
-        const { optimized, tokensBefore, tokensAfter } = optimizeMarkdown(content);
+        const { optimized, tokensBefore, tokensAfter } = optimizeMarkdown(content, { aggressive });
         const saved = tokensBefore - tokensAfter;
         const pct = tokensBefore > 0 ? Math.round((saved / tokensBefore) * 100) : 0;
-        return {
-            content: [
-                {
-                    type: 'text',
-                    text: `${optimized}\n\n---\nSaved ${saved} tokens (${pct}% reduction): ${tokensBefore} → ${tokensAfter}`,
-                },
-            ],
-        };
+        const footer = verbose
+            ? `\n\n---\nSaved ${saved} tokens (${pct}% reduction): ${tokensBefore} → ${tokensAfter}${aggressive ? ' (aggressive mode)' : ''}`
+            : `\n\n✓ ${tokensAfter} tokens (saved ${saved}, ${pct}%)${aggressive ? ' [aggressive]' : ''}`;
+        return { content: [{ type: 'text', text: optimized + footer }] };
     }
     catch (err) {
         return { content: [{ type: 'text', text: `Error: ${String(err)}` }], isError: true };
@@ -247,7 +321,7 @@ server.registerTool('image_to_prompt', {
 // ── Tool 7: check_drift ───────────────────────────────────────────────────────
 server.registerTool('check_drift', {
     title: 'Check docs for drift',
-    description: 'Scan the repo and detect where docs (README.md, AGENTS.md, CLAUDE.md, CONTRIBUTING.md) have gone stale — broken commands, missing paths, undocumented scripts or directories. Uses two detection methods: claim verification (parses the doc and checks every command/path against the real repo) and snapshot diff (compares against the state when docs were last generated).',
+    description: 'Scan the repo and detect where docs (README.md, AGENTS.md, CLAUDE.md, CONTRIBUTING.md) have gone stale — broken commands, missing paths, undocumented scripts or directories, removed MCP servers. Uses two detection methods: claim verification and snapshot diff.',
     inputSchema: {
         rootDir: z
             .string()
@@ -257,26 +331,39 @@ server.registerTool('check_drift', {
             .array(z.string())
             .optional()
             .describe('Specific doc filenames to check, e.g. ["AGENTS.md"]. Defaults to README.md, AGENTS.md, CLAUDE.md, CONTRIBUTING.md.'),
+        verbose: z
+            .boolean()
+            .default(false)
+            .describe('Return verbose output with full issue details. Default: compact one-line-per-issue format.'),
     },
-}, async ({ rootDir, docs }) => {
+}, async ({ rootDir, docs, verbose }) => {
     try {
         const dir = rootDir ?? process.cwd();
         const issues = detectDrift(dir, docs);
         if (issues.length === 0) {
-            return { content: [{ type: 'text', text: '✅ No drift detected. All docs are in sync with the repo.' }] };
+            return { content: [{ type: 'text', text: '✓ No drift — all docs in sync.' }] };
         }
-        const icon = (s) => s === 'high' ? '🔴' : s === 'medium' ? '🟡' : '⚪';
-        const lines = issues.map(i => `${icon(i.severity)} [${i.severity.toUpperCase()}] ${i.doc} — ${i.message}${i.detail ? `\n   Detail: ${i.detail}` : ''}`);
-        const highCount = issues.filter(i => i.severity === 'high').length;
-        const medCount = issues.filter(i => i.severity === 'medium').length;
-        const lowCount = issues.filter(i => i.severity === 'low').length;
-        const summary = `Found ${issues.length} issue(s): ${highCount} high · ${medCount} medium · ${lowCount} low`;
-        return {
-            content: [{
-                    type: 'text',
-                    text: `${summary}\n\n${lines.join('\n')}\n\nRun update_docs to fix high/medium issues.`,
-                }],
-        };
+        const sev = (s) => s === 'high' ? 'HIGH' : s === 'medium' ? 'MED' : 'LOW';
+        if (verbose) {
+            const icon = (s) => s === 'high' ? '🔴' : s === 'medium' ? '🟡' : '⚪';
+            const lines = issues.map(i => `${icon(i.severity)} [${i.severity.toUpperCase()}] ${i.doc} — ${i.message}${i.detail ? `\n   Detail: ${i.detail}` : ''}`);
+            const hi = issues.filter(i => i.severity === 'high').length;
+            const med = issues.filter(i => i.severity === 'medium').length;
+            const lo = issues.filter(i => i.severity === 'low').length;
+            return {
+                content: [{
+                        type: 'text',
+                        text: `${issues.length} issue(s): ${hi} high · ${med} medium · ${lo} low\n\n${lines.join('\n')}\n\nRun update_docs to fix high/medium issues.`,
+                    }],
+            };
+        }
+        // Compact: one line per issue + totals footer
+        const lines = issues.map(i => `[${sev(i.severity)}] ${i.doc} — ${i.message}`);
+        const hi = issues.filter(i => i.severity === 'high').length;
+        const med = issues.filter(i => i.severity === 'medium').length;
+        const lo = issues.filter(i => i.severity === 'low').length;
+        lines.push(`---\n${issues.length} issue(s): ${hi} high · ${med} medium · ${lo} low`);
+        return { content: [{ type: 'text', text: lines.join('\n') }] };
     }
     catch (err) {
         return { content: [{ type: 'text', text: `Error: ${String(err)}` }], isError: true };
@@ -298,17 +385,20 @@ server.registerTool('update_docs', {
             .boolean()
             .default(false)
             .describe('If true, overwrite the file on disk and update the manifest snapshot.'),
+        verbose: z
+            .boolean()
+            .default(false)
+            .describe('Return verbose output with full issue list. Default: compact single-line footer.'),
     },
-}, async ({ filename, rootDir, writeToDisk }) => {
+}, async ({ filename, rootDir, writeToDisk, verbose }) => {
     try {
         const dir = rootDir ?? process.cwd();
-        // Only pass high/medium issues to the patcher — low are advisory only
         const allIssues = detectDrift(dir, [filename]);
         const patchableIssues = allIssues.filter(i => i.severity !== 'low');
         if (patchableIssues.length === 0) {
             const lowCount = allIssues.filter(i => i.severity === 'low').length;
-            const advisory = lowCount > 0 ? ` (${lowCount} low-severity advisory note(s) not patched)` : '';
-            return { content: [{ type: 'text', text: `✅ ${filename} has no high/medium drift to fix.${advisory}` }] };
+            const advisory = lowCount > 0 ? ` (${lowCount} low advisory)` : '';
+            return { content: [{ type: 'text', text: `✓ ${filename} — no high/medium drift.${advisory}` }] };
         }
         const patched = await patchDoc(dir, filename, patchableIssues);
         if (writeToDisk) {
@@ -316,14 +406,78 @@ server.registerTool('update_docs', {
             const ctx = analyzeProject(dir);
             recordDoc(dir, filename, patched, ctx);
         }
-        const issueList = patchableIssues
-            .map(i => `  • [${i.severity}] ${i.message}`)
-            .join('\n');
+        const footer = verbose
+            ? `\n\n---\nFixed ${patchableIssues.length} issue(s) in ${filename}:\n${patchableIssues.map(i => `  • [${i.severity}] ${i.message}`).join('\n')}${writeToDisk ? '\n\nFile written to disk and manifest updated.' : '\n\n(Pass writeToDisk: true to save changes.)'}`
+            : `\n\n✓ ${filename} | fixed ${patchableIssues.length} issue(s)${writeToDisk ? ' · written' : ' · (pass writeToDisk: true to save)'}`;
+        return { content: [{ type: 'text', text: patched + footer }] };
+    }
+    catch (err) {
+        return { content: [{ type: 'text', text: `Error: ${String(err)}` }], isError: true };
+    }
+});
+// ── Tool 9: save_context ──────────────────────────────────────────────────────
+server.registerTool('save_context', {
+    title: 'Save session context to CONTEXT.md',
+    description: 'Persist session state to CONTEXT.md at the project root — decisions made, current state, next steps, open questions. Appends a new dated entry and keeps the last 5 sessions. Secret-shaped strings (API keys) are automatically redacted before writing. Everything stays on your machine.',
+    inputSchema: {
+        rootDir: z
+            .string()
+            .optional()
+            .describe('Absolute path to the project root. Defaults to cwd.'),
+        summary: z
+            .string()
+            .describe('What happened this session: decisions made, current state, next steps, open questions. Free text — the tool will structure and date-stamp it.'),
+        writeToDisk: z
+            .boolean()
+            .default(true)
+            .describe('Write CONTEXT.md to disk. Set to false to preview the content without saving.'),
+    },
+}, async ({ rootDir, summary, writeToDisk }) => {
+    try {
+        const dir = rootDir ?? process.cwd();
+        const result = saveContext(dir, summary, writeToDisk ?? true);
+        const redactNote = result.redactedCount > 0
+            ? ` · ⚠️ ${result.redactedCount} secret(s) redacted`
+            : '';
+        const writeNote = result.written ? ` · written to ${result.filePath}` : ' · (preview, not written)';
         return {
             content: [{
                     type: 'text',
-                    text: `${patched}\n\n---\nFixed ${patchableIssues.length} issue(s) in ${filename}:\n${issueList}${writeToDisk ? '\n\nFile written to disk and manifest updated.' : '\n\n(Pass writeToDisk: true to save changes.)'}`,
+                    text: `✓ Context saved | ${result.sessionCount} session(s) stored | ${result.tokenCount} tokens${redactNote}${writeNote}`,
                 }],
+        };
+    }
+    catch (err) {
+        return { content: [{ type: 'text', text: `Error: ${String(err)}` }], isError: true };
+    }
+});
+// ── Tool 10: load_context ─────────────────────────────────────────────────────
+server.registerTool('load_context', {
+    title: 'Load session context from CONTEXT.md',
+    description: 'Read the project\'s CONTEXT.md and inject prior session state into your working context. Runs a drift check on every command and path inside the file — stale references are annotated inline. Everything stays on your machine.',
+    inputSchema: {
+        rootDir: z
+            .string()
+            .optional()
+            .describe('Absolute path to the project root. Defaults to cwd.'),
+    },
+}, async ({ rootDir }) => {
+    try {
+        const dir = rootDir ?? process.cwd();
+        const result = loadContext(dir);
+        if (!result.found) {
+            return {
+                content: [{
+                        type: 'text',
+                        text: 'No CONTEXT.md found. End your session with: use mdpilot save_context to persist state for next time.',
+                    }],
+            };
+        }
+        const staleNote = result.staleAnnotations.length > 0
+            ? `\n⚠️  ${result.staleAnnotations.length} stale reference(s) annotated inline.`
+            : '';
+        return {
+            content: [{ type: 'text', text: result.content + staleNote }],
         };
     }
     catch (err) {

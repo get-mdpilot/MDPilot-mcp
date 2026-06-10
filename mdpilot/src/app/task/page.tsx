@@ -87,6 +87,7 @@ export default function TaskPage() {
   const [experienceLevel, setExperienceLevel] = useState<ExperienceLevel>('experienced');
   const [includeVerification, setIncludeVerification] = useState(false);
   const [showAlternatives, setShowAlternatives] = useState(false);
+  const [riskCheck, setRiskCheck]             = useState(false);
 
   // Generation state
   const [isGenerating, setIsGenerating]     = useState(false);
@@ -149,6 +150,7 @@ export default function TaskPage() {
       experienceLevel,
       includeVerification: executionMode === 'ai_exec' ? includeVerification : false,
       showAlternatives,
+      riskCheck: executionMode === 'ai_exec' ? riskCheck : false,
     };
     return {
       projectType:   'webapp',
@@ -517,6 +519,34 @@ export default function TaskPage() {
               </div>
             )}
 
+            {/* Risk check toggle (ai_exec only) */}
+            {executionMode === 'ai_exec' && (
+              <div className="rounded-xl border border-white/8 bg-white/[0.02] p-4 mb-4">
+                <label className="flex items-center justify-between cursor-pointer gap-4">
+                  <div>
+                    <p className="text-xs font-medium text-[var(--md-text-secondary)]">Agent risk check</p>
+                    <p className="text-[11px] text-[var(--md-text-tertiary)] mt-0.5">
+                      Tells the agent to validate its plan against the Watch-outs before starting.
+                    </p>
+                  </div>
+                  <button
+                    role="switch"
+                    aria-checked={riskCheck}
+                    onClick={() => setRiskCheck(v => !v)}
+                    className={`relative w-10 h-5.5 rounded-full border transition-all shrink-0 ${
+                      riskCheck
+                        ? 'bg-[var(--md-coral)]/80 border-[var(--md-coral)]/50'
+                        : 'bg-white/5 border-white/15'
+                    }`}
+                  >
+                    <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${
+                      riskCheck ? 'left-5' : 'left-0.5'
+                    }`} />
+                  </button>
+                </label>
+              </div>
+            )}
+
             {/* Alternatives toggle */}
             <div className="rounded-xl border border-white/8 bg-white/[0.02] p-4 mb-4">
               <label className="flex items-center justify-between cursor-pointer gap-4">
@@ -596,6 +626,12 @@ export default function TaskPage() {
                 <span className="text-xs text-[var(--md-text-tertiary)] w-24 shrink-0">Alternatives</span>
                 <span className="text-sm">{showAlternatives ? 'On' : 'Off'}</span>
               </div>
+              {executionMode === 'ai_exec' && (
+                <div className="flex items-center gap-4 px-4 py-3">
+                  <span className="text-xs text-[var(--md-text-tertiary)] w-24 shrink-0">Risk check</span>
+                  <span className="text-sm">{riskCheck ? 'On' : 'Off'}</span>
+                </div>
+              )}
               <div className="flex items-start gap-4 px-4 py-3">
                 <span className="text-xs text-[var(--md-text-tertiary)] w-24 shrink-0 pt-0.5">Files</span>
                 <span className="text-sm">{selectedFiles.map(t => FILENAMES[t]).join(', ')}</span>

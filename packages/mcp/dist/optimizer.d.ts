@@ -3,5 +3,8 @@ export interface OptimizeResult {
     tokensBefore: number;
     tokensAfter: number;
 }
-export declare function optimizeMarkdown(content: string): OptimizeResult;
+export interface OptimizeOptions {
+    aggressive?: boolean;
+}
+export declare function optimizeMarkdown(content: string, opts?: OptimizeOptions): OptimizeResult;
 //# sourceMappingURL=optimizer.d.ts.map

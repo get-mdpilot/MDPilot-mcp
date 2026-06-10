@@ -132,7 +132,17 @@ async function main() {
     }
   }
 
-  console.log(`\nDone: ${promoted} promoted · ${skipped} skipped`);
+  // ── Summary log line — auditable in CI run logs ───────────────────────────
+  const { count, error: countErr } = await db
+    .from('gold_examples')
+    .select('*', { count: 'exact', head: true });
+
+  const tableTotal = countErr ? '?' : String(count ?? 0);
+  console.log(`promoted ${promoted} gold examples; table now has ${tableTotal} rows`);
+
+  if (promoted === 0 && skipped === best.size) {
+    console.warn('Warning: all candidates skipped (no consented training samples).');
+  }
 }
 
 main().catch(err => {

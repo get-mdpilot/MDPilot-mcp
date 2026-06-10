@@ -87,18 +87,22 @@ Set exactly one. Calls are billed to your key — MDPilot does not proxy them.
 
 ---
 
-## The 8 tools
+## The 10 tools
 
 | Tool | What it does |
 |------|-------------|
-| `analyze_project` | Scan a repo — detects stack, scripts, package manager, file structure. Run before generating. |
-| `generate_md_file` | Generate `readme` / `agents` / `claude` / `contributing` / `security` / `skill` / `design` / `context` grounded in real repo data. |
+| `analyze_project` | Scan a repo — detects stack, scripts, package manager, structure, and any configured MCP servers. |
+| `generate_md_file` | Generate `readme` / `agents` / `claude` / `contributing` / `security` / `skill` / `design` / `context` grounded in real repo data. Add `tokenDiscipline: true` to inject terse-response rules into AGENTS.md/CLAUDE.md. |
 | `generate_task_file` | Turn a ticket, Slack thread, or GitHub issue into a structured `TASK.md` with requirements and an agent prompt block. |
 | `explain_code` | Analyze a file or directory → `WALKTHROUGH.md` tuned to any audience (AI agent, team, learner, non-technical). |
-| `optimize_markdown` | Run the 5-pass token optimizer on any markdown — strips boilerplate, compresses verbose prose, tightens structure. |
+| `optimize_markdown` | Run the 5-pass token optimizer on any markdown. Add `aggressive: true` for the 6th pass (soft-hedge collapse — never alters code or commands). |
 | `image_to_prompt` | Analyze a local image → recreation prompt for FLUX, Stable Diffusion, Midjourney, DALL-E, Gemini. |
-| `check_drift` | Detect stale docs — broken commands, broken paths, undocumented new files. |
+| `check_drift` | Detect stale docs — broken commands, broken paths, removed MCP servers, new undocumented files. |
 | `update_docs` | Patch ONLY the stale sections identified by `check_drift`, preserving everything else. |
+| `save_context` | Persist session state to `CONTEXT.md` — decisions, state, next steps. Last 5 sessions kept. Secrets auto-redacted. Your data never leaves your machine. |
+| `load_context` | Load prior session context. Drift-checks every command and path inline — stale references annotated automatically. |
+
+All tools accept `verbose: true` for detailed output; the default is compact (dense single-line footers).
 
 ---
 
@@ -112,6 +116,15 @@ Once configured, open any repo in your IDE and try:
 
 ```
 "Use mdpilot to check my docs for drift."
+```
+
+**Session memory (persistent context across sessions):**
+```
+# End of session:
+"Use mdpilot to save our session context — decisions: [X], next steps: [Y]"
+
+# Start of next session:
+"Load the project context via mdpilot"
 ```
 
 ---

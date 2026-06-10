@@ -1,0 +1,21 @@
+{
+  "projectType": "saas",
+  "audience": "developer",
+  "detectedStack": ["Next.js", "TypeScript", "Tailwind CSS"],
+  "rawStackInput": "Next.js 14, TypeScript, Tailwind CSS — SaaS dashboard",
+  "aiTools": ["claude-code"],
+  "mode": "generate",
+  "writingStyle": "human",
+  "bannedPhrases": [
+    "—",
+    "delve",
+    "leverage",
+    "robust",
+    "seamless",
+    "comprehensive",
+    "it's important to note",
+    "in conclusion",
+    "facilitate",
+    "utilize"
+  ]
+}

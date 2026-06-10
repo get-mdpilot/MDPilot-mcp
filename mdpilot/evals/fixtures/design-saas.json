@@ -1,0 +1,21 @@
+{
+  "projectType": "saas",
+  "audience": "developer",
+  "detectedStack": ["Next.js", "TypeScript", "Tailwind CSS"],
+  "rawStackInput": "Next.js, TypeScript, Tailwind CSS — dark-mode-first SaaS dashboard",
+  "aiTools": ["claude-code"],
+  "mode": "generate",
+  "expectedKeywords": {
+    "design": [
+      "Visual Theme",
+      "Color Palette",
+      "Typography",
+      "Component",
+      "Layout",
+      "Elevation",
+      "Responsive",
+      "Agent Prompt"
+    ]
+  },
+  "forbiddenContent": ["TODO", "placeholder", "[INSERT", "your-color", "your-font", "#000000"]
+}

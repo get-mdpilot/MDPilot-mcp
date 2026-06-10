@@ -59,6 +59,53 @@ prompts:
 
       Generate a production-grade README.md for this project. Output raw markdown only.
 
+  - label: design-prompt
+    raw: |
+      {{designSystemPrompt}}
+
+      Project type: {{fixture.projectType}}
+      Audience: {{fixture.audience}}
+      Tech stack: {{fixture.rawStackInput}}
+
+      Generate a production-grade DESIGN.md for this project. Output raw markdown only.
+
+  # Human voice prompt — README with HUMAN_VOICE_DIRECTIVE inlined (self-contained, always runnable)
+  - label: readme-human-prompt
+    raw: |
+      You are a developer advocate who writes README files that maximise project adoption.
+      Generate a production-grade README.md. Keep it under 800 tokens. No preamble — output raw markdown only.
+
+      <writing_style>
+      Write in a natural human voice:
+      - No em dashes. Use commas, periods, or parentheses instead.
+      - Use contractions (it's, you'll, don't).
+      - Vary sentence length. Short ones are fine.
+      - Plain words over formal ones (use, not utilize; help, not facilitate).
+      - No AI-isms: never "delve", "leverage", "robust", "seamless", "comprehensive",
+        "it's important to note", "in conclusion".
+      - Write like a person explaining to a colleague, not a report.
+      </writing_style>
+
+      Project type: {{fixture.projectType}}
+      Tech stack: {{fixture.rawStackInput}}
+
+      Generate a production-grade README.md. Output raw markdown only.
+
+  # ai_exec prompt — plan-first lines inlined for regression testing
+  - label: task-ai-exec-prompt
+    raw: |
+      You are a senior technical lead converting task input into AI-agent-ready TASK.md files.
+      Output mode: AI execution. All sections required. Implementation plan must be prescriptive.
+      Agent prompt must be ≤ 150 tokens. At the END of the generated agent prompt block, append these lines exactly:
+        Before executing: write a 3-5 line plan of your steps.
+        After each step: verify it succeeded before continuing (gates below).
+        Response style: terse. No preamble, no restating. Code over prose. Ask only blocking questions.
+
+      <raw_task_input>{{fixture.taskInput}}</raw_task_input>
+      <tech_stack>{{fixture.rawStackInput}}</tech_stack>
+
+      Generate a production-grade TASK.md. Output raw markdown only.
+
 # ── Test cases ─────────────────────────────────────────────────────────────────
 tests:
   - description: Next.js SaaS — AGENTS.md
@@ -163,6 +210,93 @@ tests:
         filePath: ./assertions/md-quality.js
       - type: not-contains
         value: "npm install"
+
+  # ── Human voice writing style tests ────────────────────────────────────────
+  - description: Next.js SaaS — README.md (human voice — no em dash, no AI-isms)
+    vars:
+      fileType: readme
+      fixture:
+        $ref: ./fixtures/readme-human-voice.json
+    assert:
+      - type: javascript
+        filePath: ./assertions/md-quality.js
+      - type: not-contains
+        value: " — "
+      - type: not-contains
+        value: "delve"
+      - type: not-contains
+        value: "leverage"
+      - type: not-contains
+        value: "robust"
+      - type: not-contains
+        value: "seamless"
+      - type: not-contains
+        value: "utilize"
+      - type: not-contains
+        value: "facilitate"
+      - type: not-contains
+        value: "in conclusion"
+
+  - description: Next.js SaaS — AGENTS.md (human voice param ignored — agent structure intact)
+    vars:
+      fileType: agents
+      fixture:
+        $ref: ./fixtures/readme-human-voice.json
+    assert:
+      - type: javascript
+        filePath: ./assertions/md-quality.js
+      - type: not-contains
+        value: "<writing_style>"
+
+  # ── ai_exec plan-first directive tests ───────────────────────────────────────
+  - description: Rate limiting task — TASK.md (ai_exec plan-first lines present)
+    vars:
+      fileType: task
+      fixture:
+        $ref: ./fixtures/task-ai-exec.json
+    assert:
+      - type: javascript
+        filePath: ./assertions/md-quality.js
+      - type: contains
+        value: "Before executing"
+      - type: contains
+        value: "verify it succeeded"
+      - type: contains
+        value: "Response style"
+      - type: not-contains
+        value: "TODO"
+
+  # ── Design mode ecosystem spec tests ───────────────────────────────────────
+  - description: Next.js SaaS — DESIGN.md (ecosystem spec sections)
+    vars:
+      fileType: design
+      fixture:
+        $ref: ./fixtures/design-saas.json
+    assert:
+      - type: javascript
+        filePath: ./assertions/md-quality.js
+      - type: contains
+        value: "Visual Theme"
+      - type: contains
+        value: "Color Palette"
+      - type: contains
+        value: "Typography"
+      - type: contains
+        value: "Component"
+      - type: contains
+        value: "Layout"
+      - type: contains
+        value: "Elevation"
+      - type: contains
+        value: "Responsive"
+      - type: contains
+        value: "Agent Prompt"
+      - type: not-contains
+        value: "TODO"
+      - type: not-contains
+        value: "placeholder"
+      - type: not-contains
+        value: "[INSERT"
 
   # ── Task mode domain regression tests ──────────────────────────────────────
   - description: AWS CloudFront — TASK.md (cache invalidation regression)

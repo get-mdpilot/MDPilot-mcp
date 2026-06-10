@@ -531,7 +531,7 @@ export default function McpSetupPage() {
             This is a pre-launch tester build. If something breaks or you have suggestions, we want to know.
           </p>
           <a
-            href="https://github.com/adgenie1434-glitch/md-pilot/issues/new/choose"
+            href="https://github.com/get-mdpilot/md-pilot/issues/new/choose"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 text-[13px] text-[#A855F7]/70 hover:text-[#A855F7] transition-colors font-medium"

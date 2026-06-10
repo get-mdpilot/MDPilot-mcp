@@ -242,6 +242,7 @@ function applyVerboseCompression(content: string): string {
 
 // ── Pass 5: Smart line compression ─────────────────────────────────────────────
 
+// (continued below — aggressive pass is Pass 6)
 function compressLines(content: string): string {
   let result = content;
 
@@ -263,10 +264,57 @@ function compressLines(content: string): string {
   return result.trim();
 }
 
+// ── Pass 6 (opt-in): Aggressive compression ───────────────────────────────────
+// Collapses soft hedges and filler constructs. NEVER touches code blocks,
+// commands (lines starting with $, npm, npx, git, etc.), paths, or numbers.
+
+const AGGRESSIVE_PATTERNS: [RegExp, string][] = [
+  [/\bmake sure that\b/gi, 'ensure'],
+  [/\bmake sure\b/gi, 'ensure'],
+  [/\bas well as\b/gi, 'and'],
+  [/\ba number of\b/gi, 'several'],
+  [/\btake into account\b/gi, 'consider'],
+  [/\bwith respect to\b/gi, 'for'],
+  [/\bin terms of\b/gi, 'for'],
+  [/\bwhether or not\b/gi, 'whether'],
+  [/\beach of the\b/gi, 'each'],
+  [/\ball of the\b/gi, 'all'],
+  [/\bsome of the\b/gi, 'some'],
+  [/\bmost of the\b/gi, 'most'],
+  [/\bthe fact that\b/gi, 'that'],
+  [/\bat the same time\b/gi, 'simultaneously'],
+  [/\bin addition to this\b/gi, 'additionally'],
+  [/\bcan be used to\b/gi, 'can'],
+  [/\bis designed to\b/gi, ''],
+  [/\bin the process of\b/gi, 'while'],
+];
+
+const PROTECTED_LINE_RE = /^(\s*)(```|~{3}|\$\s|npm |npx |pnpm |yarn |git |curl |wget |docker |aws |cd |ls |mkdir |\d+\.|\/[\w/])/;
+
+function aggressiveCompress(content: string): string {
+  const lines = content.split('\n');
+  let inFence = false;
+  const result = lines.map((line) => {
+    if (/^```|^~~~/.test(line)) { inFence = !inFence; return line; }
+    if (inFence || PROTECTED_LINE_RE.test(line)) return line;
+    let out = line;
+    for (const [re, repl] of AGGRESSIVE_PATTERNS) {
+      out = out.replace(re, repl);
+    }
+    return out.replace(/  +/g, ' ');
+  });
+  return result.join('\n');
+}
+
 // ── Public API ────────────────────────────────────────────────────────────────
+
+export interface OptimizeFilesOptions {
+  aggressive?: boolean;
+}
 
 export function optimizeFiles(
   files: { type: MDFileType; filename: string; content: string }[],
+  options?: OptimizeFilesOptions,
 ): CrossFileOptimizerResult {
   if (files.length === 0) {
     return { files: [], totalTokensBefore: 0, totalTokensAfter: 0, passes: [] };
@@ -328,6 +376,19 @@ export function optimizeFiles(
     description: 'Cleaned markdown structure',
     tokensSaved: Math.max(0, p5Saved),
   });
+
+  // ── Pass 6: Aggressive compression (opt-in) ──────────────────────────────
+  if (options?.aggressive) {
+    const p6Before = working.map(c => countTokens(c));
+    working = working.map(c => aggressiveCompress(c));
+    const p6After = working.map(c => countTokens(c));
+    const p6Saved = p6Before.reduce((s, t, i) => s + t - p6After[i], 0);
+    allPasses.push({
+      name: 'Aggressive compression',
+      description: 'Collapsed soft hedges and filler (code blocks/commands preserved)',
+      tokensSaved: Math.max(0, p6Saved),
+    });
+  }
 
   // ── Assemble ──────────────────────────────────────────────────────────────
   const resultFiles = files.map((f, i) => ({

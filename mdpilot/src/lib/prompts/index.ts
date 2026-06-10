@@ -2,7 +2,9 @@ import type { GenerationRequest, MDFileType } from '@/types';
 import { supabase, supabaseEnabled } from '@/lib/supabase';
 import { FALLBACK_PROMPTS } from './fallback';
 import { buildTaskSystemPrompt } from './task';
-import { buildAudienceDirective } from './audience';
+import { buildAudienceDirective, HUMAN_VOICE_DIRECTIVE, HUMAN_FACING_FILE_TYPES, AGENT_FILE_TYPES } from './audience';
+import { buildAgentsSystemPrompt } from './agents';
+import { buildClaudeSystemPrompt } from './claude';
 
 export interface ResolvedPrompt {
   content: string;
@@ -62,18 +64,38 @@ export async function getSystemPrompt(
   if (fileType === 'walkthrough' && req) {
     const base = FALLBACK_PROMPTS.walkthrough ?? '';
     const directive = buildAudienceDirective(req);
-    return { content: directive ? `${base}\n\n${directive}` : base, version: 0 };
+    let content = directive ? `${base}\n\n${directive}` : base;
+    const audience = req.generateOptions?.audience;
+    const wantHumanVoice = req.writingStyle === 'human' || audience === 'non_technical' || audience === 'learner';
+    if (wantHumanVoice) content += `\n\n${HUMAN_VOICE_DIRECTIVE}`;
+    return { content, version: 0 };
   }
 
   // Generate mode: fetch from Supabase/fallback (cached), then append audience directive
   const cacheKey = `${fileType}:${role}`;
   const cached = cache.get(cacheKey);
   if (cached && Date.now() - cached.ts < CACHE_TTL) {
-    // Still append audience directive — it's request-specific, not cached
+    let hit = cached.content;
+    // tokenDiscipline and audience directive are request-specific — not cached
+    if (req?.tokenDiscipline && (fileType === 'agents' || fileType === 'claude') && !hit.includes('## Response style')) {
+      hit = fileType === 'agents'
+        ? buildAgentsSystemPrompt({ tokenDiscipline: true })
+        : buildClaudeSystemPrompt({ tokenDiscipline: true });
+    }
     const directive = req ? buildAudienceDirective(req) : '';
-    const content = directive ? `${cached.content}\n\n${directive}` : cached.content;
-    return { content, version: cached.version };
+    let final = directive ? `${hit}\n\n${directive}` : hit;
+    // Human voice — hard guard: skip for all agent-facing file types
+    if (!AGENT_FILE_TYPES.has(fileType as never) && HUMAN_FACING_FILE_TYPES.has(fileType as never)) {
+      const audience = req?.generateOptions?.audience;
+      if (req?.writingStyle === 'human' || audience === 'non_technical' || audience === 'learner') {
+        final += `\n\n${HUMAN_VOICE_DIRECTIVE}`;
+      }
+    }
+    return { content: final, version: cached.version };
   }
+
+  // Gold example reference — may be populated below and needed in post-processing
+  let goldExample: string | null = null;
 
   let content: string;
   let version: number;
@@ -108,16 +130,41 @@ export async function getSystemPrompt(
 
   if (!content) throw new Error(`No prompt for: ${fileType}`);
 
-  const goldExample = await fetchGoldExample(fileType, role);
+  goldExample = await fetchGoldExample(fileType, role);
   if (goldExample) {
     content = injectFewShot(content, goldExample);
   }
 
   cache.set(cacheKey, { content, version, ts: Date.now() });
 
-  // Append audience directive (not cached — request-specific)
+  // Post-process with token-discipline and audience directive (request-specific, not cached)
+  let finalContent = content;
+
+  // Append terse-response block to agents/claude when tokenDiscipline is requested.
+  // We append to the already-resolved content (preserves any Supabase customisation).
+  if (req?.tokenDiscipline && (fileType === 'agents' || fileType === 'claude')) {
+    const td = fileType === 'agents'
+      ? buildAgentsSystemPrompt({ tokenDiscipline: true })
+      : buildClaudeSystemPrompt({ tokenDiscipline: true });
+    // td already contains the full BASE + suffix; use the suffix portion only by
+    // appending if finalContent doesn't already contain the discipline marker.
+    if (!finalContent.includes('## Response style')) {
+      finalContent = td;
+      if (goldExample) finalContent = injectFewShot(finalContent, goldExample);
+    }
+  }
+
   const directive = req ? buildAudienceDirective(req) : '';
-  const finalContent = directive ? `${content}\n\n${directive}` : content;
+  if (directive) finalContent = `${finalContent}\n\n${directive}`;
+
+  // Human voice — hard guard: skip for all agent-facing file types
+  if (!AGENT_FILE_TYPES.has(fileType as never) && HUMAN_FACING_FILE_TYPES.has(fileType as never)) {
+    const audience = req?.generateOptions?.audience;
+    if (req?.writingStyle === 'human' || audience === 'non_technical' || audience === 'learner') {
+      finalContent += `\n\n${HUMAN_VOICE_DIRECTIVE}`;
+    }
+  }
+
   return { content: finalContent, version };
 }
 

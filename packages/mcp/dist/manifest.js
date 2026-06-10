@@ -36,6 +36,7 @@ export function recordDoc(rootDir, filename, content, ctx) {
             scripts: ctx.scripts,
             structure: ctx.structure,
             stack: ctx.detectedStack,
+            mcpServers: ctx.mcpServers.map((s) => ({ name: s.name, configFile: s.configFile })),
         },
     };
     writeFileSync(join(dir, MANIFEST_FILE), JSON.stringify(manifest, null, 2), 'utf-8');

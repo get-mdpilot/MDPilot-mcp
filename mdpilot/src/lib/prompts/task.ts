@@ -53,15 +53,23 @@ function buildExpertiseBlock(req: GenerationRequest): string {
 
 // ── Mode-specific output instructions ─────────────────────────────────────────
 
-function modeInstructions(executionMode: string): string {
+function modeInstructions(executionMode: string, riskCheck = false): string {
   switch (executionMode) {
-    case 'ai_exec':
+    case 'ai_exec': {
+      const riskLine = riskCheck
+        ? '\n- If the TASK.md has a Watch-outs section: also append ONE final line to the agent prompt block, after the Response style line:\n  Before starting, check your plan against the Watch-outs above and adjust.'
+        : '';
       return `Output mode: AI execution. Generate a TASK.md optimized for a coding agent to execute directly with zero clarifying questions.
 - All sections required (see below)
 - Implementation plan must be prescriptive: exact files to create/modify, exact function signatures, exact command sequences
 - Agent prompt must be ≤ 150 tokens and self-contained enough that an agent can start coding from it alone
 - Flag every assumption with [ASSUMED] so a human can review before the agent runs
-- Watch-outs section is mandatory: list every pitfall from your domain/language expertise that applies to this specific task`;
+- Watch-outs section is mandatory: list every pitfall from your domain/language expertise that applies to this specific task
+- At the END of the generated agent prompt block, append these lines exactly:
+  Before executing: write a 3-5 line plan of your steps.
+  After each step: verify it succeeded before continuing (gates below).
+  Response style: terse. No preamble, no restating. Code over prose. Ask only blocking questions.${riskLine}`;
+    }
 
     case 'context':
       return `Output mode: Context drop. Generate a compact TASK.md for pasting into a chat window.
@@ -265,10 +273,11 @@ export function buildTaskSystemPrompt(req: GenerationRequest): string {
   const executionMode = req.taskOptions?.executionMode ?? 'guide';
   const experienceLevel = req.taskOptions?.experienceLevel ?? 'experienced';
   const alternativesSection = req.taskOptions?.showAlternatives ? ALTERNATIVES_ON : ALTERNATIVES_OFF;
+  const riskCheck = req.taskOptions?.riskCheck ?? false;
 
   return BASE_SYSTEM_PROMPT
     .replace('{{EXPERTISE_BLOCK}}', expertiseBlock)
-    .replace('{{MODE_INSTRUCTIONS}}', modeInstructions(executionMode))
+    .replace('{{MODE_INSTRUCTIONS}}', modeInstructions(executionMode, riskCheck))
     .replace('{{ALTERNATIVES_SECTION}}', alternativesSection)
     .replace('{{EXPERIENCE_LEVEL_NOTE}}', experienceLevelNote(experienceLevel));
 }

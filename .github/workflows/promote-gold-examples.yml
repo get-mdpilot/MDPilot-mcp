@@ -1,0 +1,44 @@
+name: Nightly gold-example promotion
+
+# Runs at 02:00 UTC every day — promotes top-rated, kept-unedited, consented
+# generation samples into gold_examples for few-shot injection.
+#
+# Secrets required (Settings → Secrets → Actions):
+#   NEXT_PUBLIC_SUPABASE_URL      — your Supabase project URL
+#   SUPABASE_SERVICE_ROLE_KEY     — service-role key (write access needed; NOT the anon key)
+#
+# The anon key (NEXT_PUBLIC_SUPABASE_ANON_KEY) must NOT be used here — gold_examples
+# has no insert policy for anon, and we don't want anonymous writes to gold tables.
+
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch: # allow manual trigger for testing
+
+jobs:
+  promote:
+    name: Promote gold examples
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mdpilot
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: mdpilot/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run promotion script
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npx tsx scripts/promote-gold-examples.ts
+        # Script exits non-zero on DB error (promote-gold-examples.ts: process.exit(1))
+        # Summary line "promoted N gold examples; table now has M rows" appears in logs

@@ -1,6 +1,13 @@
 import { readFileSync, existsSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
 
+export interface McpServerInfo {
+  name: string;
+  command: string;
+  configFile: string;
+  envKeys: string[]; // key NAMES only — values are never read or reported
+}
+
 export interface ProjectContext {
   detectedStack: string[];
   dependencies: string[];
@@ -10,6 +17,7 @@ export interface ProjectContext {
   hasExistingDocs: { readme: boolean; agents: boolean; claude: boolean };
   language: string;
   projectName: string;
+  mcpServers: McpServerInfo[];
 }
 
 const IGNORE = new Set([
@@ -117,6 +125,9 @@ export function analyzeProject(rootDir: string): ProjectContext {
     packageManager = 'pub';
   }
 
+  // ── MCP server configs ────────────────────────────────────────────────────
+  const mcpServers = detectMcpServers(rootDir);
+
   // ── Top-level structure (1 level) ─────────────────────────────────────────
   const structure: string[] = [];
   for (const entry of readdirSync(rootDir)) {
@@ -142,5 +153,52 @@ export function analyzeProject(rootDir: string): ProjectContext {
     },
     language,
     projectName,
+    mcpServers,
   };
+}
+
+// ── MCP config detection ──────────────────────────────────────────────────────
+// Reads server names and commands only — env VALUES are never read or reported.
+
+const MCP_CONFIG_PATHS = [
+  '.mcp.json',
+  join('.cursor', 'mcp.json'),
+  join('.vscode', 'mcp.json'),
+  join('.windsurf', 'mcp.json'),
+  join('.gemini', 'settings.json'),
+];
+
+function detectMcpServers(rootDir: string): McpServerInfo[] {
+  const servers: McpServerInfo[] = [];
+  const seen = new Set<string>();
+
+  for (const configRelPath of MCP_CONFIG_PATHS) {
+    const fullPath = join(rootDir, configRelPath);
+    if (!existsSync(fullPath)) continue;
+
+    try {
+      const raw = readFileSync(fullPath, 'utf-8');
+      const parsed = JSON.parse(raw) as Record<string, unknown>;
+      // Support both "mcpServers" and "servers" keys
+      const map = (parsed['mcpServers'] ?? parsed['servers'] ?? {}) as Record<
+        string,
+        { command?: string; args?: string[]; env?: Record<string, unknown> }
+      >;
+
+      for (const [name, cfg] of Object.entries(map)) {
+        if (seen.has(name)) continue;
+        seen.add(name);
+        const cmd = [cfg.command, ...(cfg.args ?? [])]
+          .filter((x): x is string => typeof x === 'string')
+          .join(' ');
+        // Report env key NAMES only — never values
+        const envKeys = Object.keys(cfg.env ?? {}).map((k) => `${k} (set)`);
+        servers.push({ name, command: cmd, configFile: configRelPath, envKeys });
+      }
+    } catch {
+      // Unparseable config — skip silently
+    }
+  }
+
+  return servers;
 }

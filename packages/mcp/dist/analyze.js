@@ -123,6 +123,8 @@ export function analyzeProject(rootDir) {
         stack.push('Flutter');
         packageManager = 'pub';
     }
+    // ── MCP server configs ────────────────────────────────────────────────────
+    const mcpServers = detectMcpServers(rootDir);
     // ── Top-level structure (1 level) ─────────────────────────────────────────
     const structure = [];
     for (const entry of readdirSync(rootDir)) {
@@ -149,6 +151,46 @@ export function analyzeProject(rootDir) {
         },
         language,
         projectName,
+        mcpServers,
     };
+}
+// ── MCP config detection ──────────────────────────────────────────────────────
+// Reads server names and commands only — env VALUES are never read or reported.
+const MCP_CONFIG_PATHS = [
+    '.mcp.json',
+    join('.cursor', 'mcp.json'),
+    join('.vscode', 'mcp.json'),
+    join('.windsurf', 'mcp.json'),
+    join('.gemini', 'settings.json'),
+];
+function detectMcpServers(rootDir) {
+    const servers = [];
+    const seen = new Set();
+    for (const configRelPath of MCP_CONFIG_PATHS) {
+        const fullPath = join(rootDir, configRelPath);
+        if (!existsSync(fullPath))
+            continue;
+        try {
+            const raw = readFileSync(fullPath, 'utf-8');
+            const parsed = JSON.parse(raw);
+            // Support both "mcpServers" and "servers" keys
+            const map = (parsed['mcpServers'] ?? parsed['servers'] ?? {});
+            for (const [name, cfg] of Object.entries(map)) {
+                if (seen.has(name))
+                    continue;
+                seen.add(name);
+                const cmd = [cfg.command, ...(cfg.args ?? [])]
+                    .filter((x) => typeof x === 'string')
+                    .join(' ');
+                // Report env key NAMES only — never values
+                const envKeys = Object.keys(cfg.env ?? {}).map((k) => `${k} (set)`);
+                servers.push({ name, command: cmd, configFile: configRelPath, envKeys });
+            }
+        }
+        catch {
+            // Unparseable config — skip silently
+        }
+    }
+    return servers;
 }
 //# sourceMappingURL=analyze.js.map

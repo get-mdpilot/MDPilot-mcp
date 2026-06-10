@@ -21,7 +21,7 @@ export default function PrivacyPage() {
 
           <p>
             MDPilot (&ldquo;we&rdquo;, &ldquo;us&rdquo;) is operated by{' '}
-            <strong className="text-white/75">Mores and Technologies</strong>. This policy explains what we
+            <strong className="text-white/75">Viveon Gizit Pvt Ltd</strong>. This policy explains what we
             collect when you use mdpilot.in and the MDPilot MCP server, and your rights over it. We
             designed MDPilot to collect as little as possible.
           </p>
@@ -183,7 +183,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-[15px] font-bold text-white mb-3">Contact</h2>
             <p>
-              Mores and Technologies —{' '}
+              Viveon Gizit Pvt Ltd —{' '}
               <a href="mailto:privacy@mdpilot.in" className="text-[#4FACFF]/70 hover:text-[#4FACFF] transition-colors">
                 privacy@mdpilot.in
               </a>. For users in India, this address also serves as our grievance contact under the

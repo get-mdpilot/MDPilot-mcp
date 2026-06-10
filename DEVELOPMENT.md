@@ -117,18 +117,19 @@ mdpilot/
 ```
 packages/mcp/
 ├── src/
-│   ├── index.ts           # Entry — 8 tools registered (stdio) + setup arg branch
+│   ├── index.ts           # Entry — 10 tools registered (stdio) + setup arg branch
 │   ├── setup.ts           # Interactive setup wizard (npx mdpilot-mcp setup)
 │   ├── ai-provider.ts     # Multi-provider resolver: GROQ → NVIDIA → ANTHROPIC → OPENAI
-│   ├── analyze.ts         # Reads repo: stack, scripts, dependencies, structure
+│   ├── analyze.ts         # Reads repo: stack, scripts, deps, structure, MCP servers
 │   ├── repo-context.ts    # Deep context: repomix + Secretlint → 30k-token packed summary
-│   ├── generate.ts        # Generation calls via ai-provider.ts (multi-provider)
+│   ├── generate.ts        # Generation calls via ai-provider.ts (tokenDiscipline + mcpServers)
 │   ├── verify-generate.ts # Self-verification loop: draft → verify → revise (max 2 attempts)
-│   ├── optimizer.ts       # 4-pass optimizer adapted for single-file use
+│   ├── optimizer.ts       # 5-pass optimizer (+ opt-in aggressive 6th pass)
 │   ├── tokenizer.ts       # js-tiktoken wrapper
-│   ├── prompts.ts         # All system prompts (mirrored from web app)
-│   ├── manifest.ts        # Snapshot storage — .mdpilot/manifest.json per doc
-│   ├── drift.ts           # Drift detection: claim verification + snapshot diff
+│   ├── prompts.ts         # System prompts with buildAgentsPrompt/buildClaudePrompt builders
+│   ├── manifest.ts        # Snapshot storage — .mdpilot/manifest.json per doc + mcpServers
+│   ├── drift.ts           # Drift detection: claim verification + snapshot diff + MCP server drift
+│   ├── context.ts         # save_context / load_context — local session memory (secret-redacted)
 │   └── patch.ts           # Section-level patching (preserves unchanged sections)
 └── dist/                  # Compiled output (tsc → ES2022, NodeNext)
 ```
@@ -173,6 +174,38 @@ Result: 20–40% token reduction without meaning loss.
 | 2 | **Self-verification loop** | After generating, `verifyClaimsOnContent` checks every command and path against the live repo. If issues found, revises with real project state. Max 2 attempts. | `verify-generate.ts`, `drift.ts` |
 | 3 | **Eval harness** | Promptfoo eval — 3 fixtures × 3 file types = 9 test cases. Custom `md-quality.js` assertion checks length, code blocks, structure, keyword presence, no forbidden placeholders. GitHub Action gates prompt PRs at 80% pass rate. | `evals/` |
 | 4 | **Few-shot injection** | Nightly job promotes top-rated `generation_feedback` rows into `gold_examples`. On generation, `getSystemPrompt()` fetches the gold example and injects as `<few_shot_example>`. | `scripts/promote-gold-examples.ts` |
+
+### Learning loop — how automatic training works
+
+```
+User generates file
+  → usage_events row (file_type, role, provider, tokens)
+    → user clicks 👍, keeps file unedited
+      → generation_feedback row (thumbs=up, kept_unedited=true, edit_distance_bucket=none)
+        → training_samples row (consented=true, pii_scrubbed_input, output)
+
+Nightly GitHub Action (02:00 UTC, .github/workflows/promote-gold-examples.yml):
+  → promote-gold-examples.ts runs with SUPABASE_SERVICE_ROLE_KEY
+    → JOINs feedback + samples, filters: thumbs=up ∧ kept_unedited ∧ consented
+    → Picks best (most recent) per (file_type, role)
+    → UPSERTs into gold_examples (idempotent — safe to re-run)
+    → Logs: "promoted N gold examples; table now has M rows"
+
+Next generation call:
+  → getSystemPrompt() → fetchGoldExample(fileType, role) [5-min cache]
+    → if row found: injectFewShot(prompt, example) → <few_shot_example> appended
+    → if Supabase down: silently no-ops, uses base prompt
+```
+
+**What is automatic:** feedback collection → nightly promotion → few-shot injection. No human needed once the Action is running.
+
+**What stays manual (by design):** domain-lens updates (`src/lib/task/domains.ts`) are reviewed from QA logs before merging. Auto-ingestion of user content into lenses would risk encoding idiosyncratic or incorrect patterns at scale.
+
+**Secrets needed in GitHub Actions** (Settings → Secrets → Actions):
+- `NEXT_PUBLIC_SUPABASE_URL` — Supabase project URL
+- `SUPABASE_SERVICE_ROLE_KEY` — service-role key (write access to gold_examples; NOT the anon key)
+
+The anon key (`NEXT_PUBLIC_SUPABASE_ANON_KEY`) stays in the app for read-only operations only. Never use it in the promotion script — gold_examples has no insert/update policy for anon.
 
 ### Drift detection
 
@@ -276,7 +309,7 @@ GROQ_API_KEY=gsk_...           # free — recommended
 ### Web app
 
 ```bash
-git clone https://github.com/adgenie1434-glitch/md-pilot
+git clone https://github.com/get-mdpilot/md-pilot
 cd md-pilot/mdpilot
 npm install
 cp .env.example .env.local
@@ -318,9 +351,10 @@ npm publish --access public
 | **v1** | Shipped | Generate mode, 3 file types (README/AGENTS/CLAUDE), 3-pass optimizer, CodeMirror split-pane, copy/download/zip |
 | **v2** | Shipped | Task + Convert modes, 9 file types, 5-pass optimizer, multi-model (Claude/GPT/Gemini/Groq/NVIDIA), badge generator, auto-TOC, template gallery, Supabase analytics + prompt versioning, admin prompt API |
 | **MCP v0.2** | Shipped | `mdpilot-mcp` — 8 tools, multi-provider (GROQ free → NVIDIA free → Anthropic → OpenAI), `npx mdpilot-mcp setup` wizard (detects editor, gets free key, merges config + backup) |
+| **MCP v0.3** | Shipped | 10 tools — added `save_context` + `load_context` (local session memory, secret-redacted, self-verifying drift); MCP server detection in `analyze_project`; compact tool outputs + `verbose` escape hatch; `tokenDiscipline` param on `generate_md_file`; aggressive optimizer pass (6th pass, opt-in); token-discipline terse-response block for ai_exec Task prompts; MCP awareness in generated AGENTS.md |
 | **SEO** | Shipped | 120 SSG pages (`/agents-md/for/nextjs` etc.), sitemap.xml, robots.txt, JSON-LD (TechArticle + FAQPage), zero runtime LLM calls |
 | **Docs hub** | Shipped | 11 docs pages with sidebar, MCP setup guide (multi-provider, "Fastest setup" callout), all Labs docs |
-| **Legal** | Shipped | `/privacy` + `/terms` — Mores and Technologies, India/Bengaluru, DPDP + GDPR-aligned |
+| **Legal** | Shipped | `/privacy` + `/terms` — Viveon Gizit Pvt Ltd, India/Bengaluru, DPDP + GDPR-aligned |
 | **Feedback** | Shipped | GitHub issue templates (bug/feedback/config.yml), feedback links in footer + docs |
 | **Agent Intel** | Shipped | Repomix+Secretlint deep context, self-verification loop, promptfoo eval harness + CI gate, gold_examples few-shot injection |
 | **v3** | Planned | Shareable public links, light accounts, Stripe billing, PostHog analytics, streaming generation |

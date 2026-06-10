@@ -32,7 +32,7 @@ export default function BlogPage() {
             <p className="text-white/35 text-[14px] max-w-sm mx-auto leading-relaxed">
               First posts are in draft. Check back soon — or{' '}
               <a
-                href="https://github.com/mohanreddyt"
+                href="https://github.com/get-mdpilot"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[#4FACFF]/60 hover:text-[#4FACFF] transition-colors"

@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Terms of Service — MDPilot',
-  description: 'Terms governing your use of mdpilot.in and the MDPilot MCP server, operated by Mores and Technologies.',
+  description: 'Terms governing your use of mdpilot.in and the MDPilot MCP server, operated by Viveon Gizit Pvt Ltd.',
 };
 
 export default function TermsPage() {
@@ -21,7 +21,7 @@ export default function TermsPage() {
 
           <p>
             These terms govern your use of mdpilot.in and the MDPilot MCP server, operated by{' '}
-            <strong className="text-white/75">Mores and Technologies</strong>. By using MDPilot, you
+            <strong className="text-white/75">Viveon Gizit Pvt Ltd</strong>. By using MDPilot, you
             agree to them.
           </p>
 
@@ -95,7 +95,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-[15px] font-bold text-white mb-3">Limitation of liability</h2>
             <p>
-              To the maximum extent permitted by law, Mores and Technologies will not be liable for
+              To the maximum extent permitted by law, Viveon Gizit Pvt Ltd will not be liable for
               any indirect, incidental, special, consequential, or punitive damages, or for any loss of
               data, profits, or business, arising from your use of MDPilot. Our total liability is
               limited to the amount you paid us, if any, in the 12 months before the claim.
@@ -127,7 +127,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-[15px] font-bold text-white mb-3">Contact</h2>
             <p>
-              Mores and Technologies —{' '}
+              Viveon Gizit Pvt Ltd —{' '}
               <a href="mailto:privacy@mdpilot.in" className="text-[#4FACFF]/70 hover:text-[#4FACFF] transition-colors">
                 privacy@mdpilot.in
               </a>

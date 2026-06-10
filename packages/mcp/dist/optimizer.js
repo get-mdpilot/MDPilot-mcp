@@ -79,14 +79,60 @@ function compressLines(content) {
     result = result.replace(/^(?:Note|Important|Warning|Tip): /gm, '> ');
     return result.trim();
 }
-// ── Public API ────────────────────────────────────────────────────────────────
-export function optimizeMarkdown(content) {
+// ── Pass 5 (opt-in): Aggressive compression ───────────────────────────────────
+// Collapses soft hedges and filler constructs. NEVER touches code blocks,
+// commands (lines starting with $, npm, npx, git, curl, etc.), paths, or numbers.
+const AGGRESSIVE_PATTERNS = [
+    [/\bmake sure that\b/gi, 'ensure'],
+    [/\bmake sure\b/gi, 'ensure'],
+    [/\bas well as\b/gi, 'and'],
+    [/\ba number of\b/gi, 'several'],
+    [/\btake into account\b/gi, 'consider'],
+    [/\bwith respect to\b/gi, 'for'],
+    [/\bin terms of\b/gi, 'for'],
+    [/\bwhether or not\b/gi, 'whether'],
+    [/\beach of the\b/gi, 'each'],
+    [/\ball of the\b/gi, 'all'],
+    [/\bsome of the\b/gi, 'some'],
+    [/\bmost of the\b/gi, 'most'],
+    [/\bthe fact that\b/gi, 'that'],
+    [/\bat the same time\b/gi, 'simultaneously'],
+    [/\bin addition to this\b/gi, 'additionally'],
+    [/\bcan be used to\b/gi, 'can'],
+    [/\bis designed to\b/gi, ''],
+    [/\bin the process of\b/gi, 'while'],
+];
+const PROTECTED_LINE_RE = /^(\s*)(```|~{3}|\$\s|npm |npx |pnpm |yarn |git |curl |wget |docker |aws |cd |ls |mkdir |\d+\.|\/[\w/])/;
+function aggressiveCompress(content) {
+    const lines = content.split('\n');
+    let inFence = false;
+    const result = lines.map((line) => {
+        // Track code fence state
+        if (/^```|^~~~/.test(line)) {
+            inFence = !inFence;
+            return line;
+        }
+        // Never touch lines inside code fences or command-like lines
+        if (inFence || PROTECTED_LINE_RE.test(line))
+            return line;
+        let out = line;
+        for (const [re, repl] of AGGRESSIVE_PATTERNS) {
+            out = out.replace(re, repl);
+        }
+        return out.replace(/  +/g, ' ');
+    });
+    return result.join('\n');
+}
+export function optimizeMarkdown(content, opts) {
     const tokensBefore = countTokens(content);
     let working = content;
     working = stripBoilerplate(working);
     working = compressStructure(working);
     working = applyVerboseCompression(working);
     working = compressLines(working);
+    if (opts?.aggressive) {
+        working = aggressiveCompress(working);
+    }
     const tokensAfter = countTokens(working);
     return { optimized: working, tokensBefore, tokensAfter };
 }

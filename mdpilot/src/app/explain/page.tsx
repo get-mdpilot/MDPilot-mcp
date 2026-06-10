@@ -30,6 +30,7 @@ const AUDIENCE_OPTIONS: { id: ReaderAudience; icon: string; label: string; desc:
 export default function ExplainPage() {
   const [code, setCode]                 = useState('');
   const [audience, setAudience]         = useState<ReaderAudience>('non_technical');
+  const [humanVoice, setHumanVoice]     = useState(true); // default ON; non_technical/learner always use it
   const [isGenerating, setIsGenerating] = useState(false);
   const [output, setOutput]             = useState<string | null>(null);
   const [error, setError]               = useState<string | null>(null);
@@ -57,6 +58,7 @@ export default function ExplainPage() {
             rawStackInput: code,
             selectedFiles: ['walkthrough'],
             generateOptions: { audience, readingLevel: 'plain', includeReasoning: true },
+            writingStyle: humanVoice ? 'human' : 'default',
           },
         }),
       });
@@ -185,7 +187,11 @@ export default function ExplainPage() {
               return (
                 <button
                   key={opt.id}
-                  onClick={() => setAudience(opt.id)}
+                  onClick={() => {
+                    setAudience(opt.id);
+                    // Auto-enable human voice for non_technical and learner
+                    if (opt.id === 'non_technical' || opt.id === 'learner') setHumanVoice(true);
+                  }}
                   className={`flex items-start gap-3 rounded-xl border p-3.5 text-left transition-all ${
                     active
                       ? 'border-[#4FACFF]/50 bg-[#4FACFF]/[0.07]'
@@ -208,6 +214,30 @@ export default function ExplainPage() {
                 </button>
               );
             })}
+          </div>
+          {/* Human voice toggle */}
+          <div className="mt-3 rounded-xl border border-white/8 bg-white/[0.02] p-3.5">
+            <label className="flex items-center justify-between cursor-pointer gap-4">
+              <div>
+                <p className="text-xs font-medium text-[var(--md-text-secondary)]">Human voice</p>
+                <p className="text-[11px] text-[var(--md-text-tertiary)] mt-0.5">
+                  Natural prose — no em dashes or AI-isms.
+                  {(audience === 'non_technical' || audience === 'learner') && (
+                    <span className="ml-1 text-[#4FACFF]">Auto-on for this audience.</span>
+                  )}
+                </p>
+              </div>
+              <button
+                role="switch"
+                aria-checked={humanVoice}
+                onClick={() => setHumanVoice(v => !v)}
+                className={`relative w-10 h-5.5 rounded-full border transition-all shrink-0 ${
+                  humanVoice ? 'bg-[#4FACFF]/80 border-[#4FACFF]/50' : 'bg-white/5 border-white/15'
+                }`}
+              >
+                <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${humanVoice ? 'left-5' : 'left-0.5'}`} />
+              </button>
+            </label>
           </div>
         </div>
 

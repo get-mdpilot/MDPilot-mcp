@@ -168,6 +168,34 @@ export function diffSnapshot(rootDir: string, filename: string, ctx: ProjectCont
     }
   }
 
+  // MCP server drift — compare snapshot servers vs current config
+  if (snap.mcpServers) {
+    const snapshotNames = new Set(snap.mcpServers.map((s) => s.name));
+    const currentNames = new Set(ctx.mcpServers.map((s) => s.name));
+
+    for (const { name, configFile } of snap.mcpServers) {
+      if (!currentNames.has(name)) {
+        issues.push({
+          doc: filename,
+          severity: 'medium',
+          type: 'stale',
+          message: `MCP server "${name}" was in ${configFile} when docs were generated but is no longer configured`,
+        });
+      }
+    }
+
+    for (const { name, configFile } of ctx.mcpServers) {
+      if (!snapshotNames.has(name)) {
+        issues.push({
+          doc: filename,
+          severity: 'low',
+          type: 'new_dependency',
+          message: `New MCP server "${name}" added in ${configFile} since docs were generated — consider documenting it in AGENTS.md`,
+        });
+      }
+    }
+  }
+
   return issues;
 }
 

@@ -1,0 +1,19 @@
+{
+  "fileType": "task",
+  "mode": "task",
+  "domain": "backend",
+  "executionMode": "ai_exec",
+  "experienceLevel": "experienced",
+  "taskInput": "Add rate limiting to the /api/generate endpoint. Limit to 10 requests per minute per IP. Return 429 with Retry-After header when limit is hit. Use Redis for storage. Existing endpoint is at src/app/api/generate/route.ts.",
+  "detectedStack": ["nextjs", "typescript", "redis"],
+  "rawStackInput": "Next.js 14, TypeScript, Redis",
+  "expectedKeywords": {
+    "task": ["rate limit", "429", "Redis", "Retry-After"]
+  },
+  "planFirstMarkers": [
+    "Before executing",
+    "write a 3-5 line plan",
+    "verify it succeeded"
+  ],
+  "forbiddenContent": ["TODO", "placeholder"]
+}

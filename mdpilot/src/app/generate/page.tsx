@@ -18,7 +18,7 @@ import { LabsBreadcrumb } from '@/components/ui/labs-breadcrumb';
 import type { AIProvider } from '@/lib/ai-client';
 import type {
   GenerationRequest, MDFileType, ProjectType, Audience, AITool, GeneratedFile,
-  ReaderAudience, ReadingLevel, GenerateOptions,
+  ReaderAudience, ReadingLevel, GenerateOptions, WritingStyle,
 } from '@/types';
 import type { FileRec, RecommendFilesResponse } from '@/lib/prompts/recommend-files';
 
@@ -227,6 +227,7 @@ export default function GeneratePage() {
   const [readerAudience, setReaderAudience]         = useState<ReaderAudience>('ai_agent');
   const [readingLevel, setReadingLevel]             = useState<ReadingLevel>('expert');
   const [includeReasoning, setIncludeReasoning]     = useState(false);
+  const [humanVoice, setHumanVoice]                 = useState(false);
 
   // Step 5 — goal-first recommendation state (non_technical path)
   const [goal, setGoal]                             = useState('');
@@ -299,6 +300,8 @@ export default function GeneratePage() {
     setReadingLevel(opt.defaultLevel);
     setIncludeReasoning(opt.defaultReasoning);
     if (id !== 'non_technical') setUserRequestedGoalFirst(false);
+    // Auto-enable human voice for non-technical and learner audiences
+    setHumanVoice(id === 'non_technical' || id === 'learner');
   };
 
   // ── Goal-first ────────────────────────────────────────────────────────────────
@@ -368,6 +371,7 @@ export default function GeneratePage() {
 
   const buildRequest = (): GenerationRequest => {
     const generateOptions: GenerateOptions = { audience: readerAudience, readingLevel, includeReasoning };
+    const writingStyle: WritingStyle = humanVoice ? 'human' : 'default';
     return {
       projectType: projectType!,
       projectDescription: showGoalFirst && goal.trim() ? goal.trim() : projectDescription,
@@ -377,6 +381,7 @@ export default function GeneratePage() {
       detectedStack,
       selectedFiles,
       generateOptions,
+      writingStyle,
     };
   };
 
@@ -832,7 +837,7 @@ export default function GeneratePage() {
                   </div>
                 )}
                 {readerAudience === 'team' && (
-                  <div className="rounded-xl border border-white/8 bg-white/[0.02] p-4">
+                  <div className="rounded-xl border border-white/8 bg-white/[0.02] p-4 mb-3">
                     <label className="flex items-center justify-between cursor-pointer gap-4">
                       <div>
                         <p className="text-xs font-medium text-[var(--md-text-secondary)]">Include reasoning notes</p>
@@ -848,6 +853,26 @@ export default function GeneratePage() {
                     </label>
                   </div>
                 )}
+                <div className="rounded-xl border border-white/8 bg-white/[0.02] p-4">
+                  <label className="flex items-center justify-between cursor-pointer gap-4">
+                    <div>
+                      <p className="text-xs font-medium text-[var(--md-text-secondary)]">Human voice</p>
+                      <p className="text-[11px] text-[var(--md-text-tertiary)] mt-0.5">
+                        Natural prose for README, CONTRIBUTING, DESIGN — no em dashes or AI-isms.
+                        {(readerAudience === 'non_technical' || readerAudience === 'learner') && (
+                          <span className="ml-1 text-[#4FACFF]">Auto-on for this audience.</span>
+                        )}
+                      </p>
+                    </div>
+                    <button role="switch" aria-checked={humanVoice} onClick={() => setHumanVoice(v => !v)}
+                      className={`relative w-10 h-5.5 rounded-full border transition-all shrink-0 ${
+                        humanVoice ? 'bg-[#4FACFF]/80 border-[#4FACFF]/50' : 'bg-white/5 border-white/15'
+                      }`}
+                    >
+                      <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${humanVoice ? 'left-5' : 'left-0.5'}`} />
+                    </button>
+                  </label>
+                </div>
               </>
             )}
             {readerAudience === 'ai_agent' && (
@@ -1109,6 +1134,7 @@ export default function GeneratePage() {
                 { label: 'AI tools',   value: reviewAiLabel },
                 { label: 'Tech stack', value: reviewStackLabel },
                 { label: 'Reader',     value: reviewReaderLabel },
+                ...(humanVoice && readerAudience !== 'ai_agent' ? [{ label: 'Voice', value: 'Human (no AI-isms)' }] : []),
                 ...(showGoalFirst && goal ? [{ label: 'Your goal', value: `"${goal}"` }] : []),
                 { label: 'Files',      value: `${selectedFiles.filter(t => V1_SUPPORTED.includes(t)).length} file${selectedFiles.filter(t => V1_SUPPORTED.includes(t)).length !== 1 ? 's' : ''} queued` },
               ].map(row => (

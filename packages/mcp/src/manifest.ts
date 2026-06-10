@@ -14,6 +14,7 @@ export interface DocManifest {
       scripts: Record<string, string>;
       structure: string[];
       stack: string[];
+      mcpServers?: { name: string; configFile: string }[];
     };
   }>;
 }
@@ -60,6 +61,7 @@ export function recordDoc(
       scripts: ctx.scripts,
       structure: ctx.structure,
       stack: ctx.detectedStack,
+      mcpServers: ctx.mcpServers.map((s) => ({ name: s.name, configFile: s.configFile })),
     },
   };
 

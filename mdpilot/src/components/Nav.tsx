@@ -124,7 +124,7 @@ export default function Nav() {
 
                 <NavigationMenuItem>
                   <a
-                    href="https://github.com/mohanreddyt"
+                    href="https://github.com/get-mdpilot"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex flex-row items-center gap-1.5 px-4 py-2 text-[13.5px] font-medium text-white/45 hover:text-white cursor-pointer rounded-md hover:bg-white/[0.04] transition-colors"
@@ -247,7 +247,7 @@ export default function Nav() {
                       </SheetClose>
 
                       <a
-                        href="https://github.com/mohanreddyt"
+                        href="https://github.com/get-mdpilot"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center justify-between py-3.5 text-[14px] text-white/40 hover:text-white transition-colors"

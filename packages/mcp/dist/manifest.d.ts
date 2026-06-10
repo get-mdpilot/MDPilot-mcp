@@ -10,6 +10,10 @@ export interface DocManifest {
             scripts: Record<string, string>;
             structure: string[];
             stack: string[];
+            mcpServers?: {
+                name: string;
+                configFile: string;
+            }[];
         };
     }>;
 }

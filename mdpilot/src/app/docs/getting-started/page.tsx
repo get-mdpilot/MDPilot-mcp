@@ -166,7 +166,7 @@ export default function GettingStartedPage() {
         <p className="text-[12px] text-white/30">
           Found a bug?{' '}
           <a
-            href="https://github.com/adgenie1434-glitch/md-pilot/issues/new/choose"
+            href="https://github.com/get-mdpilot/md-pilot/issues/new/choose"
             target="_blank"
             rel="noopener noreferrer"
             className="text-[#4FACFF]/60 hover:text-[#4FACFF] transition-colors"

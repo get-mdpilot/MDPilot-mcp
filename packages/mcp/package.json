@@ -1,6 +1,6 @@
 {
   "name": "mdpilot-mcp",
-  "version": "0.2.0",
+  "version": "0.3.1",
   "description": "MCP server for MDPilot — generate AGENTS.md/CLAUDE.md, optimize tokens, and detect doc drift from inside your IDE.",
   "type": "module",
   "bin": {
@@ -32,15 +32,15 @@
     "agents",
     "documentation"
   ],
-  "author": "MDPilot",
+  "author": "Mohan (Viveon Gizit Pvt Ltd)",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/adgenie1434-glitch/md-pilot.git"
+    "url": "git+https://github.com/get-mdpilot/md-pilot.git"
   },
   "homepage": "https://mdpilot.in",
   "bugs": {
-    "url": "https://github.com/adgenie1434-glitch/md-pilot/issues"
+    "url": "https://github.com/get-mdpilot/md-pilot/issues"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.100.1",

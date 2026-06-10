@@ -129,7 +129,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div>
                 <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-4">Company</p>
                 <ul className="space-y-2.5">
-                  {[['GitHub', 'https://github.com'], ['Twitter / X', '#'], ['mdpilot.in', 'https://mdpilot.in']].map(([label, href]) => (
+                  {[['GitHub', 'https://github.com/get-mdpilot'], ['Twitter / X', '#'], ['mdpilot.in', 'https://mdpilot.in']].map(([label, href]) => (
                     <li key={label}>
                       <a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" className="text-sm text-white/50 hover:text-white transition-colors">{label}</a>
                     </li>
@@ -138,10 +138,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mt-6 mb-4">Support</p>
                 <ul className="space-y-2.5">
                   <li>
-                    <a href="https://github.com/adgenie1434-glitch/md-pilot/issues/new/choose" target="_blank" rel="noopener noreferrer" className="text-sm text-white/50 hover:text-white transition-colors">Feedback</a>
+                    <a href="https://github.com/get-mdpilot/md-pilot/issues/new/choose" target="_blank" rel="noopener noreferrer" className="text-sm text-white/50 hover:text-white transition-colors">Feedback</a>
                   </li>
                   <li>
-                    <a href="https://github.com/adgenie1434-glitch/md-pilot/issues/new/choose" target="_blank" rel="noopener noreferrer" className="text-sm text-white/50 hover:text-white transition-colors">Report a bug</a>
+                    <a href="https://github.com/get-mdpilot/md-pilot/issues/new/choose" target="_blank" rel="noopener noreferrer" className="text-sm text-white/50 hover:text-white transition-colors">Report a bug</a>
                   </li>
                 </ul>
                 <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mt-6 mb-4">Legal</p>
