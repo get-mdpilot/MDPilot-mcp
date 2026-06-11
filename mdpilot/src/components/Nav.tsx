@@ -55,16 +55,28 @@ export default function Nav() {
 
             {/* Logo */}
             <Link href="/" className="group flex items-center gap-2.5 shrink-0">
-              <div className="relative w-8 h-8">
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-[#4FACFF] to-[#A855F7] opacity-90 group-hover:opacity-100 transition-opacity shadow-[0_0_16px_rgba(79,172,255,0.4)]" />
-                <div className="absolute inset-0 rounded-xl flex items-center justify-center">
-                  <span
-                    className="text-[#07070f] text-[11px] font-black tracking-tighter"
-                    style={{ fontFamily: 'Space Grotesk, sans-serif' }}
-                  >
-                    MD
-                  </span>
-                </div>
+              <div className="relative w-11 h-11 flex items-center justify-center">
+                {/* Ambient glow behind logo */}
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#4FACFF]/20 to-[#A855F7]/15 blur-lg scale-[1.4] pointer-events-none" />
+                {/* Conic ring — mask trick renders just the border */}
+                <div
+                  className="absolute inset-0 rounded-full opacity-50 group-hover:opacity-90 transition-opacity duration-300 pointer-events-none"
+                  style={{
+                    background: 'conic-gradient(from 0deg, #4FACFF, #A855F7, #2DD4BF, #4FACFF)',
+                    padding: '1.5px',
+                    WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                    WebkitMaskComposite: 'xor',
+                    maskComposite: 'exclude',
+                    borderRadius: '50%',
+                  }}
+                />
+                <img
+                  src="/mdpilot-logo.svg"
+                  alt="MDPilot"
+                  width={44}
+                  height={44}
+                  className="relative z-10 w-10 h-10 object-contain group-hover:opacity-90 transition-opacity drop-shadow-[0_0_10px_rgba(79,172,255,0.35)]"
+                />
               </div>
               <span
                 className="font-bold text-[15px] text-white tracking-tight"
@@ -95,7 +107,7 @@ export default function Nav() {
                 <NavigationMenuItem>
                   <NavigationMenuLink
                     href="/labs"
-                    className="flex items-center gap-1.5 px-4 py-2 text-[13.5px] font-medium text-white/55 hover:text-white cursor-pointer rounded-md hover:bg-white/[0.04] transition-colors"
+                    className="!flex !flex-row items-center gap-1.5 px-4 py-2 text-[13.5px] font-medium text-white/55 hover:text-white cursor-pointer rounded-md hover:bg-white/[0.04] transition-colors"
                   >
                     <FlaskConical size={13} className="opacity-50 shrink-0" />
                     Labs
@@ -124,7 +136,7 @@ export default function Nav() {
 
                 <NavigationMenuItem>
                   <a
-                    href="https://github.com/get-mdpilot"
+                    href="https://github.com/get-mdpilot/md-pilot"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex flex-row items-center gap-1.5 px-4 py-2 text-[13.5px] font-medium text-white/45 hover:text-white cursor-pointer rounded-md hover:bg-white/[0.04] transition-colors"
@@ -178,12 +190,13 @@ export default function Nav() {
                 {/* Mobile header */}
                 <div className="flex h-14 items-center justify-between border-b border-white/[0.06] px-5">
                   <Link href="/" className="flex items-center gap-2.5">
-                    <div className="relative w-7 h-7">
-                      <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-[#4FACFF] to-[#A855F7]" />
-                      <div className="absolute inset-0 rounded-lg flex items-center justify-center">
-                        <span className="text-[#07070f] text-[10px] font-black">MD</span>
-                      </div>
-                    </div>
+                    <img
+                      src="/mdpilot-logo.svg"
+                      alt="MDPilot"
+                      width={36}
+                      height={36}
+                      className="w-9 h-9 object-contain"
+                    />
                     <span
                       className="font-bold text-[15px] text-white"
                       style={{ fontFamily: 'Space Grotesk, sans-serif' }}
@@ -247,7 +260,7 @@ export default function Nav() {
                       </SheetClose>
 
                       <a
-                        href="https://github.com/get-mdpilot"
+                        href="https://github.com/get-mdpilot/md-pilot"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center justify-between py-3.5 text-[14px] text-white/40 hover:text-white transition-colors"

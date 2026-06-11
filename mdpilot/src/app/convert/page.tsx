@@ -189,6 +189,9 @@ export default function ConvertPage() {
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
+          <div className="flex justify-center mb-4">
+            <img src="/mdpilot-logo.svg" alt="MDPilot" width={52} height={52} className="w-13 h-13 object-contain drop-shadow-[0_0_12px_rgba(45,212,191,0.30)]" />
+          </div>
           <div className="section-label mb-4 mx-auto w-fit" style={{ color: 'var(--md-teal)', borderColor: 'rgba(45,212,191,0.25)', background: 'rgba(45,212,191,0.06)' }}>
             CONVERT
           </div>

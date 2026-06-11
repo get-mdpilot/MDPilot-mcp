@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import type { AIProvider } from '@/lib/ai-client';
 
 interface ModelSelectorProps {
@@ -8,15 +9,21 @@ interface ModelSelectorProps {
   available: AIProvider[];
 }
 
-const PROVIDER_INFO: Record<AIProvider, { label: string; icon: string; color: string; desc: string; model: string }> = {
-  claude:  { label: 'Claude',    icon: '✦', color: '#D97706', desc: 'Anthropic', model: 'claude-sonnet-4-6' },
-  gpt:     { label: 'GPT-4o',   icon: '◉', color: '#10A37F', desc: 'OpenAI',    model: 'gpt-4o' },
-  gemini:  { label: 'Gemini',   icon: '✧', color: '#4285F4', desc: 'Google',    model: 'gemini-2.0-flash' },
-  groq:    { label: 'Llama',    icon: '⚡', color: '#F55036', desc: 'Groq',      model: 'llama-3.3-70b-versatile' },
-  nvidia:  { label: 'Llama 3.3', icon: '◈', color: '#76B900', desc: 'NVIDIA NIM', model: 'meta/llama-3.3-70b-instruct' },
+const CLAUDE_STAR = (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 2C10 7 7 10 2 12C7 14 10 17 12 22C14 17 17 14 22 12C17 10 14 7 12 2Z"/>
+  </svg>
+);
+
+const PROVIDER_INFO: Record<AIProvider, { label: string; icon: React.ReactNode; color: string; desc: string; model: string }> = {
+  nvidia:  { label: 'Nemotron', icon: '⬡', color: '#76B900', desc: 'NVIDIA NIM', model: 'nvidia/nemotron-3-ultra-550b-a55b' },
+  claude:  { label: 'Claude',   icon: CLAUDE_STAR, color: '#D97706', desc: 'Anthropic', model: 'claude-sonnet-4-6' },
+  gpt:     { label: 'GPT-4o',  icon: '◉', color: '#10A37F', desc: 'OpenAI',    model: 'gpt-4o' },
+  gemini:  { label: 'Gemini',  icon: '✧', color: '#4285F4', desc: 'Google',    model: 'gemini-2.0-flash' },
+  groq:    { label: 'Llama',   icon: '⚡', color: '#F55036', desc: 'Groq',      model: 'llama-3.3-70b-versatile' },
 };
 
-const ORDER: AIProvider[] = ['claude', 'gpt', 'gemini', 'groq', 'nvidia'];
+const ORDER: AIProvider[] = ['groq', 'claude', 'nvidia', 'gpt', 'gemini'];
 
 export default function ModelSelector({ selected, onChange, available }: ModelSelectorProps) {
   const info = PROVIDER_INFO[selected];

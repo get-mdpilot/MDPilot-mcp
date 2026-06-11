@@ -104,7 +104,10 @@ export default function LabsPage() {
 
         {/* Header */}
         <div className="mb-16">
-          <div className="section-label mb-5 w-fit">Experimental</div>
+          <div className="flex items-center gap-4 mb-6">
+            <img src="/mdpilot-logo.svg" alt="MDPilot" width={52} height={52} className="w-13 h-13 object-contain drop-shadow-[0_0_10px_rgba(79,172,255,0.28)]" />
+            <div className="section-label w-fit">Experimental</div>
+          </div>
           <h1 className="text-[clamp(2.2rem,5vw,3.5rem)] font-black text-white tracking-[-0.04em] mb-4">
             Labs
           </h1>

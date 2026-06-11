@@ -150,7 +150,7 @@ const audienceOptions: { id: Audience; icon: React.ReactNode; label: string; des
 ];
 
 const aiToolOptions: { id: AITool; icon: React.ReactNode; label: string; desc: string }[] = [
-  { id: 'claude',   icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5L3.5 20.5h4.5L12 8.5l4 12h4.5L12 2.5zm0 7.5 2.3 6H9.7L12 10z" /></svg>, label: 'Claude Code',      desc: "Anthropic's coding agent" },
+  { id: 'claude',   icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="#D97706"><path d="M12 2C10 7 7 10 2 12C7 14 10 17 12 22C14 17 17 14 22 12C17 10 14 7 12 2Z"/></svg>, label: 'Claude Code',      desc: "Anthropic's coding agent" },
   { id: 'cursor',   icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M5.5 3.21V20.8l4.3-4.3 2.6 6.03 2.22-.96-2.6-6.04H18L5.5 3.21z" /></svg>, label: 'Cursor',           desc: 'AI-first code editor' },
   { id: 'copilot',  icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" /></svg>, label: 'GitHub Copilot',   desc: 'In VS Code or JetBrains' },
   { id: 'windsurf', icon: <svg width="20" height="18" viewBox="0 0 28 20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M2 10c3-5 8-8 12-5s8 8 12 5"/><path d="M2 16c3-4 8-6 12-4s8 5 12 4"/></svg>, label: 'Windsurf',         desc: "Codeium's agent IDE" },
@@ -638,15 +638,11 @@ export default function GeneratePage() {
       </div>
 
       {/* Page header */}
-      <div className="relative border-b border-white/[0.05] bg-[var(--md-dark-2)] px-4 sm:px-8 py-5">
+      <div className="relative border-b border-white/[0.05] bg-[var(--md-dark-2)] px-4 sm:px-8 py-4">
         <div className="max-w-xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#4FACFF] to-[#A855F7] flex items-center justify-center">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#07070f" strokeWidth={2.8} strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-              </svg>
-            </div>
-            <span className="text-[13px] font-semibold text-white/70" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Generate</span>
+          <div className="flex items-center gap-3">
+            <img src="/mdpilot-logo.svg" alt="MDPilot" width={40} height={40} className="w-10 h-10 object-contain drop-shadow-[0_0_8px_rgba(79,172,255,0.3)]" />
+            <span className="text-[14px] font-semibold text-white/80" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Generate</span>
           </div>
           <div className="flex items-center gap-3">
             <a href="/" className="text-[12px] text-white/30 hover:text-white/55 transition-colors">← Home</a>

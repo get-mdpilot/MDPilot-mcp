@@ -243,9 +243,10 @@ export default function MouseHero() {
       </div>
 
       {/* Hero content */}
-      <div className="relative z-20 text-center max-w-4xl mx-auto fade-up mt-16 sm:mt-24">
-        {/* Live badge */}
-        <div className="inline-flex items-center gap-2.5 px-4 py-2 mb-10 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-xl text-[12px] text-white/50">
+      <div className="relative z-20 text-center max-w-4xl mx-auto fade-up mt-10 sm:mt-16">
+
+        {/* Live badge — sits at the very top */}
+        <div className="inline-flex items-center gap-2.5 px-4 py-2 mb-8 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-xl text-[12px] text-white/50">
           <span className="relative flex h-2 w-2 shrink-0">
             <span className="pulse-green absolute inline-flex h-full w-full rounded-full bg-[#34D399]" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-[#34D399]" />
@@ -256,7 +257,7 @@ export default function MouseHero() {
         </div>
 
         {/* Headline */}
-        <h1 className="text-[clamp(2.6rem,7.5vw,5.5rem)] font-black leading-[1.04] tracking-[-0.04em] mb-10">
+        <h1 className="text-[clamp(2.4rem,7vw,5rem)] font-black leading-[1.04] tracking-[-0.04em] mb-8">
           <span className="text-white block">Give your AI agent</span>
           <span className="text-gradient-animated block">the perfect starting point.</span>
         </h1>

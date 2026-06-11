@@ -171,7 +171,7 @@ export default function McpSetupPage() {
             </span>
             <div>
               <p className="text-[13px] font-semibold text-white/80 mb-0.5">Node.js 20+</p>
-              <p className="text-[12px] text-white/40 leading-relaxed">
+              <p className="text-[13px] text-white/55 leading-relaxed">
                 Check with <code className="text-[11px] font-mono bg-white/[0.06] px-1 rounded text-white/55">node --version</code>.
                 The MCP server is ESM and requires Node 20 or later.
               </p>
@@ -291,9 +291,12 @@ export default function McpSetupPage() {
             </div>
 
             <p className="text-[14px] font-medium text-white/80 leading-snug mb-1">
-              One command — detects your editor, gets you a free key, writes the config.
+              One command — detects your editor, gets you a free API key, writes the config.
             </p>
-            <p className="text-[12px] text-white/40 leading-relaxed mb-4">
+            <p className="text-[13px] text-white/55 leading-relaxed mb-1">
+              Bring your own key or get a free one: works with <strong className="text-white/75">Groq</strong> (free), <strong className="text-white/75">NVIDIA NIM</strong> (free), <strong className="text-white/75">Anthropic (Claude)</strong>, or <strong className="text-white/75">OpenAI</strong>.
+            </p>
+            <p className="text-[13px] text-white/55 leading-relaxed mb-4">
               No account on MDPilot. No billing. Your key stays on your machine.
             </p>
 
@@ -339,7 +342,7 @@ export default function McpSetupPage() {
               recommended
             </span>
           </div>
-          <p className="text-[12px] text-white/35 mb-3 leading-relaxed">
+          <p className="text-[13px] text-white/50 mb-3 leading-relaxed">
             Add this block to your client&apos;s MCP config file. Replace{' '}
             <code className="text-[11px] font-mono bg-white/[0.06] px-1 rounded text-[#4FACFF]/70">gsk_...</code>
             {' '}with your actual Groq key (or swap the env key for whichever provider you use). No install step — npx pulls the package automatically.
@@ -358,14 +361,14 @@ export default function McpSetupPage() {
               contributors / local dev
             </span>
           </div>
-          <p className="text-[12px] text-white/35 mb-3 leading-relaxed">
+          <p className="text-[13px] text-white/50 mb-3 leading-relaxed">
             Build the package first, then point the config at the compiled output.
           </p>
           <CodeBlock label="1. Build from source">{BUILD_COMMANDS}</CodeBlock>
           <div className="mt-3">
             <CodeBlock label="2. mcp config (Method B — from source)">{SOURCE_CONFIG}</CodeBlock>
           </div>
-          <p className="text-[12px] text-white/35 mt-2">
+          <p className="text-[13px] text-white/50 mt-2">
             Replace <code className="text-[11px] font-mono bg-white/[0.06] px-1 rounded text-white/50">/absolute/path/to/packages/mcp/dist/index.js</code> with
             the actual absolute path on your machine.
           </p>
@@ -381,7 +384,7 @@ export default function McpSetupPage() {
               <span className="w-2 h-2 rounded-full bg-[#CC785C]/70" />
               <span className="text-[13px] font-semibold text-white/75">Claude Code</span>
             </div>
-            <p className="text-[12px] text-white/40 mb-3">
+            <p className="text-[13px] text-white/55 mb-3">
               Use the CLI shortcut or add the JSON config to{' '}
               <code className="text-[11px] font-mono bg-white/[0.06] px-1 rounded text-white/55">~/.claude/mcp.json</code>.
             </p>
@@ -410,7 +413,7 @@ export default function McpSetupPage() {
               <span className="w-2 h-2 rounded-full bg-[#CDD6F4]/50" />
               <span className="text-[13px] font-semibold text-white/75">Cursor</span>
             </div>
-            <p className="text-[12px] text-white/40 mb-1">
+            <p className="text-[13px] text-white/55 mb-1">
               Open Cursor Settings → MCP → Add new server. Paste the JSON config block from Method A above.
             </p>
             <a
@@ -429,7 +432,7 @@ export default function McpSetupPage() {
               <span className="w-2 h-2 rounded-full bg-[#06B6D4]/70" />
               <span className="text-[13px] font-semibold text-white/75">Windsurf</span>
             </div>
-            <p className="text-[12px] text-white/40 mb-1">
+            <p className="text-[13px] text-white/55 mb-1">
               Open Windsurf Settings → Cascade → MCP Servers. Add a new entry using the JSON config block from Method A above.
             </p>
             <a
@@ -448,7 +451,7 @@ export default function McpSetupPage() {
               <span className="w-2 h-2 rounded-full bg-[#F59E0B]/70" />
               <span className="text-[13px] font-semibold text-white/75">Goose</span>
             </div>
-            <p className="text-[12px] text-white/40 mb-1">
+            <p className="text-[13px] text-white/55 mb-1">
               Add MDPilot as a stdio extension: set type to{' '}
               <code className="text-[11px] font-mono bg-white/[0.06] px-1 rounded text-white/55">stdio</code>,
               command to{' '}
@@ -487,7 +490,7 @@ export default function McpSetupPage() {
                 <code className="text-[12px] font-mono font-semibold text-[#4FACFF]/75 break-all">
                   {tool.name}
                 </code>
-                <p className="text-[12px] text-white/40 leading-relaxed mt-0.5">{tool.desc}</p>
+                <p className="text-[13px] text-white/55 leading-relaxed mt-0.5">{tool.desc}</p>
               </div>
             </div>
           ))}
@@ -497,37 +500,58 @@ export default function McpSetupPage() {
       {/* 5. Quick start */}
       <DocSection id="quick-start">
         <h2 className="text-[16px] font-bold text-white mb-3">Quick start — try it in 60 seconds</h2>
-        <p className="text-[13px] text-white/45 mb-4 leading-relaxed">
-          Once the server is configured, open any repo in your IDE and try these two prompts:
+        <p className="text-[14px] text-white/55 mb-5 leading-relaxed">
+          Once the server is configured, open any repo in your IDE and try these prompts. Copy and paste them directly into Claude Code, Cursor, or Windsurf.
         </p>
         <div className="space-y-3">
-          <div className="p-4 rounded-xl border border-[#4FACFF]/[0.15] bg-[#4FACFF]/[0.04]">
-            <p className="text-[10px] font-mono text-[#4FACFF]/50 uppercase tracking-wider mb-2">Prompt 1</p>
-            <p className="text-[13px] text-white/75 leading-relaxed font-mono">
-              &quot;Use mdpilot to generate an AGENTS.md for this project and write it to disk.&quot;
-            </p>
-          </div>
-          <div className="p-4 rounded-xl border border-[#2DD4BF]/[0.15] bg-[#2DD4BF]/[0.04]">
-            <p className="text-[10px] font-mono text-[#2DD4BF]/50 uppercase tracking-wider mb-2">Prompt 2</p>
-            <p className="text-[13px] text-white/75 leading-relaxed font-mono">
-              &quot;Use mdpilot to check my docs for drift.&quot;
-            </p>
-          </div>
+          {[
+            {
+              label: 'Generate instruction files',
+              accent: '#4FACFF',
+              prompt: '"Use mdpilot to analyze this project and generate an AGENTS.md. Write it to disk."',
+              note: 'Calls analyze_project → generate_md_file. References your real scripts and paths.',
+            },
+            {
+              label: 'Turn a task into a prompt',
+              accent: '#CC785C',
+              prompt: '"Use mdpilot to turn this ticket into a TASK.md: [paste your ticket here]"',
+              note: 'Calls generate_task_file. Pick execution mode: Guide, AI Exec, or Context.',
+            },
+            {
+              label: 'Explain this codebase',
+              accent: '#A855F7',
+              prompt: '"Use mdpilot to generate a WALKTHROUGH.md for src/lib/auth.ts tuned for a new team member."',
+              note: 'Calls explain_code. Audience options: ai_agent, team, learner, non_technical.',
+            },
+            {
+              label: 'Check for stale docs',
+              accent: '#2DD4BF',
+              prompt: '"Use mdpilot to check my docs for drift, then patch any stale sections."',
+              note: 'Calls check_drift → update_docs. Only rewrites outdated parts.',
+            },
+          ].map(({ label, accent, prompt, note }) => (
+            <div
+              key={label}
+              className="p-4 rounded-xl border"
+              style={{ borderColor: `${accent}22`, background: `${accent}08` }}
+            >
+              <p className="text-[10px] font-mono uppercase tracking-wider mb-2" style={{ color: `${accent}80` }}>
+                {label}
+              </p>
+              <p className="text-[13px] text-white/80 leading-relaxed font-mono mb-2">
+                {prompt}
+              </p>
+              <p className="text-[11px] text-white/35 leading-relaxed">{note}</p>
+            </div>
+          ))}
         </div>
-        <p className="text-[12px] text-white/30 mt-4 leading-relaxed">
-          The first prompt calls <code className="font-mono text-white/45 text-[11px]">analyze_project</code> then{' '}
-          <code className="font-mono text-white/45 text-[11px]">generate_md_file</code> with verified mode.
-          The second calls <code className="font-mono text-white/45 text-[11px]">check_drift</code> and surfaces
-          any stale sections — follow up with{' '}
-          <code className="font-mono text-white/45 text-[11px]">update_docs</code> to patch them.
-        </p>
       </DocSection>
 
       {/* 6. Feedback */}
       <section id="feedback" className="scroll-mt-24 pt-10">
         <div className="p-5 rounded-xl border border-[#A855F7]/[0.18] bg-[#A855F7]/[0.04]">
           <h2 className="text-[14px] font-bold text-white/80 mb-2">Found a bug or have feedback?</h2>
-          <p className="text-[13px] text-white/45 leading-relaxed mb-3">
+          <p className="text-[14px] text-white/55 leading-relaxed mb-3">
             This is a pre-launch tester build. If something breaks or you have suggestions, we want to know.
           </p>
           <a

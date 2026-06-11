@@ -150,8 +150,11 @@ export default function ExplainPage() {
 
         {/* Header */}
         <div className="mb-8">
-          <div className="inline-flex items-center gap-2 text-xs font-mono px-2.5 py-1 rounded-full bg-[#4FACFF]/10 text-[#4FACFF] border border-[#4FACFF]/20 mb-3">
-            Explain mode
+          <div className="flex items-center gap-3 mb-4">
+            <img src="/mdpilot-logo.svg" alt="MDPilot" width={44} height={44} className="w-11 h-11 object-contain drop-shadow-[0_0_10px_rgba(79,172,255,0.28)]" />
+            <div className="inline-flex items-center gap-2 text-xs font-mono px-2.5 py-1 rounded-full bg-[#4FACFF]/10 text-[#4FACFF] border border-[#4FACFF]/20">
+              Explain mode
+            </div>
           </div>
           <h1 className="text-2xl font-semibold mb-1">Explain code to anyone</h1>
           <p className="text-sm text-[var(--md-text-secondary)]">

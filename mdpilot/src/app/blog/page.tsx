@@ -15,7 +15,10 @@ export default function BlogPage() {
 
         {/* Header */}
         <div className="mb-14">
-          <div className="section-label mb-4 w-fit">Blog</div>
+          <div className="flex items-center gap-4 mb-5">
+            <img src="/mdpilot-logo.svg" alt="MDPilot" width={52} height={52} className="w-13 h-13 object-contain drop-shadow-[0_0_10px_rgba(79,172,255,0.28)]" />
+            <div className="section-label w-fit">Blog</div>
+          </div>
           <h1 className="text-[clamp(2rem,5vw,3rem)] font-black text-white tracking-[-0.04em] mb-4 leading-tight">
             Writing
           </h1>

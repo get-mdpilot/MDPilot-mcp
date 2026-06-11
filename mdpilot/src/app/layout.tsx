@@ -65,9 +65,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               {/* Brand */}
               <div className="col-span-2 sm:col-span-1">
                 <div className="flex items-center gap-2.5 mb-4">
-                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#4FACFF] to-[#A855F7] flex items-center justify-center shadow-lg">
-                    <span className="text-[#07070f] text-xs font-bold font-[Space_Grotesk]">MD</span>
-                  </div>
+                  <img src="/mdpilot-logo.svg" alt="MDPilot" width={40} height={40} className="w-10 h-10 object-contain drop-shadow-[0_0_6px_rgba(79,172,255,0.20)]" />
                   <span className="font-[Space_Grotesk] font-semibold text-white">MDPilot</span>
                 </div>
                 <p className="text-sm text-white/40 leading-relaxed max-w-[200px]">
@@ -117,7 +115,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div>
                 <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-4">Resources</p>
                 <ul className="space-y-2.5">
-                  {[['AGENTS.md spec', '#'], ['CLAUDE.md guide', '#'], ['Token optimization', '#']].map(([label, href]) => (
+                  {[['AGENTS.md spec', '/docs/files'], ['CLAUDE.md guide', '/docs/generate'], ['Token optimization', '/docs/token-optimizer']].map(([label, href]) => (
                     <li key={label}>
                       <a href={href} className="text-sm text-white/50 hover:text-white transition-colors">{label}</a>
                     </li>
@@ -129,7 +127,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div>
                 <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-4">Company</p>
                 <ul className="space-y-2.5">
-                  {[['GitHub', 'https://github.com/get-mdpilot'], ['Twitter / X', '#'], ['mdpilot.in', 'https://mdpilot.in']].map(([label, href]) => (
+                  {[['GitHub', 'https://github.com/get-mdpilot/md-pilot'], ['mdpilot.in', 'https://mdpilot.in']].map(([label, href]) => (
                     <li key={label}>
                       <a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" className="text-sm text-white/50 hover:text-white transition-colors">{label}</a>
                     </li>

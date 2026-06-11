@@ -15,7 +15,7 @@ const DEFAULT_MODELS: Record<AIProvider, string> = {
   gpt:     'gpt-4o',
   gemini:  'gemini-2.0-flash',
   groq:    'llama-3.3-70b-versatile',
-  nvidia:  'meta/llama-3.3-70b-instruct',
+  nvidia:  'nvidia/nemotron-3-ultra-550b-a55b',
 };
 
 export async function generateWithProvider(
@@ -82,14 +82,25 @@ async function generateNvidia(system: string, user: string, model: string): Prom
     apiKey: process.env.NVIDIA_API_KEY ?? '',
     baseURL: 'https://integrate.api.nvidia.com/v1',
   });
-  const res = await client.chat.completions.create({
-    model, max_tokens: 8192,
+  const isNemotronUltra = model.includes('nemotron');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const res = await (client.chat.completions.create as any)({
+    model,
+    max_tokens: 16384,
+    temperature: isNemotronUltra ? 1 : 0.6,
+    top_p: isNemotronUltra ? 0.95 : 1,
     messages: [
       { role: 'system', content: system },
       { role: 'user', content: user },
     ],
+    ...(isNemotronUltra && {
+      chat_template_kwargs: { enable_thinking: true },
+      reasoning_budget: 8192,
+    }),
   });
-  return res.choices[0]?.message?.content ?? '';
+  const raw: string = res.choices[0]?.message?.content ?? '';
+  // Strip any exposed <think>…</think> block if the model surfaces it in content
+  return raw.replace(/<think>[\s\S]*?<\/think>\s*/i, '').trim();
 }
 
 // ── Vision (image → text) ────────────────────────────────────────────────────
@@ -151,12 +162,12 @@ export function getAvailableVisionProviders(): VisionProvider[] {
   return out;
 }
 
-// Which providers have a configured API key — Groq first so it is the default
+// Which providers have a configured API key — Groq first (fastest), NVIDIA available but not default
 export function getAvailableProviders(): AIProvider[] {
   const providers: AIProvider[] = [];
   if (process.env.GROQ_API_KEY)      providers.push('groq');
-  if (process.env.NVIDIA_API_KEY)    providers.push('nvidia');
   if (process.env.ANTHROPIC_API_KEY) providers.push('claude');
+  if (process.env.NVIDIA_API_KEY)    providers.push('nvidia');
   if (process.env.OPENAI_API_KEY)    providers.push('gpt');
   if (process.env.GOOGLE_AI_API_KEY || process.env.GEMINI_API_KEY) providers.push('gemini');
   return providers;

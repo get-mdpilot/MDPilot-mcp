@@ -345,6 +345,14 @@ export default function TaskPage() {
   // ── Wizard ────────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-[var(--md-dark-2)] px-4 sm:px-8 py-12">
+      {/* Page logo header */}
+      <div className="max-w-xl mx-auto flex items-center gap-3 mb-8 pb-6 border-b border-white/[0.06]">
+        <img src="/mdpilot-logo.svg" alt="MDPilot" width={44} height={44} className="w-11 h-11 object-contain drop-shadow-[0_0_10px_rgba(79,172,255,0.3)]" />
+        <div>
+          <p className="text-[15px] font-bold text-white leading-tight" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Task</p>
+          <p className="text-[11px] text-white/35 font-mono">Turn any task into an agent-ready prompt</p>
+        </div>
+      </div>
       <Stepper
         steps={STEPS}
         currentStep={step}
