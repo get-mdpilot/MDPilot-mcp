@@ -1,0 +1,5 @@
+{
+  "buildCommand": "cd mdpilot && npm install && npm run build",
+  "outputDirectory": "mdpilot/.next",
+  "framework": "nextjs"
+}
