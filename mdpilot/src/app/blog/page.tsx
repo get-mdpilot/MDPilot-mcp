@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function BlogPage() {
   return (
     <div className="min-h-screen bg-[var(--md-dark)]">
-      <div className="max-w-3xl mx-auto px-5 sm:px-8 py-16 sm:py-20">
+      <div className="max-w-4xl mx-auto px-5 sm:px-8 py-16 sm:py-20">
 
         {/* Header */}
         <div className="mb-14">
@@ -46,49 +46,58 @@ export default function BlogPage() {
             </p>
           </div>
         ) : (
-          <ul className="space-y-2">
-            {posts.map(post => (
-              <li key={post.slug}>
-                <Link
-                  href={`/blog/${post.slug}`}
-                  className="group flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6 p-5 rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)] hover:bg-[var(--md-surface-2)] hover:border-[var(--md-border)] transition-all duration-150"
-                >
-                  <img
-                    src={post.hero}
-                    alt=""
-                    width={1200}
-                    height={630}
-                    loading="lazy"
-                    aria-hidden
-                    className="w-full sm:w-[148px] aspect-[1200/630] object-cover rounded-lg border border-[var(--md-border)] shrink-0 order-first"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[14px] font-semibold text-[var(--md-text-secondary)] group-hover:text-[var(--md-text)] transition-colors mb-1 leading-snug">
-                      {post.title}
-                    </p>
-                    <p className="text-[12px] text-[var(--md-text-tertiary)] leading-relaxed line-clamp-2">
-                      {post.description}
-                    </p>
-                    {post.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 mt-2">
-                        {post.tags.map(tag => (
-                          <span
-                            key={tag}
-                            className="text-[10px] font-mono text-[var(--md-text-tertiary)] bg-[var(--md-surface-2)] border border-[var(--md-border)] px-2 py-0.5 rounded-[5px]"
-                          >
-                            {tag}
-                          </span>
-                        ))}
+          <ul className="space-y-6">
+            {posts.map((post, i) => {
+              const reversed = i % 2 === 1;
+              return (
+                <li key={post.slug}>
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className={`group flex flex-col ${reversed ? 'md:flex-row-reverse' : 'md:flex-row'} rounded-2xl border border-[var(--md-border)] bg-[var(--md-surface)] hover:bg-[var(--md-surface-2)] overflow-hidden transition-all duration-150 hover:-translate-y-px`}
+                  >
+                    {/* Artwork half */}
+                    <div className={`md:w-1/2 shrink-0 bg-[var(--md-bg)] ${reversed ? 'md:border-l' : 'md:border-r'} border-b md:border-b-0 border-[var(--md-border)]`}>
+                      <img
+                        src={post.hero}
+                        alt=""
+                        width={1200}
+                        height={630}
+                        loading="lazy"
+                        aria-hidden
+                        className="w-full h-full aspect-[1200/630] object-cover"
+                      />
+                    </div>
+
+                    {/* Content half */}
+                    <div className="flex-1 min-w-0 flex flex-col justify-center p-6 sm:p-8">
+                      {post.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mb-3">
+                          {post.tags.map(tag => (
+                            <span
+                              key={tag}
+                              className="text-[10px] font-mono text-[var(--md-accent)]/80 bg-[var(--md-accent)]/[0.07] border border-[var(--md-accent)]/[0.15] px-2 py-0.5 rounded-[5px]"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      <p className="font-display text-[18px] sm:text-[20px] font-semibold text-[var(--md-text)] group-hover:text-[var(--md-accent)] transition-colors mb-2 leading-snug tracking-[-0.01em]">
+                        {post.title}
+                      </p>
+                      <p className="text-[13px] text-[var(--md-text-secondary)] leading-relaxed line-clamp-3 mb-4">
+                        {post.description}
+                      </p>
+                      <div className="flex items-center gap-2.5 text-[11px] font-mono text-[var(--md-text-tertiary)]">
+                        <time>{post.date}</time>
+                        <span>·</span>
+                        <span>{post.readingTime}</span>
                       </div>
-                    )}
-                  </div>
-                  <div className="shrink-0 text-right">
-                    <time className="text-[11px] font-mono text-[var(--md-text-tertiary)]">{post.date}</time>
-                    <p className="text-[10px] font-mono text-[var(--md-text-tertiary)] mt-0.5">{post.readingTime}</p>
-                  </div>
-                </Link>
-              </li>
-            ))}
+                    </div>
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         )}
 
