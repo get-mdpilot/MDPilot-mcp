@@ -1,6 +1,0 @@
-{
-  "buildCommand": "cd mdpilot && npm install && npm run build",
-  "outputDirectory": "mdpilot/.next",
-  "devCommand": "cd mdpilot && npm run dev",
-  "installCommand": "echo skip"
-}
