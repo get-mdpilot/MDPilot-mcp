@@ -51,8 +51,17 @@ export default function BlogPage() {
               <li key={post.slug}>
                 <Link
                   href={`/blog/${post.slug}`}
-                  className="group flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2 sm:gap-6 p-5 rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)] hover:bg-[var(--md-surface-2)] hover:border-[var(--md-border)] transition-all duration-150"
+                  className="group flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6 p-5 rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)] hover:bg-[var(--md-surface-2)] hover:border-[var(--md-border)] transition-all duration-150"
                 >
+                  <img
+                    src={post.hero}
+                    alt=""
+                    width={1200}
+                    height={630}
+                    loading="lazy"
+                    aria-hidden
+                    className="w-full sm:w-[148px] aspect-[1200/630] object-cover rounded-lg border border-[var(--md-border)] shrink-0 order-first"
+                  />
                   <div className="flex-1 min-w-0">
                     <p className="text-[14px] font-semibold text-[var(--md-text-secondary)] group-hover:text-[var(--md-text)] transition-colors mb-1 leading-snug">
                       {post.title}
