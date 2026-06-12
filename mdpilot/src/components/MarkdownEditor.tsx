@@ -25,22 +25,22 @@ const EDITOR_THEME = EditorView.theme({
   '&': { height: '100%', fontSize: '13px', outline: 'none', background: 'transparent' },
   '.cm-scroller': {
     overflow: 'auto',
-    fontFamily: 'var(--font-dm-mono, ui-monospace), "Cascadia Code", "Source Code Pro", Menlo, monospace',
+    fontFamily: 'var(--font-mono, ui-monospace), "Cascadia Code", "Source Code Pro", Menlo, monospace',
   },
   '.cm-content': { padding: '1.25rem', minHeight: '100%' },
   '.cm-gutters': {
-    backgroundColor: '#08081200',
-    borderRight: '1px solid rgba(255,255,255,0.06)',
-    color: 'rgba(240,240,248,0.22)',
+    backgroundColor: 'transparent',
+    borderRight: '1px solid var(--md-border)',
+    color: 'var(--md-text-tertiary)',
     fontSize: '11px',
     paddingRight: '8px',
   },
   '.cm-lineNumbers .cm-gutterElement': { paddingLeft: '8px' },
   '.cm-activeLineGutter': { backgroundColor: 'transparent' },
-  '.cm-activeLine': { backgroundColor: 'rgba(255,255,255,0.025)' },
-  '.cm-selectionBackground': { backgroundColor: 'rgba(79,172,255,0.12)' },
-  '&.cm-focused .cm-selectionBackground': { backgroundColor: 'rgba(79,172,255,0.18)' },
-  '.cm-cursor': { borderLeftColor: '#4FACFF' },
+  '.cm-activeLine': { backgroundColor: 'color-mix(in oklab, var(--md-text) 3%, transparent)' },
+  '.cm-selectionBackground': { backgroundColor: 'color-mix(in oklab, var(--md-accent) 14%, transparent)' },
+  '&.cm-focused .cm-selectionBackground': { backgroundColor: 'color-mix(in oklab, var(--md-accent) 20%, transparent)' },
+  '.cm-cursor': { borderLeftColor: 'var(--md-accent)' },
 });
 
 export default function MarkdownEditor({
@@ -98,21 +98,21 @@ export default function MarkdownEditor({
   const hasTools = onInsertTOC || (showBadgeButton && onToggleBadges);
 
   return (
-    <div className="flex flex-col rounded-xl border border-white/[0.08] overflow-hidden bg-[#080812]">
+    <div className="flex flex-col rounded-[var(--md-radius)] border border-[var(--md-border)] overflow-hidden bg-[var(--md-surface)]">
 
       {/* ── Toolbar ────────────────────────────────────────────────────── */}
-      <div className="flex items-center gap-2 px-4 py-2 border-b border-white/[0.06] bg-[#0a0a16] shrink-0 min-h-[40px]">
+      <div className="flex items-center gap-2 px-4 py-2 border-b border-[var(--md-border)] bg-[var(--md-surface-2)] shrink-0 min-h-[40px]">
         {/* Filename */}
-        <span className="text-[12px] font-mono font-medium text-white/50 shrink-0">{filename}</span>
+        <span className="text-[12px] font-mono font-medium text-[var(--md-text-secondary)] shrink-0">{filename}</span>
 
         {/* Tool buttons */}
         {hasTools && (
-          <div className="flex items-center gap-1 border-l border-white/[0.07] pl-2 ml-1">
+          <div className="flex items-center gap-1 border-l border-[var(--md-border)] pl-2 ml-1">
             {onInsertTOC && (
               <button
                 onClick={onInsertTOC}
                 title="Insert table of contents"
-                className="flex items-center gap-1 text-[11px] px-2 py-1 rounded-md text-white/40 hover:text-white/80 hover:bg-white/[0.06] transition-colors cursor-pointer"
+                className="flex items-center gap-1 text-[11px] px-2 py-1 rounded-md text-[var(--md-text-tertiary)] hover:text-[var(--md-text)] hover:bg-[var(--md-accent-dim)] transition-colors cursor-pointer"
               >
                 <List size={12} />
                 <span className="hidden sm:inline">TOC</span>
@@ -122,7 +122,7 @@ export default function MarkdownEditor({
               <button
                 onClick={onToggleBadges}
                 title="Add shields.io badges"
-                className="flex items-center gap-1 text-[11px] px-2 py-1 rounded-md text-white/40 hover:text-white/80 hover:bg-white/[0.06] transition-colors cursor-pointer"
+                className="flex items-center gap-1 text-[11px] px-2 py-1 rounded-md text-[var(--md-text-tertiary)] hover:text-[var(--md-text)] hover:bg-[var(--md-accent-dim)] transition-colors cursor-pointer"
               >
                 <Tag size={12} />
                 <span className="hidden sm:inline">Badges</span>
@@ -136,13 +136,13 @@ export default function MarkdownEditor({
 
         {/* Mobile pane switcher */}
         <div className="flex items-center lg:hidden">
-          <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-white/[0.06]">
+          <div className="flex items-center gap-0.5 p-0.5 rounded-[8px] bg-[var(--md-surface)] border border-[var(--md-border)]">
             <button
               onClick={() => setMobilePane('edit')}
-              className={`flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-md transition-all ${
+              className={`flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-md transition-all cursor-pointer ${
                 mobilePane === 'edit'
-                  ? 'bg-white/10 text-white font-medium'
-                  : 'text-white/40 hover:text-white/70'
+                  ? 'bg-[var(--md-accent-dim)] text-[var(--md-text)] font-medium'
+                  : 'text-[var(--md-text-tertiary)] hover:text-[var(--md-text-secondary)]'
               }`}
             >
               <Code2 size={11} />
@@ -150,10 +150,10 @@ export default function MarkdownEditor({
             </button>
             <button
               onClick={() => setMobilePane('preview')}
-              className={`flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-md transition-all ${
+              className={`flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-md transition-all cursor-pointer ${
                 mobilePane === 'preview'
-                  ? 'bg-white/10 text-white font-medium'
-                  : 'text-white/40 hover:text-white/70'
+                  ? 'bg-[var(--md-accent-dim)] text-[var(--md-text)] font-medium'
+                  : 'text-[var(--md-text-tertiary)] hover:text-[var(--md-text-secondary)]'
               }`}
             >
               <Eye size={11} />
@@ -164,15 +164,15 @@ export default function MarkdownEditor({
 
         {/* View mode toggle (desktop) */}
         {hasOptimized && (
-          <div className="hidden sm:flex items-center gap-0.5 p-0.5 rounded-lg bg-white/[0.05]">
+          <div className="hidden sm:flex items-center gap-0.5 p-0.5 rounded-[8px] bg-[var(--md-surface)] border border-[var(--md-border)]">
             {(['original', 'optimized'] as const).map(mode => (
               <button
                 key={mode}
                 onClick={() => onViewModeChange(mode)}
                 className={`text-[11px] px-2.5 py-1 rounded-md transition-all capitalize cursor-pointer ${
                   viewMode === mode
-                    ? 'bg-white/10 text-white font-medium'
-                    : 'text-white/35 hover:text-white/70'
+                    ? 'bg-[var(--md-accent-dim)] text-[var(--md-text)] font-medium'
+                    : 'text-[var(--md-text-tertiary)] hover:text-[var(--md-text-secondary)]'
                 }`}
               >
                 {mode === 'optimized' ? 'Optimized' : 'Original'}
@@ -182,7 +182,7 @@ export default function MarkdownEditor({
         )}
 
         {/* Live token count */}
-        <span className="text-[11px] font-mono text-white/25 shrink-0 hidden sm:block border-l border-white/[0.06] pl-2">
+        <span className="text-[11px] font-mono text-[var(--md-text-tertiary)] shrink-0 hidden sm:block border-l border-[var(--md-border)] pl-2">
           {tokens.toLocaleString()} tok
         </span>
       </div>
@@ -191,14 +191,14 @@ export default function MarkdownEditor({
       <div className="flex flex-col lg:flex-row" style={{ minHeight: 'clamp(400px, 60vh, 700px)' }}>
 
         {/* Editor pane — hidden on mobile when preview is active */}
-        <div className={`flex-1 min-w-0 overflow-hidden border-b lg:border-b-0 lg:border-r border-white/[0.06] bg-[#080812] ${
+        <div className={`flex-1 min-w-0 overflow-hidden border-b lg:border-b-0 lg:border-r border-[var(--md-border)] bg-[var(--md-surface)] ${
           mobilePane === 'preview' ? 'hidden lg:flex' : 'flex flex-col'
         }`}>
           <div ref={editorContainerRef} className="h-full" />
         </div>
 
-        {/* Preview pane — hidden on mobile when edit is active */}
-        <div className={`flex-1 min-w-0 overflow-auto bg-white ${
+        {/* Preview pane — warm paper, intentionally light */}
+        <div className={`flex-1 min-w-0 overflow-auto bg-[#F7F2E9] ${
           mobilePane === 'edit' ? 'hidden lg:block' : 'block'
         }`}>
           <div className="md-preview text-[14px] p-6 max-w-none">

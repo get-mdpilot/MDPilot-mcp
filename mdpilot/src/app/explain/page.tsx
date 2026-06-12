@@ -1,26 +1,27 @@
 'use client';
 
 import { useState } from 'react';
+import { Briefcase, GraduationCap, Users, Bot } from 'lucide-react';
 import type { ReaderAudience } from '@/types';
 import { LabsBreadcrumb } from '@/components/ui/labs-breadcrumb';
 
 // ── Audience card data ────────────────────────────────────────────────────────
 
-const AUDIENCE_OPTIONS: { id: ReaderAudience; icon: string; label: string; desc: string }[] = [
+const AUDIENCE_OPTIONS: { id: ReaderAudience; icon: React.ReactNode; label: string; desc: string }[] = [
   {
-    id: 'non_technical', icon: '💼', label: 'Non-technical reader',
+    id: 'non_technical', icon: <Briefcase size={13} aria-hidden />, label: 'Non-technical reader',
     desc: 'Founder, PM, investor, or client. Every term defined. Plain language.',
   },
   {
-    id: 'learner', icon: '🎓', label: "I'm learning this code",
+    id: 'learner', icon: <GraduationCap size={13} aria-hidden />, label: "I'm learning this code",
     desc: 'Explain the why behind each decision, not just the what.',
   },
   {
-    id: 'team', icon: '👥', label: 'New team member',
+    id: 'team', icon: <Users size={13} aria-hidden />, label: 'New team member',
     desc: 'Assume engineering skills, explain project-specific choices.',
   },
   {
-    id: 'ai_agent', icon: '🤖', label: 'AI agent',
+    id: 'ai_agent', icon: <Bot size={13} aria-hidden />, label: 'AI agent',
     desc: 'Terse, machine-parseable walkthrough for an agent working in this codebase.',
   },
 ];
@@ -94,37 +95,37 @@ export default function ExplainPage() {
 
   if (output) {
     return (
-      <div className="min-h-screen bg-[var(--md-dark-2)] px-4 sm:px-8 py-12">
+      <div className="min-h-screen bg-[var(--md-bg)] px-4 sm:px-8 py-12">
         <div className="max-w-3xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-xl font-semibold">WALKTHROUGH.md</h1>
-              <p className="text-sm text-[var(--md-text-secondary)] mt-0.5">Ready for {AUDIENCE_OPTIONS.find(o => o.id === audience)?.label ?? audience}</p>
+              <h1 className="font-display font-semibold text-xl">WALKTHROUGH.md</h1>
+              <p className="text-sm text-[var(--md-text-secondary)] mt-0.5">Cleared for takeoff — ready for {AUDIENCE_OPTIONS.find(o => o.id === audience)?.label ?? audience}</p>
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => { setOutput(null); }}
-                className="text-sm text-[var(--md-text-tertiary)] hover:text-[var(--md-text)] transition-colors px-3 py-1.5"
+                className="text-sm text-[var(--md-text-secondary)] hover:text-[var(--md-text)] transition-colors px-3 py-1.5 cursor-pointer"
               >
                 ← Back
               </button>
               <button
                 onClick={handleDownload}
-                className="text-sm border border-white/10 rounded-lg px-3 py-1.5 hover:bg-white/5 transition-colors"
+                className="text-sm border border-[var(--md-border-strong)] rounded-[10px] px-3 py-1.5 text-[var(--md-text-secondary)] hover:text-[var(--md-text)] hover:border-[var(--md-accent)] transition-colors duration-200 cursor-pointer"
               >
                 Download
               </button>
               <button
                 onClick={() => void handleCopy()}
-                className="text-sm bg-[#4FACFF]/80 text-white rounded-lg px-4 py-1.5 hover:bg-[#4FACFF] transition-colors"
+                className="text-sm bg-[var(--md-accent)] text-[var(--md-accent-ink)] font-semibold rounded-[10px] px-4 py-1.5 hover:bg-[var(--md-accent-strong)] hover:-translate-y-px transition-all duration-200 shadow-[var(--shadow-sm)] cursor-pointer"
               >
                 {copied ? 'Copied!' : 'Copy'}
               </button>
             </div>
           </div>
 
-          <div className="rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)] overflow-hidden">
-            <div className="px-4 py-2.5 border-b border-white/8 flex items-center gap-2">
+          <div className="rounded-[var(--md-radius)] border border-[var(--md-border)] bg-[var(--md-surface)] overflow-hidden">
+            <div className="px-4 py-2.5 border-b border-[var(--md-border)] flex items-center gap-2">
               <span className="text-xs font-mono text-[var(--md-text-tertiary)]">WALKTHROUGH.md</span>
               <span className="ml-auto text-xs text-[var(--md-text-tertiary)]">{output.split('\n').length} lines</span>
             </div>
@@ -144,19 +145,17 @@ export default function ExplainPage() {
   // ── Input form ────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-[var(--md-dark-2)] px-4 sm:px-8 py-12">
+    <div className="min-h-screen bg-[var(--md-bg)] px-4 sm:px-8 py-12">
       <LabsBreadcrumb page="Explain" />
       <div className="max-w-2xl mx-auto">
 
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <img src="/mdpilot-logo.svg" alt="MDPilot" width={44} height={44} className="w-11 h-11 object-contain drop-shadow-[0_0_10px_rgba(79,172,255,0.28)]" />
-            <div className="inline-flex items-center gap-2 text-xs font-mono px-2.5 py-1 rounded-full bg-[#4FACFF]/10 text-[#4FACFF] border border-[#4FACFF]/20">
-              Explain mode
-            </div>
+            <img src="/mdpilot-logo.webp" alt="MDPilot" width={44} height={44} className="w-11 h-11 object-contain" />
+            <p className="section-label">Explain mode</p>
           </div>
-          <h1 className="text-2xl font-semibold mb-1">Explain code to anyone</h1>
+          <h1 className="font-display font-semibold text-2xl mb-1">Explain code to anyone</h1>
           <p className="text-sm text-[var(--md-text-secondary)]">
             Paste code or a file. We&apos;ll generate a WALKTHROUGH.md that explains it to your chosen audience.
           </p>
@@ -172,7 +171,7 @@ export default function ExplainPage() {
             onChange={e => setCode(e.target.value)}
             placeholder={"// Paste any code here — a file, a function, a module, an API route…\n// The more context you give, the better the explanation."}
             rows={12}
-            className="w-full rounded-xl border border-white/8 bg-white/[0.02] p-4 text-sm font-mono resize-none focus:outline-none focus:border-[#4FACFF]/50 transition-colors text-[var(--md-text)] placeholder:text-white/15 leading-relaxed"
+            className="w-full rounded-[var(--md-radius)] border border-[var(--md-border)] bg-[var(--md-surface)] p-4 text-sm font-mono resize-none focus:outline-none focus:border-[var(--md-accent)] transition-colors text-[var(--md-text)] placeholder:text-[var(--md-text-tertiary)] leading-relaxed"
             autoFocus
           />
           <div className="flex items-center justify-between mt-1.5">
@@ -195,22 +194,22 @@ export default function ExplainPage() {
                     // Auto-enable human voice for non_technical and learner
                     if (opt.id === 'non_technical' || opt.id === 'learner') setHumanVoice(true);
                   }}
-                  className={`flex items-start gap-3 rounded-xl border p-3.5 text-left transition-all ${
+                  className={`flex items-start gap-3 rounded-[var(--md-radius)] border p-3.5 text-left transition-all duration-200 cursor-pointer ${
                     active
-                      ? 'border-[#4FACFF]/50 bg-[#4FACFF]/[0.07]'
-                      : 'border-white/8 bg-white/[0.02] hover:border-white/15 hover:bg-white/[0.04]'
+                      ? 'border-[var(--md-accent)] bg-[var(--md-accent-dim)]'
+                      : 'border-[var(--md-border)] bg-[var(--md-surface)] hover:border-[var(--md-border-strong)] hover:bg-[var(--md-surface-2)]'
                   }`}
                 >
                   <div className={`mt-0.5 w-3.5 h-3.5 rounded-full border-2 shrink-0 flex items-center justify-center transition-all ${
-                    active ? 'border-[#4FACFF] bg-[#4FACFF]' : 'border-white/20'
+                    active ? 'border-[var(--md-accent)] bg-[var(--md-accent)]' : 'border-[var(--md-border-strong)]'
                   }`}>
-                    {active && <div className="w-1 h-1 rounded-full bg-white" />}
+                    {active && <div className="w-1 h-1 rounded-full bg-[var(--md-accent-ink)]" />}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className={`text-xs font-semibold mb-0.5 ${active ? 'text-[var(--md-text)]' : 'text-[var(--md-text-secondary)]'}`}>
-                      <span className="mr-1.5">{opt.icon}</span>{opt.label}
+                    <p className={`flex items-center gap-1.5 text-xs font-semibold mb-0.5 ${active ? 'text-[var(--md-text)]' : 'text-[var(--md-text-secondary)]'}`}>
+                      <span className={active ? 'text-[var(--md-accent)]' : 'text-[var(--md-text-tertiary)]'}>{opt.icon}</span>{opt.label}
                     </p>
-                    <p className={`text-[11px] leading-snug ${active ? 'text-[var(--md-text-secondary)]' : 'text-[var(--md-text-tertiary)]'}`}>
+                    <p className="text-[11px] leading-snug text-[var(--md-text-secondary)]">
                       {opt.desc}
                     </p>
                   </div>
@@ -219,14 +218,14 @@ export default function ExplainPage() {
             })}
           </div>
           {/* Human voice toggle */}
-          <div className="mt-3 rounded-xl border border-white/8 bg-white/[0.02] p-3.5">
+          <div className="mt-3 rounded-[var(--md-radius)] border border-[var(--md-border)] bg-[var(--md-surface)] p-3.5">
             <label className="flex items-center justify-between cursor-pointer gap-4">
               <div>
                 <p className="text-xs font-medium text-[var(--md-text-secondary)]">Human voice</p>
                 <p className="text-[11px] text-[var(--md-text-tertiary)] mt-0.5">
                   Natural prose — no em dashes or AI-isms.
                   {(audience === 'non_technical' || audience === 'learner') && (
-                    <span className="ml-1 text-[#4FACFF]">Auto-on for this audience.</span>
+                    <span className="ml-1 text-[var(--md-accent)]">Auto-on for this audience.</span>
                   )}
                 </p>
               </div>
@@ -234,11 +233,11 @@ export default function ExplainPage() {
                 role="switch"
                 aria-checked={humanVoice}
                 onClick={() => setHumanVoice(v => !v)}
-                className={`relative w-10 h-5.5 rounded-full border transition-all shrink-0 ${
-                  humanVoice ? 'bg-[#4FACFF]/80 border-[#4FACFF]/50' : 'bg-white/5 border-white/15'
+                className={`relative w-10 h-5.5 rounded-full border transition-all shrink-0 cursor-pointer ${
+                  humanVoice ? 'bg-[var(--md-accent)] border-[var(--md-accent)]' : 'bg-[var(--md-surface-2)] border-[var(--md-border-strong)]'
                 }`}
               >
-                <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${humanVoice ? 'left-5' : 'left-0.5'}`} />
+                <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-[var(--md-text)] shadow transition-all ${humanVoice ? 'left-5' : 'left-0.5'}`} />
               </button>
             </label>
           </div>
@@ -248,19 +247,19 @@ export default function ExplainPage() {
         <button
           onClick={() => void handleGenerate()}
           disabled={!canGenerate || isGenerating}
-          className={`w-full rounded-xl py-3 text-sm font-semibold transition-all ${
+          className={`w-full rounded-[10px] py-3 text-sm font-semibold transition-all duration-200 ${
             canGenerate && !isGenerating
-              ? 'bg-[#4FACFF]/80 text-white hover:bg-[#4FACFF]'
-              : 'bg-white/5 text-[var(--md-text-tertiary)] cursor-not-allowed'
+              ? 'bg-[var(--md-accent)] text-[var(--md-accent-ink)] hover:bg-[var(--md-accent-strong)] hover:-translate-y-px shadow-[var(--shadow-sm)] cursor-pointer'
+              : 'bg-[var(--md-surface-2)] text-[var(--md-text-tertiary)] cursor-not-allowed'
           }`}
         >
           {isGenerating ? (
             <span className="flex items-center justify-center gap-2">
-              <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+              <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24" aria-hidden>
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
               </svg>
-              Generating WALKTHROUGH.md…
+              In flight… generating WALKTHROUGH.md
             </span>
           ) : (
             'Generate WALKTHROUGH.md'
@@ -272,14 +271,14 @@ export default function ExplainPage() {
         )}
 
         {error && (
-          <div className="mt-4 rounded-xl border border-[var(--md-coral)]/30 bg-[var(--md-coral-light)] px-4 py-3">
-            <p className="text-sm text-[var(--md-coral)] font-medium mb-0.5">Generation failed</p>
-            <p className="text-xs text-[var(--md-coral)]">{error}</p>
+          <div className="mt-4 rounded-[var(--md-radius)] border border-[var(--md-caution)]/40 bg-[var(--md-caution-dim)] px-4 py-3">
+            <p className="text-sm text-[var(--md-caution)] font-medium mb-0.5">Generation failed</p>
+            <p className="text-xs text-[var(--md-text-secondary)]">{error}</p>
           </div>
         )}
 
         {/* What you get */}
-        <div className="mt-8 rounded-xl border border-white/8 bg-white/[0.02] p-4">
+        <div className="mt-8 rounded-[var(--md-radius)] border border-[var(--md-border)] bg-[var(--md-surface)] p-4">
           <p className="text-xs font-medium text-[var(--md-text-secondary)] mb-3">What you get</p>
           <div className="space-y-2">
             {[
@@ -291,8 +290,8 @@ export default function ExplainPage() {
               ['## Glossary', 'Every technical term defined (non-technical + learner audiences)'],
             ].map(([heading, desc]) => (
               <div key={heading} className="flex items-start gap-3">
-                <span className="text-[11px] font-mono text-[#4FACFF]/70 shrink-0 pt-0.5 w-40">{heading}</span>
-                <span className="text-[11px] text-[var(--md-text-tertiary)]">{desc}</span>
+                <span className="text-[11px] font-mono text-[var(--md-accent)] shrink-0 pt-0.5 w-40">{heading}</span>
+                <span className="text-[11px] text-[var(--md-text-secondary)]">{desc}</span>
               </div>
             ))}
           </div>

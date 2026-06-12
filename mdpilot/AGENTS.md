@@ -40,7 +40,8 @@ npx tsc --noEmit     # typecheck all
 
 - `src/app/` — Next.js App Router pages and API routes
 - `src/components/ui/` — reusable base components (Button, Card, Input)
-- `src/components/` — feature components (Stepper, ModeSelector, TokenMeter)
+- `src/components/` — feature components (Hero, Nav, Stepper, OutputView, TokenMeter, TaskSuggestions)
+- `src/components/fx/` — cockpit instrument components (FlipWord, ZuluClock, Altimeter, RadarScope, ApproachLights, Reveal)
 - `src/lib/prompts/` — system prompt templates per file type (readme.ts, agents.ts, claude.ts)
 - `src/lib/anthropic.ts` — Anthropic client wrapper (server-side only)
 - `src/lib/tokenizer.ts` — js-tiktoken wrapper for token counting

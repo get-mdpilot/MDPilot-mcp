@@ -10,11 +10,6 @@ const TOOLS = [
   {
     href: '/generate',
     label: 'Generate',
-    accent: '#4FACFF',
-    borderColor: 'border-[#4FACFF]/[0.15]',
-    bgColor: 'bg-[#4FACFF]/[0.04]',
-    glowColor: 'bg-[#4FACFF]/20',
-    textColor: 'text-[#4FACFF]',
     desc: 'AGENTS.md, CLAUDE.md, README & more from your project',
     detail: '9 file types · 5-pass optimizer · multi-model',
     icon: (
@@ -29,11 +24,6 @@ const TOOLS = [
   {
     href: '/explain',
     label: 'Explain',
-    accent: '#A855F7',
-    borderColor: 'border-[#A855F7]/[0.15]',
-    bgColor: 'bg-[#A855F7]/[0.04]',
-    glowColor: 'bg-[#A855F7]/20',
-    textColor: 'text-[#A855F7]',
     desc: 'Turn any code or repo into a plain-language walkthrough',
     detail: 'Tuned to any audience — agent, team, learner, non-technical',
     icon: (
@@ -45,11 +35,6 @@ const TOOLS = [
   {
     href: '/convert',
     label: 'Convert',
-    accent: '#2DD4BF',
-    borderColor: 'border-[#2DD4BF]/[0.15]',
-    bgColor: 'bg-[#2DD4BF]/[0.04]',
-    glowColor: 'bg-[#2DD4BF]/20',
-    textColor: 'text-[#2DD4BF]',
     desc: 'Any file (PDF, DOCX, CSV…) → clean markdown',
     detail: 'Powered by MarkItDown · preserves structure',
     icon: (
@@ -63,11 +48,6 @@ const TOOLS = [
   {
     href: '/image-to-prompt',
     label: 'Image → Prompt',
-    accent: '#F97316',
-    borderColor: 'border-[#F97316]/[0.15]',
-    bgColor: 'bg-[#F97316]/[0.04]',
-    glowColor: 'bg-[#F97316]/20',
-    textColor: 'text-[#F97316]',
     desc: 'Recreate any image as a generation prompt',
     detail: 'Outputs for FLUX, SD, Midjourney, DALL-E & Gemini',
     icon: (
@@ -81,11 +61,6 @@ const TOOLS = [
   {
     href: '/interview-primer',
     label: 'Interview Primer',
-    accent: '#FBBF24',
-    borderColor: 'border-[#FBBF24]/[0.15]',
-    bgColor: 'bg-[#FBBF24]/[0.04]',
-    glowColor: 'bg-[#FBBF24]/20',
-    textColor: 'text-[#FBBF24]',
     desc: 'Role + JD → a ready-to-paste AI coach prompt',
     detail: 'Any level · custom JD · instant output',
     icon: (
@@ -99,20 +74,20 @@ const TOOLS = [
 
 export default function LabsPage() {
   return (
-    <div className="min-h-screen bg-[var(--md-dark)]">
+    <div className="min-h-screen bg-[var(--md-bg)]">
       <div className="max-w-5xl mx-auto px-5 sm:px-8 py-20">
 
         {/* Header */}
         <div className="mb-16">
           <div className="flex items-center gap-4 mb-6">
-            <img src="/mdpilot-logo.svg" alt="MDPilot" width={52} height={52} className="w-13 h-13 object-contain drop-shadow-[0_0_10px_rgba(79,172,255,0.28)]" />
-            <div className="section-label w-fit">Experimental</div>
+            <img src="/mdpilot-logo.webp" alt="MDPilot" width={52} height={52} className="w-13 h-13 object-contain" />
+            <p className="section-label">Experimental</p>
           </div>
-          <h1 className="text-[clamp(2.2rem,5vw,3.5rem)] font-black text-white tracking-[-0.04em] mb-4">
-            Labs
+          <h1 className="font-display font-semibold text-[clamp(2.2rem,5vw,3.5rem)] text-[var(--md-text)] tracking-[-0.015em] mb-4">
+            The Hangar
           </h1>
-          <p className="text-[16px] text-white/40 max-w-lg leading-relaxed">
-            Additional and experimental MDPilot tools. All fully working — just not the main act.
+          <p className="text-[16px] text-[var(--md-text-secondary)] max-w-lg leading-relaxed">
+            Labs — experimental tools. All fully working, just not the main act.
           </p>
         </div>
 
@@ -122,27 +97,24 @@ export default function LabsPage() {
             <Link
               key={tool.href}
               href={tool.href}
-              className={`group relative rounded-2xl border ${tool.borderColor} ${tool.bgColor} p-6 card-interactive overflow-hidden cursor-pointer transition-all duration-200 hover:border-opacity-60`}
+              className="group relative rounded-[var(--md-radius-lg)] border border-[var(--md-border)] bg-[var(--md-surface)] p-6 card-interactive cursor-pointer"
             >
-              {/* Hover glow blob */}
-              <div className={`absolute -top-8 -right-8 w-28 h-28 rounded-full ${tool.glowColor} blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none`} />
-
-              <div className="relative z-10 flex items-start justify-between gap-4">
+              <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   {/* Icon + label row */}
                   <div className="flex items-center gap-2.5 mb-3">
-                    <div className={`shrink-0 w-9 h-9 rounded-xl ${tool.bgColor} border ${tool.borderColor} flex items-center justify-center ${tool.textColor}`}>
+                    <div className="shrink-0 w-9 h-9 rounded-[10px] bg-[var(--md-surface-2)] border border-[var(--md-border)] flex items-center justify-center text-[var(--md-accent)]">
                       {tool.icon}
                     </div>
-                    <span className={`text-[12px] font-mono font-bold ${tool.textColor} tracking-wide`}>
+                    <span className="text-[12px] font-mono font-medium text-[var(--md-accent)] tracking-wide">
                       {tool.label}
                     </span>
                   </div>
 
-                  <p className="text-[14px] font-semibold text-white/80 leading-snug mb-1.5">
+                  <p className="text-[14px] font-semibold text-[var(--md-text)] leading-snug mb-1.5">
                     {tool.desc}
                   </p>
-                  <p className="text-[12px] text-white/30 font-mono">
+                  <p className="text-[12px] text-[var(--md-text-tertiary)] font-mono">
                     {tool.detail}
                   </p>
                 </div>
@@ -151,7 +123,7 @@ export default function LabsPage() {
                 <svg
                   width="16" height="16" fill="none" viewBox="0 0 24 24"
                   stroke="currentColor" strokeWidth={2}
-                  className="shrink-0 mt-1 text-white/15 group-hover:text-white/40 group-hover:translate-x-0.5 transition-all duration-200"
+                  className="shrink-0 mt-1 text-[var(--md-text-tertiary)] group-hover:text-[var(--md-accent)] group-hover:translate-x-0.5 transition-all duration-200"
                   aria-hidden
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
@@ -162,19 +134,19 @@ export default function LabsPage() {
         </div>
 
         {/* Back to hero */}
-        <div className="mt-14 pt-8 border-t border-white/[0.05] flex items-center justify-between gap-4 flex-wrap">
+        <div className="mt-14 pt-8 border-t border-[var(--md-border)] flex items-center justify-between gap-4 flex-wrap">
           <div>
-            <p className="text-[13px] text-white/30 mb-1">Looking for the main tool?</p>
+            <p className="text-[13px] text-[var(--md-text-tertiary)] mb-1">Looking for the main tool?</p>
             <Link
               href="/task"
-              className="text-[13px] text-[#4FACFF]/80 hover:text-[#4FACFF] font-medium transition-colors"
+              className="text-[13px] text-[var(--md-accent)] hover:text-[var(--md-accent-strong)] font-medium transition-colors"
             >
               Start with a task →
             </Link>
           </div>
           <Link
             href="/"
-            className="text-[11px] font-mono text-white/20 hover:text-white/40 transition-colors"
+            className="text-[11px] font-mono text-[var(--md-text-tertiary)] hover:text-[var(--md-text-secondary)] transition-colors"
           >
             ← Home
           </Link>

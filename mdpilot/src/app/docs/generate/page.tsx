@@ -25,18 +25,18 @@ export default function GenerateDocsPage() {
 
       <div className="mb-8">
         <div className="section-label mb-4 w-fit">Labs</div>
-        <h1 className="text-[clamp(1.6rem,4vw,2.4rem)] font-black text-white tracking-[-0.04em] mb-3 leading-tight">
+        <h1 className="text-[clamp(1.6rem,4vw,2.4rem)] font-semibold text-[var(--md-text)] tracking-[-0.015em] mb-3 leading-tight">
           Generate mode
         </h1>
-        <p className="text-white/45 text-[15px] leading-relaxed">
+        <p className="text-[var(--md-text-secondary)] text-[15px] leading-relaxed">
           A 7-step wizard that generates production-grade AI instruction files and project docs grounded
           in your actual tech stack — not generic boilerplate.
         </p>
       </div>
 
       {/* When to use */}
-      <div className="mb-8 p-4 rounded-xl border border-white/[0.07] bg-white/[0.02]">
-        <h2 className="text-[13px] font-semibold text-white/70 mb-2">When to use Generate mode</h2>
+      <div className="mb-8 p-4 rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)]">
+        <h2 className="text-[13px] font-semibold text-[var(--md-text-secondary)] mb-2">When to use Generate mode</h2>
         <ul className="space-y-1.5">
           {[
             'Starting a new project and want AGENTS.md + CLAUDE.md set up correctly from day one',
@@ -45,8 +45,8 @@ export default function GenerateDocsPage() {
             'Retrofitting AI context files onto an existing codebase',
           ].map((item, i) => (
             <li key={i} className="flex items-start gap-2">
-              <span className="w-1 h-1 rounded-full bg-[#2DD4BF]/60 mt-2 shrink-0" />
-              <span className="text-[12px] text-white/45 leading-relaxed">{item}</span>
+              <span className="w-1 h-1 rounded-full bg-[var(--md-go)]/60 mt-2 shrink-0" />
+              <span className="text-[12px] text-[var(--md-text-tertiary)] leading-relaxed">{item}</span>
             </li>
           ))}
         </ul>
@@ -54,31 +54,31 @@ export default function GenerateDocsPage() {
 
       {/* Files */}
       <div className="mb-8">
-        <h2 className="text-[15px] font-bold text-white mb-3">Files it generates</h2>
+        <h2 className="text-[15px] font-semibold text-[var(--md-text)] mb-3">Files it generates</h2>
         <div className="flex flex-wrap gap-2">
           {FILES.map(f => (
-            <code key={f} className="text-[11px] font-mono px-2.5 py-1 rounded-lg bg-white/[0.05] border border-white/[0.09] text-white/50">
+            <code key={f} className="text-[11px] font-mono px-2.5 py-1 rounded-lg bg-[var(--md-surface-2)] border border-[var(--md-border)] text-[var(--md-text-tertiary)]">
               {f}
             </code>
           ))}
         </div>
-        <p className="text-[12px] text-white/30 mt-2">
-          See <Link href="/docs/files" className="text-[#4FACFF]/60 hover:text-[#4FACFF] transition-colors">Files reference</Link> for what each file is and where it goes.
+        <p className="text-[12px] text-[var(--md-text-tertiary)] mt-2">
+          See <Link href="/docs/files" className="text-[var(--md-accent)]/60 hover:text-[var(--md-accent)] transition-colors">Files reference</Link> for what each file is and where it goes.
         </p>
       </div>
 
       {/* Steps */}
       <div className="mb-8">
-        <h2 className="text-[15px] font-bold text-white mb-4">The 7 wizard steps</h2>
+        <h2 className="text-[15px] font-semibold text-[var(--md-text)] mb-4">The 7 wizard steps</h2>
         <div className="space-y-3">
           {STEPS.map(step => (
             <div key={step.n} className="flex items-start gap-3">
-              <span className="shrink-0 w-6 h-6 rounded-full bg-[#2DD4BF]/10 border border-[#2DD4BF]/18 flex items-center justify-center text-[10px] font-mono font-bold text-[#2DD4BF]/55 mt-0.5">
+              <span className="shrink-0 w-6 h-6 rounded-full bg-[var(--md-go)]/10 border border-[var(--md-go)]/18 flex items-center justify-center text-[10px] font-mono font-bold text-[var(--md-go)]/80 mt-0.5">
                 {step.n}
               </span>
               <div>
-                <p className="text-[13px] font-semibold text-white/70 mb-0.5">{step.label}</p>
-                <p className="text-[12px] text-white/40 leading-relaxed">{step.desc}</p>
+                <p className="text-[13px] font-semibold text-[var(--md-text-secondary)] mb-0.5">{step.label}</p>
+                <p className="text-[12px] text-[var(--md-text-tertiary)] leading-relaxed">{step.desc}</p>
               </div>
             </div>
           ))}
@@ -86,21 +86,21 @@ export default function GenerateDocsPage() {
       </div>
 
       {/* MCP note */}
-      <div className="p-4 rounded-xl border border-[#34D399]/[0.15] bg-[#34D399]/[0.03] mb-6">
-        <p className="text-[12px] text-white/45 leading-relaxed">
-          <span className="text-[#34D399]/70 font-semibold">Via MCP:</span> Use the{' '}
-          <code className="text-[11px] font-mono bg-white/[0.06] px-1 rounded text-white/55">generate_md_file</code> tool
+      <div className="p-4 rounded-xl border border-[var(--md-go)]/[0.15] bg-[var(--md-go)]/[0.03] mb-6">
+        <p className="text-[12px] text-[var(--md-text-tertiary)] leading-relaxed">
+          <span className="text-[var(--md-go)]/70 font-semibold">Via MCP:</span> Use the{' '}
+          <code className="text-[11px] font-mono bg-[var(--md-surface-2)] px-1 rounded text-[var(--md-text-secondary)]">generate_md_file</code> tool
           to generate any supported file type from inside your IDE. The MCP version reads your actual
           repo files, so output references real scripts and paths.{' '}
-          <Link href="/docs/mcp" className="text-[#4FACFF]/60 hover:text-[#4FACFF] transition-colors">MCP setup →</Link>
+          <Link href="/docs/mcp" className="text-[var(--md-accent)]/60 hover:text-[var(--md-accent)] transition-colors">MCP setup →</Link>
         </p>
       </div>
 
-      <div className="pt-6 border-t border-white/[0.05] flex items-center gap-4">
-        <Link href="/labs" className="text-[12px] font-mono text-white/25 hover:text-white/50 transition-colors">
+      <div className="pt-6 border-t border-[var(--md-border)] flex items-center gap-4">
+        <Link href="/labs" className="text-[12px] font-mono text-[var(--md-text-tertiary)] hover:text-[var(--md-text-secondary)] transition-colors">
           ← Labs
         </Link>
-        <Link href="/docs/explain" className="text-[12px] font-mono text-white/25 hover:text-white/50 transition-colors">
+        <Link href="/docs/explain" className="text-[12px] font-mono text-[var(--md-text-tertiary)] hover:text-[var(--md-text-secondary)] transition-colors">
           Explain mode →
         </Link>
       </div>

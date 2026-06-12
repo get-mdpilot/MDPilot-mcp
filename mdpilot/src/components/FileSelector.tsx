@@ -19,8 +19,9 @@ interface FileSelectorProps {
 }
 
 export default function FileSelector({ files, selected, onToggle, accent = 'blue' }: FileSelectorProps) {
-  const accentColor   = accent === 'coral' ? '#E05E3A' : '#4FACFF';
-  const selectedGlow  = accent === 'coral' ? 'card-selected-coral' : 'card-selected-blue';
+  const accentColor  = accent === 'coral' ? 'var(--md-caution)' : 'var(--md-accent)';
+  const accentDim    = accent === 'coral' ? 'var(--md-caution-dim)' : 'var(--md-accent-dim)';
+  const selectedRing = accent === 'coral' ? 'card-selected-coral' : 'card-selected-blue';
 
   return (
     <div className="flex flex-col gap-2.5">
@@ -34,26 +35,27 @@ export default function FileSelector({ files, selected, onToggle, accent = 'blue
             key={f.type}
             onClick={() => !disabled && !locked && onToggle(f.type)}
             disabled={disabled}
-            className={`flex items-center gap-4 rounded-xl border p-4 text-left w-full transition-all duration-200 ${
+            className={`flex items-center gap-4 rounded-[10px] border p-4 text-left w-full transition-all duration-200 ${
               disabled
-                ? 'opacity-40 cursor-not-allowed border-white/[0.06] bg-white/[0.02]'
+                ? 'opacity-40 cursor-not-allowed border-[var(--md-border)] bg-[var(--md-surface)]'
                 : isSelected
-                ? `border-[${accentColor}]/50 bg-[${accentColor}]/[0.07] ${selectedGlow}`
-                : 'border-white/[0.07] bg-white/[0.03] hover:border-white/[0.14] hover:bg-white/[0.05] hover:-translate-y-[1px]'
+                ? `border-transparent ${selectedRing}`
+                : 'border-[var(--md-border)] bg-[var(--md-surface)] card-interactive cursor-pointer'
             } ${locked ? 'cursor-default' : ''}`}
-            style={isSelected && !disabled ? { borderColor: `${accentColor}80` } : undefined}
+            style={isSelected && !disabled ? { background: accentDim } : undefined}
           >
             {/* Checkbox */}
             <span
               className="w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-all"
               style={{
-                borderColor: isSelected && !disabled ? accentColor : 'rgba(255,255,255,0.18)',
+                borderColor: isSelected && !disabled ? accentColor : 'var(--md-border-strong)',
                 background:   isSelected && !disabled ? accentColor : 'transparent',
+                color: 'var(--md-accent-ink)',
               }}
             >
               {isSelected && !disabled && (
                 <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
-                  <path d="M2 6l2.5 2.5L10 3" stroke="#07070f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M2 6l2.5 2.5L10 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               )}
             </span>
@@ -64,19 +66,19 @@ export default function FileSelector({ files, selected, onToggle, accent = 'blue
                 <span className="text-sm font-mono font-semibold text-[var(--md-text)]">{f.name}</span>
                 {f.recommended && !f.v2 && (
                   <span
-                    className="text-[10px] px-1.5 py-0.5 rounded-full font-medium"
-                    style={{ background: `${accentColor}1A`, color: accentColor }}
+                    className="text-[10px] px-1.5 py-0.5 rounded font-medium"
+                    style={{ background: accentDim, color: accentColor }}
                   >
                     Recommended
                   </span>
                 )}
                 {locked && (
-                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/[0.06] text-[var(--md-text-tertiary)]">
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--md-surface-2)] text-[var(--md-text-tertiary)]">
                     always on
                   </span>
                 )}
                 {f.v2 && (
-                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/[0.06] text-[var(--md-text-tertiary)]">
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--md-surface-2)] text-[var(--md-text-tertiary)]">
                     v2
                   </span>
                 )}

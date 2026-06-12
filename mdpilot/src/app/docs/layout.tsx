@@ -1,5 +1,8 @@
+'use client';
+
 import type { ReactNode } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 interface SidebarLink {
   label: string;
@@ -49,8 +52,10 @@ const SIDEBAR_SECTIONS: SidebarSection[] = [
 ];
 
 export default function DocsLayout({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+
   return (
-    <div className="min-h-screen bg-[var(--md-dark)]">
+    <div className="min-h-screen bg-[var(--md-bg)]">
       <div className="max-w-6xl mx-auto px-5 sm:px-8 py-10">
         <div className="flex flex-col lg:flex-row gap-10">
 
@@ -58,49 +63,57 @@ export default function DocsLayout({ children }: { children: ReactNode }) {
           <aside className="lg:w-52 shrink-0">
             <nav aria-label="Documentation navigation">
               {/* Mobile: compact horizontal scroll */}
-              <div className="lg:hidden flex gap-1 overflow-x-auto pb-3 mb-6 border-b border-white/[0.06] scrollbar-none">
-                {SIDEBAR_SECTIONS.flatMap(s => s.links).map(link => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`shrink-0 px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors whitespace-nowrap ${
-                      link.accent
-                        ? 'text-[#4FACFF]/80 bg-[#4FACFF]/[0.08] border border-[#4FACFF]/20 hover:text-[#4FACFF]'
-                        : 'text-white/45 bg-white/[0.04] border border-white/[0.07] hover:text-white/80'
-                    } ${link.soon ? 'opacity-50 pointer-events-none' : ''}`}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+              <div className="lg:hidden flex gap-1.5 overflow-x-auto pb-3 mb-6 border-b border-[var(--md-border)] scrollbar-none">
+                {SIDEBAR_SECTIONS.flatMap(s => s.links).map(link => {
+                  const active = pathname === link.href;
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      aria-current={active ? 'page' : undefined}
+                      className={`shrink-0 px-3 py-1.5 rounded-[6px] text-[12px] font-medium border transition-colors duration-150 whitespace-nowrap cursor-pointer ${
+                        active
+                          ? 'text-[var(--md-accent)] border-[var(--md-accent)] bg-[var(--md-accent-dim)]'
+                          : 'text-[var(--md-text-secondary)] bg-[var(--md-surface)] border-[var(--md-border)] hover:text-[var(--md-text)] hover:border-[var(--md-border-strong)]'
+                      } ${link.soon ? 'opacity-50 pointer-events-none' : ''}`}
+                    >
+                      {link.label}
+                    </Link>
+                  );
+                })}
               </div>
 
-              {/* Desktop: vertical sidebar */}
-              <div className="hidden lg:block sticky top-24 space-y-5">
+              {/* Desktop: vertical sidebar — field-manual index */}
+              <div className="hidden lg:block sticky top-24 space-y-6 border-l border-[var(--md-border)]">
                 {SIDEBAR_SECTIONS.map((section, i) => (
                   <div key={i}>
                     {section.group && (
-                      <p className="text-[10px] font-mono font-semibold text-white/25 uppercase tracking-[0.12em] mb-2 px-2">
+                      <p className="font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--md-text-tertiary)] mb-2 pl-4">
                         {section.group}
                       </p>
                     )}
                     <ul className="space-y-0.5">
-                      {section.links.map(link => (
-                        <li key={link.href}>
-                          <Link
-                            href={link.href}
-                            className={`flex items-center justify-between px-2 py-1.5 rounded-lg text-[13px] transition-colors group ${
-                              link.accent
-                                ? 'text-[#4FACFF]/80 hover:text-[#4FACFF] hover:bg-[#4FACFF]/[0.06]'
-                                : 'text-white/45 hover:text-white/80 hover:bg-white/[0.04]'
-                            } ${link.soon ? 'opacity-40 pointer-events-none' : ''}`}
-                          >
-                            {link.label}
-                            {link.soon && (
-                              <span className="text-[9px] font-mono text-white/20 group-hover:text-white/30">soon</span>
-                            )}
-                          </Link>
-                        </li>
-                      ))}
+                      {section.links.map(link => {
+                        const active = pathname === link.href;
+                        return (
+                          <li key={link.href}>
+                            <Link
+                              href={link.href}
+                              aria-current={active ? 'page' : undefined}
+                              className={`flex items-center justify-between -ml-px py-1.5 pl-4 pr-2 border-l-2 text-[13px] transition-colors duration-150 group cursor-pointer ${
+                                active
+                                  ? 'border-[var(--md-accent)] text-[var(--md-accent)] font-medium'
+                                  : 'border-transparent text-[var(--md-text-secondary)] hover:text-[var(--md-text)] hover:border-[var(--md-border-strong)]'
+                              } ${link.soon ? 'opacity-40 pointer-events-none' : ''}`}
+                            >
+                              {link.label}
+                              {link.soon && (
+                                <span className="text-[9px] font-mono text-[var(--md-text-tertiary)]">soon</span>
+                              )}
+                            </Link>
+                          </li>
+                        );
+                      })}
                     </ul>
                   </div>
                 ))}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Tag } from 'lucide-react';
 
 interface BadgeGeneratorProps {
   onInsert: (markdown: string) => void;
@@ -74,12 +75,12 @@ export default function BadgeGenerator({ onInsert }: BadgeGeneratorProps) {
   };
 
   return (
-    <div className="mt-3 rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)] overflow-hidden">
+    <div className="mt-3 rounded-[var(--md-radius)] border border-[var(--md-border)] bg-[var(--md-surface)] overflow-hidden">
       <button
         onClick={() => setOpen(o => !o)}
-        className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-white/[0.03] transition-colors"
+        className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-[var(--md-surface-2)] transition-colors cursor-pointer"
       >
-        <span className="flex items-center gap-2 text-sm font-medium">🏷️ Add badges</span>
+        <span className="flex items-center gap-2 text-sm font-medium"><Tag size={14} className="text-[var(--md-accent)]" aria-hidden /> Add badges</span>
         <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
           className={`text-[var(--md-text-tertiary)] transition-transform ${open ? 'rotate-180' : ''}`}>
           <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
@@ -97,11 +98,11 @@ export default function BadgeGenerator({ onInsert }: BadgeGeneratorProps) {
                     key={b.label}
                     onClick={() => insert(b.template, b.label)}
                     title={`Insert ${b.label} badge`}
-                    className="rounded-md border border-[var(--md-border)] bg-white/[0.02] px-2 py-1.5 hover:border-[#4FACFF]/40 hover:bg-white/[0.05] transition-all"
+                    className="rounded-md border border-[var(--md-border)] bg-[var(--md-surface-2)] px-2 py-1.5 hover:border-[var(--md-accent)]/50 hover:bg-[var(--md-accent-dim)] transition-all cursor-pointer"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={badgeUrl(b.template)} alt={b.label} className="h-[18px]" />
-                    {added === b.label && <span className="block text-[9px] text-[var(--md-teal)] mt-0.5">Added!</span>}
+                    {added === b.label && <span className="block text-[9px] text-[var(--md-go)] mt-0.5">Added!</span>}
                   </button>
                 ))}
               </div>
@@ -114,22 +115,22 @@ export default function BadgeGenerator({ onInsert }: BadgeGeneratorProps) {
             <div className="flex flex-wrap gap-2 items-center">
               <input
                 value={label} onChange={e => setLabel(e.target.value)} placeholder="Label"
-                className="flex-1 min-w-[90px] rounded-lg border border-[var(--md-border)] bg-white/[0.03] px-3 py-1.5 text-xs focus:outline-none focus:border-[#4FACFF]/50"
+                className="flex-1 min-w-[90px] rounded-[8px] border border-[var(--md-border)] bg-[var(--md-surface-2)] px-3 py-1.5 text-xs focus:outline-none focus:border-[var(--md-accent)]"
               />
               <input
                 value={value} onChange={e => setValue(e.target.value)} placeholder="Value"
-                className="flex-1 min-w-[90px] rounded-lg border border-[var(--md-border)] bg-white/[0.03] px-3 py-1.5 text-xs focus:outline-none focus:border-[#4FACFF]/50"
+                className="flex-1 min-w-[90px] rounded-[8px] border border-[var(--md-border)] bg-[var(--md-surface-2)] px-3 py-1.5 text-xs focus:outline-none focus:border-[var(--md-accent)]"
               />
               <select
                 value={color} onChange={e => setColor(e.target.value)}
-                className="rounded-lg border border-[var(--md-border)] bg-[var(--md-surface)] px-3 py-1.5 text-xs focus:outline-none focus:border-[#4FACFF]/50"
+                className="rounded-[8px] border border-[var(--md-border)] bg-[var(--md-surface)] px-3 py-1.5 text-xs focus:outline-none focus:border-[var(--md-accent)]"
               >
                 {COLORS.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
               <button
                 onClick={addCustom}
                 disabled={!label.trim() || !value.trim()}
-                className="px-3 py-1.5 rounded-lg bg-[#4FACFF] text-[#07070f] text-xs font-medium hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
+                className="px-3 py-1.5 rounded-[8px] bg-[var(--md-accent)] text-[var(--md-accent-ink)] text-xs font-semibold hover:bg-[var(--md-accent-strong)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
               >
                 {added === 'custom' ? 'Added!' : 'Add'}
               </button>

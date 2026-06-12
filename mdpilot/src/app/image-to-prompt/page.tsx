@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { Image as ImageIcon } from 'lucide-react';
 import { countTokens } from '@/lib/tokenizer';
 import { LabsBreadcrumb } from '@/components/ui/labs-breadcrumb';
 
@@ -149,16 +150,16 @@ export default function ImageToPromptPage() {
   if (result) {
     const activePrompt = String(result.formatted[activeFormat] ?? '');
     return (
-      <div className="min-h-screen bg-[var(--md-dark-2)] px-4 sm:px-8 py-12">
+      <div className="min-h-screen bg-[var(--md-bg)] px-4 sm:px-8 py-12">
         <LabsBreadcrumb page="Image → Prompt" />
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-xl font-semibold">Recreation prompts</h2>
+              <h2 className="font-display font-semibold text-xl">Cleared for takeoff — recreation prompts</h2>
               <p className="text-xs text-[var(--md-text-tertiary)] mt-0.5">Analyzed with {result.provider}</p>
             </div>
             <button onClick={() => { setResult(null); setImage(null); }}
-              className="text-sm text-[var(--md-text-secondary)] hover:text-[var(--md-text)] transition-colors">
+              className="text-sm text-[var(--md-text-secondary)] hover:text-[var(--md-text)] transition-colors cursor-pointer">
               ↻ New image
             </button>
           </div>
@@ -168,21 +169,21 @@ export default function ImageToPromptPage() {
             <div className="lg:w-[40%] shrink-0">
               {preview && (
                 /* eslint-disable-next-line @next/next/no-img-element */
-                <img src={preview} alt="source" className="w-full rounded-xl border border-[var(--md-border)] mb-4 max-h-56 object-cover" />
+                <img src={preview} alt="source" className="w-full rounded-[var(--md-radius)] border border-[var(--md-border)] mb-4 max-h-56 object-cover" />
               )}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2">
                 {Object.entries(result.analysis).map(([k, v]) => {
                   const hexes = k === 'colors' ? extractHexes(v) : [];
                   return (
-                    <div key={k} className="rounded-lg border border-[var(--md-border)] bg-[var(--md-surface)] px-3 py-2">
-                      <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--md-purple)] mb-0.5">
+                    <div key={k} className="rounded-[var(--md-radius-sm)] border border-[var(--md-border)] bg-[var(--md-surface)] px-3 py-2">
+                      <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--md-accent)] mb-0.5">
                         {ANALYSIS_LABELS[k] ?? k}
                       </p>
                       <p className="text-xs text-[var(--md-text-secondary)] leading-relaxed">{toDisplay(v)}</p>
                       {hexes.length > 0 && (
                         <div className="flex gap-1.5 mt-2">
                           {hexes.map(h => (
-                            <span key={h} className="w-3 h-3 rounded-full border border-white/20" style={{ background: h }} title={h} />
+                            <span key={h} className="w-3 h-3 rounded-full border border-[var(--md-border-strong)]" style={{ background: h }} title={h} />
                           ))}
                         </div>
                       )}
@@ -198,9 +199,9 @@ export default function ImageToPromptPage() {
               <div className="flex overflow-x-auto border-b border-[var(--md-border)] mb-3">
                 {FORMAT_TABS.map(t => (
                   <button key={t.id} onClick={() => setActiveFormat(t.id)}
-                    className={`px-3.5 py-2 text-sm border-b-2 -mb-px whitespace-nowrap transition-colors ${
+                    className={`px-3.5 py-2 text-sm border-b-2 -mb-px whitespace-nowrap transition-colors cursor-pointer ${
                       activeFormat === t.id
-                        ? 'border-[var(--md-purple)] text-[var(--md-purple)]'
+                        ? 'border-[var(--md-accent)] text-[var(--md-accent)]'
                         : 'border-transparent text-[var(--md-text-secondary)] hover:text-[var(--md-text)]'
                     }`}>
                     {t.label}
@@ -212,7 +213,7 @@ export default function ImageToPromptPage() {
               <div className="relative">
                 <textarea
                   readOnly value={activePrompt} rows={6}
-                  className="w-full rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)] p-4 pr-4 text-xs font-mono leading-relaxed resize-none focus:outline-none"
+                  className="w-full rounded-[var(--md-radius)] border border-[var(--md-border)] bg-[var(--md-surface)] p-4 pr-4 text-xs font-mono leading-relaxed resize-none focus:outline-none"
                 />
                 <span className="absolute bottom-3 right-3 text-[10px] font-mono text-[var(--md-text-tertiary)] pointer-events-none">
                   {countTokens(activePrompt)} tokens
@@ -222,9 +223,9 @@ export default function ImageToPromptPage() {
               {/* Negative prompt for SD */}
               {activeFormat === 'stable_diffusion' && result.formatted.negative_prompt && (
                 <div className="mt-3">
-                  <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--md-coral)] mb-1">Negative prompt</p>
+                  <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--md-caution)] mb-1">Negative prompt</p>
                   <textarea readOnly value={result.formatted.negative_prompt} rows={2}
-                    className="w-full rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)] p-3 text-xs font-mono resize-none focus:outline-none" />
+                    className="w-full rounded-[var(--md-radius)] border border-[var(--md-border)] bg-[var(--md-surface)] p-3 text-xs font-mono resize-none focus:outline-none" />
                 </div>
               )}
 
@@ -234,13 +235,13 @@ export default function ImageToPromptPage() {
                   <div className="flex items-center justify-between mb-1.5">
                     <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--md-text-tertiary)]">Tags</p>
                     <button onClick={() => copy('tags', result.formatted.tags.join(', '))}
-                      className="text-[11px] text-[var(--md-purple)] hover:underline">
+                      className="text-[11px] text-[var(--md-accent)] hover:underline cursor-pointer">
                       {copied === 'tags' ? '✓ Copied' : 'Copy all'}
                     </button>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {result.formatted.tags.map(t => (
-                      <span key={t} className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-[var(--md-purple-light)] text-[var(--md-purple)]">{t}</span>
+                      <span key={t} className="text-[11px] font-mono px-2 py-0.5 rounded-md bg-[var(--md-surface-2)] border border-[var(--md-border)] text-[var(--md-text-secondary)]">{t}</span>
                     ))}
                   </div>
                 </div>
@@ -249,11 +250,11 @@ export default function ImageToPromptPage() {
               {/* Actions */}
               <div className="flex flex-wrap gap-2 mt-5">
                 <button onClick={() => copy('prompt', activePrompt)}
-                  className="text-sm px-4 py-2 rounded-lg bg-[var(--md-purple)] text-white font-medium hover:opacity-90 transition-opacity">
+                  className="text-sm px-4 py-2 rounded-[10px] bg-[var(--md-accent)] text-[var(--md-accent-ink)] font-semibold hover:bg-[var(--md-accent-strong)] hover:-translate-y-px transition-all duration-200 shadow-[var(--shadow-sm)] cursor-pointer">
                   {copied === 'prompt' ? '✓ Copied' : 'Copy prompt'}
                 </button>
                 <button onClick={downloadAll}
-                  className="text-sm px-4 py-2 rounded-lg border border-[var(--md-border)] hover:bg-white/[0.05] transition-colors">
+                  className="text-sm px-4 py-2 rounded-[10px] border border-[var(--md-border-strong)] text-[var(--md-text-secondary)] hover:text-[var(--md-text)] hover:border-[var(--md-accent)] transition-colors duration-200 cursor-pointer">
                   Download all prompts (.txt)
                 </button>
               </div>
@@ -268,47 +269,45 @@ export default function ImageToPromptPage() {
   // UPLOAD / ANALYZE VIEW
   // ════════════════════════════════════════════════════════════════════════
   return (
-    <div className="min-h-screen bg-[var(--md-dark-2)] px-4 sm:px-8 py-12">
+    <div className="min-h-screen bg-[var(--md-bg)] px-4 sm:px-8 py-12">
       <LabsBreadcrumb page="Image → Prompt" />
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
-          <div className="section-label mb-4 mx-auto w-fit" style={{ color: 'var(--md-purple)', borderColor: 'rgba(124,58,237,0.3)', background: 'rgba(124,58,237,0.08)' }}>
-            IMAGE → PROMPT
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mb-2">Recreate any image with AI</h1>
+          <p className="section-label mb-4 mx-auto w-fit">Image → Prompt</p>
+          <h1 className="font-display font-semibold text-2xl sm:text-3xl tracking-[-0.015em] mb-2">Recreate any image with AI</h1>
           <p className="text-sm text-[var(--md-text-secondary)]">
             Upload a screenshot or photo. Get a precise prompt formatted for FLUX, Stable Diffusion, Midjourney, DALL-E, and Gemini.
           </p>
         </div>
 
         {error && (
-          <div className="mb-6 rounded-xl border border-[var(--md-coral)]/30 bg-[var(--md-coral-light)] px-4 py-3">
-            <p className="text-sm text-[var(--md-coral)] whitespace-pre-line">{error}</p>
+          <div className="mb-6 rounded-[var(--md-radius)] border border-[var(--md-caution)]/40 bg-[var(--md-caution-dim)] px-4 py-3">
+            <p className="text-sm text-[var(--md-caution)] whitespace-pre-line">{error}</p>
           </div>
         )}
 
         {/* Analyzing */}
         {isAnalyzing && (
-          <div className="rounded-2xl border border-[var(--md-purple)]/30 bg-[var(--md-purple-light)] p-8 text-center">
+          <div className="rounded-[var(--md-radius-lg)] border border-[var(--md-border-strong)] bg-[var(--md-surface)] p-8 text-center">
             {preview && /* eslint-disable-next-line @next/next/no-img-element */ (
-              <img src={preview} alt="" className="mx-auto rounded-xl max-h-40 object-cover mb-4 opacity-80" />
+              <img src={preview} alt="" className="mx-auto rounded-[var(--md-radius)] max-h-40 object-cover mb-4 opacity-80" />
             )}
             <div className="flex items-center justify-center gap-2 mb-1">
-              <svg className="animate-spin w-4 h-4 text-[var(--md-purple)]" fill="none" viewBox="0 0 24 24">
+              <svg className="animate-spin w-4 h-4 text-[var(--md-accent)]" fill="none" viewBox="0 0 24 24" aria-hidden>
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
               </svg>
-              <span className="text-sm font-medium text-[var(--md-purple)]">{stage}</span>
+              <span className="text-sm font-medium text-[var(--md-accent)]">In flight… {stage}</span>
             </div>
-            <p className="text-xs text-[var(--md-purple)]/70">3-stage pipeline — usually 10–20 seconds</p>
+            <p className="text-xs text-[var(--md-text-secondary)]">3-stage pipeline — usually 10–20 seconds</p>
           </div>
         )}
 
         {/* Image selected */}
         {image && !isAnalyzing && (
-          <div className="rounded-2xl border border-[var(--md-border)] bg-[var(--md-surface)] p-6">
+          <div className="rounded-[var(--md-radius-lg)] border border-[var(--md-border)] bg-[var(--md-surface)] p-6">
             {preview && /* eslint-disable-next-line @next/next/no-img-element */ (
-              <img src={preview} alt="preview" className="w-full rounded-xl max-h-52 object-cover mb-4" />
+              <img src={preview} alt="preview" className="w-full rounded-[var(--md-radius)] max-h-52 object-cover mb-4" />
             )}
             <p className="text-sm font-medium truncate">{image.name}</p>
             <p className="text-xs text-[var(--md-text-tertiary)] mb-4">{humanSize(image.size)}</p>
@@ -318,12 +317,12 @@ export default function ImageToPromptPage() {
             <div className="flex gap-2 mb-2">
               {([['groq', 'Groq Llama Vision'], ['gemini', 'Gemini Flash']] as const).map(([id, label]) => (
                 <button key={id} onClick={() => setProvider(id)}
-                  className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border transition-all ${
+                  className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-[10px] border transition-all duration-200 cursor-pointer ${
                     provider === id
-                      ? 'border-[var(--md-purple)] bg-[var(--md-purple-light)] text-[var(--md-purple)]'
+                      ? 'border-[var(--md-accent)] bg-[var(--md-accent-dim)] text-[var(--md-accent)]'
                       : 'border-[var(--md-border)] text-[var(--md-text-secondary)] hover:text-[var(--md-text)]'
                   }`}>
-                  {label} <span className="text-[var(--md-teal)]">✓ Free</span>
+                  {label} <span className="text-[var(--md-go)]">✓ Free</span>
                 </button>
               ))}
             </div>
@@ -333,11 +332,11 @@ export default function ImageToPromptPage() {
 
             <div className="flex flex-col sm:flex-row gap-2">
               <button onClick={() => void handleAnalyze()}
-                className="flex-1 px-5 py-2.5 rounded-lg bg-[var(--md-purple)] text-white text-sm font-medium hover:opacity-90 transition-opacity">
+                className="flex-1 px-5 py-2.5 rounded-[10px] bg-[var(--md-accent)] text-[var(--md-accent-ink)] text-sm font-semibold hover:bg-[var(--md-accent-strong)] hover:-translate-y-px transition-all duration-200 shadow-[var(--shadow-sm)] cursor-pointer">
                 Analyze image
               </button>
               <button onClick={() => setImage(null)}
-                className="px-5 py-2.5 rounded-lg border border-[var(--md-border)] text-sm text-[var(--md-text-secondary)] hover:text-[var(--md-text)] transition-colors">
+                className="px-5 py-2.5 rounded-[10px] border border-[var(--md-border-strong)] text-sm text-[var(--md-text-secondary)] hover:text-[var(--md-text)] transition-colors duration-200 cursor-pointer">
                 Choose different image
               </button>
             </div>
@@ -352,26 +351,23 @@ export default function ImageToPromptPage() {
               onDragLeave={e => { e.preventDefault(); setIsDragging(false); }}
               onDrop={handleDrop}
               onClick={() => inputRef.current?.click()}
-              className={`flex flex-col items-center justify-center text-center rounded-2xl border-2 border-dashed cursor-pointer transition-all duration-150 px-6 ${
+              className={`flex flex-col items-center justify-center text-center rounded-[var(--md-radius-lg)] border-2 border-dashed cursor-pointer transition-all duration-150 px-6 ${
                 isDragging
-                  ? 'border-[var(--md-purple)] bg-[var(--md-purple-light)] scale-[1.01]'
-                  : 'border-white/[0.12] bg-white/[0.02] hover:border-white/[0.2] hover:bg-white/[0.04]'
+                  ? 'border-[var(--md-accent)] bg-[var(--md-accent-dim)]'
+                  : 'border-[var(--md-border-strong)] bg-[var(--md-surface)] hover:border-[var(--md-accent)]/60 hover:bg-[var(--md-surface-2)]'
               }`}
               style={{ minHeight: 280 }}
             >
-              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-4 transition-colors ${
-                isDragging ? 'bg-[var(--md-purple)] text-white' : 'bg-white/5 text-[var(--md-purple)]'
+              <div className={`w-14 h-14 rounded-[var(--md-radius)] flex items-center justify-center mb-4 transition-colors ${
+                isDragging ? 'bg-[var(--md-accent)] text-[var(--md-accent-ink)]' : 'bg-[var(--md-surface-2)] text-[var(--md-accent)]'
               }`}>
-                <svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M18 7.5h.008v.008H18V7.5Z" />
-                  <rect x="2.25" y="3.75" width="19.5" height="16.5" rx="2" />
-                </svg>
+                <ImageIcon size={26} strokeWidth={1.5} aria-hidden />
               </div>
               <p className="text-lg font-semibold mb-1">{isDragging ? 'Drop to analyze' : 'Drop an image here'}</p>
               <p className="text-sm text-[var(--md-text-secondary)] mb-5">or click to browse</p>
               <div className="flex flex-wrap items-center justify-center gap-1.5">
                 {['.jpg', '.jpeg', '.png', '.webp'].map(c => (
-                  <span key={c} className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-white/5 text-[var(--md-text-tertiary)]">{c}</span>
+                  <span key={c} className="text-[11px] font-mono px-2 py-0.5 rounded-md bg-[var(--md-surface-2)] border border-[var(--md-border)] text-[var(--md-text-tertiary)]">{c}</span>
                 ))}
               </div>
               <p className="text-[11px] text-[var(--md-text-tertiary)] mt-4">Up to 4MB</p>

@@ -2,12 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import {
-  MenuIcon,
-  XIcon,
-  ExternalLink,
-  FlaskConical,
-} from 'lucide-react';
+import { MenuIcon, XIcon, ExternalLink } from 'lucide-react';
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -20,17 +15,22 @@ import {
   SheetContent,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import ZuluClock from '@/components/fx/ZuluClock';
+
+/* Aviation naming — the product is a pilot, the nav is its panel.
+   Each destination keeps its route but flies under a callsign. */
+const LINKS = [
+  { href: '/task', label: 'Flight Deck', sub: 'Task', primary: true },
+  { href: '/labs', label: 'Hangar', sub: 'Labs', primary: false },
+  { href: '/docs', label: 'Field Manual', sub: 'Docs', primary: false },
+  { href: '/blog', label: 'Logbook', sub: 'Blog', primary: false },
+];
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
-  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const fn = () => {
-      setScrolled(window.scrollY > 20);
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      setProgress(max > 0 ? window.scrollY / max : 0);
-    };
+    const fn = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', fn, { passive: true });
     return () => window.removeEventListener('scroll', fn);
   }, []);
@@ -38,134 +38,73 @@ export default function Nav() {
   return (
     <>
       <header
-        className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-          scrolled
-            ? 'bg-[rgba(7,7,15,0.88)] backdrop-blur-xl border-b border-white/[0.06] shadow-[0_1px_0_rgba(255,255,255,0.04)]'
-            : 'bg-transparent'
+        className={`fixed top-0 inset-x-0 z-50 transition-colors duration-300 ${
+          scrolled ? 'nav-glass' : 'bg-transparent'
         }`}
       >
-        {/* Scroll-progress line */}
-        <div
-          className="absolute top-0 left-0 h-[2px] z-50 bg-gradient-to-r from-[#4FACFF] via-[#a855f7] to-[#2DD4BF] transition-[width] duration-100 pointer-events-none"
-          style={{ width: `${progress * 100}%` }}
-        />
-
         <div className="max-w-6xl mx-auto px-5 sm:px-8">
-          <div className="flex items-center justify-between h-[60px]">
+          <div className="flex items-center justify-between h-[64px]">
 
-            {/* Logo */}
-            <Link href="/" className="group flex items-center gap-2.5 shrink-0">
-              <div className="relative w-11 h-11 flex items-center justify-center">
-                {/* Ambient glow behind logo */}
-                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#4FACFF]/20 to-[#A855F7]/15 blur-lg scale-[1.4] pointer-events-none" />
-                {/* Conic ring — mask trick renders just the border */}
-                <div
-                  className="absolute inset-0 rounded-full opacity-50 group-hover:opacity-90 transition-opacity duration-300 pointer-events-none"
-                  style={{
-                    background: 'conic-gradient(from 0deg, #4FACFF, #A855F7, #2DD4BF, #4FACFF)',
-                    padding: '1.5px',
-                    WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-                    WebkitMaskComposite: 'xor',
-                    maskComposite: 'exclude',
-                    borderRadius: '50%',
-                  }}
-                />
-                <img
-                  src="/mdpilot-logo.svg"
-                  alt="MDPilot"
-                  width={44}
-                  height={44}
-                  className="relative z-10 w-10 h-10 object-contain group-hover:opacity-90 transition-opacity drop-shadow-[0_0_10px_rgba(79,172,255,0.35)]"
-                />
-              </div>
-              <span
-                className="font-bold text-[15px] text-white tracking-tight"
-                style={{ fontFamily: 'Space Grotesk, sans-serif' }}
-              >
-                MDPilot
-              </span>
-              <span className="hidden sm:inline text-[10px] font-mono text-[#4FACFF] border border-[#4FACFF]/30 bg-[#4FACFF]/[0.08] rounded-full px-2 py-0.5">
-                v2
+            {/* Brand */}
+            <Link href="/" className="group flex items-center gap-3 shrink-0">
+              <img
+                src="/mdpilot-logo.webp"
+                alt="MDPilot"
+                width={36}
+                height={36}
+                className="w-9 h-9 object-contain"
+              />
+              <span className="flex flex-col leading-none">
+                <span className="font-brand text-[16px] font-bold text-[var(--md-text)]">
+                  MDPilot
+                </span>
+                <span className="hidden sm:block font-mono text-[9px] tracking-[0.22em] uppercase text-[var(--md-text-tertiary)] mt-1">
+                  Flight deck for markdown
+                </span>
               </span>
             </Link>
 
-            {/* Desktop NavigationMenu */}
+            {/* Desktop nav */}
             <NavigationMenu className="hidden md:flex">
-              <NavigationMenuList>
-
-                {/* Task — primary emphasis */}
-                <NavigationMenuItem>
-                  <NavigationMenuLink
-                    href="/task"
-                    className="px-4 py-2 text-[13.5px] font-semibold text-white/80 hover:text-white cursor-pointer rounded-md hover:bg-white/[0.04] transition-colors"
-                  >
-                    Task
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-
-                {/* Labs */}
-                <NavigationMenuItem>
-                  <NavigationMenuLink
-                    href="/labs"
-                    className="!flex !flex-row items-center gap-1.5 px-4 py-2 text-[13.5px] font-medium text-white/55 hover:text-white cursor-pointer rounded-md hover:bg-white/[0.04] transition-colors"
-                  >
-                    <FlaskConical size={13} className="opacity-50 shrink-0" />
-                    Labs
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-
-                {/* Docs */}
-                <NavigationMenuItem>
-                  <NavigationMenuLink
-                    href="/docs"
-                    className="px-4 py-2 text-[13.5px] font-medium text-white/50 hover:text-white cursor-pointer rounded-md hover:bg-white/[0.04] transition-colors"
-                  >
-                    Docs
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-
-                {/* Blog */}
-                <NavigationMenuItem>
-                  <NavigationMenuLink
-                    href="/blog"
-                    className="px-4 py-2 text-[13.5px] font-medium text-white/50 hover:text-white cursor-pointer rounded-md hover:bg-white/[0.04] transition-colors"
-                  >
-                    Blog
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
+              <NavigationMenuList className="gap-1">
+                {LINKS.map(link => (
+                  <NavigationMenuItem key={link.href}>
+                    <NavigationMenuLink
+                      href={link.href}
+                      className={`group/link !flex !flex-col !items-start gap-0 px-3.5 py-1.5 rounded-md cursor-pointer transition-colors hover:bg-[var(--md-surface-2)] ${
+                        link.primary ? 'text-[var(--md-text)]' : 'text-[var(--md-text-secondary)]'
+                      } hover:text-[var(--md-text)]`}
+                    >
+                      <span className="text-[13.5px] font-medium leading-tight">{link.label}</span>
+                      <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[var(--md-text-tertiary)] leading-tight group-hover/link:text-[var(--md-accent)] transition-colors">
+                        {link.sub}
+                      </span>
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+                ))}
 
                 <NavigationMenuItem>
                   <a
-                    href="https://github.com/get-mdpilot/md-pilot"
+                    href="https://github.com/get-mdpilot"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex flex-row items-center gap-1.5 px-4 py-2 text-[13.5px] font-medium text-white/45 hover:text-white cursor-pointer rounded-md hover:bg-white/[0.04] transition-colors"
+                    className="flex items-center gap-1.5 px-3.5 py-2 text-[13.5px] font-medium text-[var(--md-text-secondary)] hover:text-[var(--md-text)] cursor-pointer rounded-md hover:bg-[var(--md-surface-2)] transition-colors"
                   >
                     GitHub
                     <ExternalLink size={11} className="opacity-40 shrink-0" />
                   </a>
                 </NavigationMenuItem>
-
               </NavigationMenuList>
             </NavigationMenu>
 
             {/* Right side — desktop */}
-            <div className="hidden md:flex items-center gap-3">
-              <div className="flex items-center gap-2 text-[12px] text-white/30">
-                <span className="relative flex h-2 w-2">
-                  <span className="pulse-green absolute inline-flex h-full w-full rounded-full bg-[#34D399]" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[#34D399]" />
-                </span>
-                <span className="hidden lg:inline">All systems go</span>
-              </div>
-
-              <Link
-                href="/task"
-                className="btn-shine relative inline-flex items-center gap-1.5 px-5 py-[9px] rounded-full text-[13px] font-bold text-[#07070f] bg-gradient-to-r from-[#4FACFF] to-[#38D9A9] hover:from-[#6FBFFF] hover:to-[#5FEAD9] shadow-[0_0_20px_rgba(79,172,255,0.28)] hover:shadow-[0_0_30px_rgba(79,172,255,0.45)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-                style={{ fontFamily: 'Space Grotesk, sans-serif' }}
-              >
-                Start for free
-                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <div className="hidden md:flex items-center gap-4">
+              <span className="hidden lg:inline-flex" title="Zulu time — aviation standard">
+                <ZuluClock />
+              </span>
+              <Link href="/task" className="nav-cta takeoff-group">
+                File a flight plan
+                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.25} aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                 </svg>
               </Link>
@@ -175,111 +114,85 @@ export default function Nav() {
             <Sheet>
               <SheetTrigger asChild>
                 <button
-                  className="md:hidden w-9 h-9 flex flex-col items-center justify-center gap-[5px] rounded-lg hover:bg-white/[0.06] transition-colors"
+                  className="md:hidden w-10 h-10 flex items-center justify-center rounded-md hover:bg-[var(--md-surface-2)] transition-colors cursor-pointer"
                   aria-label="Open menu"
                 >
-                  <MenuIcon className="size-5 text-white/70" />
+                  <MenuIcon className="size-5 text-[var(--md-text-secondary)]" />
                 </button>
               </SheetTrigger>
 
               <SheetContent
-                className="bg-[rgba(7,7,15,0.97)] border-l border-white/[0.06] w-full backdrop-blur-xl gap-0"
+                className="bg-[var(--md-bg)] border-l border-[var(--md-border)] w-full gap-0"
                 showClose={false}
                 side="right"
               >
                 {/* Mobile header */}
-                <div className="flex h-14 items-center justify-between border-b border-white/[0.06] px-5">
+                <div className="flex h-16 items-center justify-between border-b border-[var(--md-border)] px-5">
                   <Link href="/" className="flex items-center gap-2.5">
                     <img
-                      src="/mdpilot-logo.svg"
+                      src="/mdpilot-logo.webp"
                       alt="MDPilot"
-                      width={36}
-                      height={36}
-                      className="w-9 h-9 object-contain"
+                      width={32}
+                      height={32}
+                      className="w-8 h-8 object-contain"
                     />
-                    <span
-                      className="font-bold text-[15px] text-white"
-                      style={{ fontFamily: 'Space Grotesk, sans-serif' }}
-                    >
+                    <span className="font-brand text-[15px] font-bold text-[var(--md-text)]">
                       MDPilot
                     </span>
                   </Link>
                   <SheetClose asChild>
                     <button
-                      className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-white/[0.06] transition-colors"
+                      className="w-10 h-10 flex items-center justify-center rounded-md hover:bg-[var(--md-surface-2)] transition-colors cursor-pointer"
                       aria-label="Close menu"
                     >
-                      <XIcon className="size-5 text-white/70" />
+                      <XIcon className="size-5 text-[var(--md-text-secondary)]" />
                     </button>
                   </SheetClose>
                 </div>
 
                 {/* Scrollable content */}
-                <div className="flex flex-col h-[calc(100%-56px)] overflow-y-auto">
-                  <div className="px-5 pt-4 pb-4 flex-1">
-                    <div className="space-y-0">
-                      {/* Task — primary */}
-                      <SheetClose asChild>
-                        <Link
-                          href="/task"
-                          className="flex items-center py-3.5 text-[15px] font-semibold text-white/85 hover:text-white border-b border-white/[0.05] transition-colors"
-                        >
-                          Task
-                        </Link>
-                      </SheetClose>
-
-                      {/* Labs */}
-                      <SheetClose asChild>
-                        <Link
-                          href="/labs"
-                          className="flex items-center gap-2 py-3.5 text-[14px] font-medium text-white/55 hover:text-white border-b border-white/[0.05] transition-colors"
-                        >
-                          <FlaskConical size={14} className="opacity-50 shrink-0" />
-                          Labs
-                        </Link>
-                      </SheetClose>
-
-                      {/* Docs */}
-                      <SheetClose asChild>
-                        <Link
-                          href="/docs"
-                          className="flex items-center py-3.5 text-[14px] font-medium text-white/50 hover:text-white border-b border-white/[0.05] transition-colors"
-                        >
-                          Docs
-                        </Link>
-                      </SheetClose>
-
-                      {/* Blog */}
-                      <SheetClose asChild>
-                        <Link
-                          href="/blog"
-                          className="flex items-center py-3.5 text-[14px] font-medium text-white/50 hover:text-white border-b border-white/[0.05] transition-colors"
-                        >
-                          Blog
-                        </Link>
-                      </SheetClose>
+                <div className="flex flex-col h-[calc(100%-64px)] overflow-y-auto">
+                  <div className="px-5 pt-3 pb-4 flex-1">
+                    <div>
+                      {LINKS.map(link => (
+                        <SheetClose asChild key={link.href}>
+                          <Link
+                            href={link.href}
+                            className="flex items-baseline justify-between py-4 border-b border-[var(--md-border)] transition-colors group"
+                          >
+                            <span className={`text-[15px] font-medium ${link.primary ? 'text-[var(--md-text)]' : 'text-[var(--md-text-secondary)]'} group-hover:text-[var(--md-text)]`}>
+                              {link.label}
+                            </span>
+                            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--md-text-tertiary)]">
+                              {link.sub}
+                            </span>
+                          </Link>
+                        </SheetClose>
+                      ))}
 
                       <a
-                        href="https://github.com/get-mdpilot/md-pilot"
+                        href="https://github.com/get-mdpilot"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-between py-3.5 text-[14px] text-white/40 hover:text-white transition-colors"
+                        className="flex items-center justify-between py-4 text-[15px] font-medium text-[var(--md-text-secondary)] hover:text-[var(--md-text)] transition-colors"
                       >
                         GitHub
-                        <ExternalLink size={13} className="opacity-30" />
+                        <ExternalLink size={13} className="opacity-40" />
                       </a>
                     </div>
                   </div>
 
                   {/* Sticky CTA */}
-                  <div className="p-5 border-t border-white/[0.06] bg-[rgba(7,7,15,0.97)]">
+                  <div className="p-5 border-t border-[var(--md-border)]">
                     <SheetClose asChild>
                       <Link
                         href="/task"
-                        className="btn-shine flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gradient-to-r from-[#4FACFF] to-[#38D9A9] text-[#07070f] text-sm font-bold shadow-[0_0_20px_rgba(79,172,255,0.3)] transition-transform active:scale-[0.98]"
-                        style={{ fontFamily: 'Space Grotesk, sans-serif' }}
+                        className="flex items-center justify-center gap-2 w-full py-3.5 rounded-[10px] bg-[var(--md-accent)] text-[var(--md-accent-ink)] text-sm font-semibold transition-transform active:scale-[0.98]"
                       >
-                        Start for free →
+                        File a flight plan
+                        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.25} aria-hidden>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                        </svg>
                       </Link>
                     </SheetClose>
                   </div>
@@ -292,7 +205,7 @@ export default function Nav() {
       </header>
 
       {/* Spacer for fixed header */}
-      <div className="h-[60px]" />
+      <div className="h-[64px]" />
     </>
   );
 }

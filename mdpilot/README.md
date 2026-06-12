@@ -6,13 +6,14 @@ Markdown intelligence platform at [mdpilot.in](https://mdpilot.in). Primary tool
 
 | Route | Description |
 |-------|-------------|
-| `/` | Landing page — 7-section narrative (Hero → Insight → Before/After → MCP → Drift → Trust → CTA) |
-| `/task` | Task mode — primary tool |
-| `/labs` | Labs hub — 5 secondary tools |
-| `/docs` | Documentation hub (sidebar layout) |
-| `/docs/mcp` | MCP server setup — full guide, all 8 tools (live) |
-| `/docs/getting-started` | Getting started (coming soon) |
-| `/blog` | Blog index (empty state pending first post) |
+| `/` | Landing — Night Approach hero, FlipWord, ghost numerals, radar scope, approach lights, altimeter |
+| `/task` | Flight Deck — Task mode (primary tool) |
+| `/labs` | Hangar — 5 secondary tools |
+| `/docs` | Field Manual — documentation hub (sidebar layout) |
+| `/docs/mcp` | MCP server setup — full guide, all 10 tools (live) |
+| `/docs/getting-started` | Getting started |
+| `/atmosphere` | Night Approach design study — six design decisions behind the site's look |
+| `/blog` | Logbook — blog index (empty state pending first post) |
 | `/blog/[slug]` | Blog post template with `generateMetadata` + `generateStaticParams` |
 
 ## Primary mode
@@ -55,11 +56,13 @@ Markdown intelligence platform at [mdpilot.in](https://mdpilot.in). Primary tool
 
 ## Stack
 
-- Next.js 16 App Router + TypeScript + Tailwind
+- Next.js 16 App Router + TypeScript + Tailwind CSS v4
 - Anthropic API (claude-sonnet-4-6), with multi-provider fallback (OpenAI, Gemini, Groq, NVIDIA NIM)
 - `js-tiktoken` for browser-side token counting
 - CodeMirror 6 for the markdown editor
 - MarkItDown CLI for Convert mode (installed separately)
+- Fraunces + IBM Plex Sans/Mono (Night Approach design system — `src/app/globals.css`)
+- `motion` (Framer Motion v12) for cockpit instrument effects (`src/components/fx/`)
 
 ## Local setup
 

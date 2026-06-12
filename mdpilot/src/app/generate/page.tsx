@@ -482,26 +482,20 @@ export default function GeneratePage() {
 
   if (isGenerating || (fileStatuses.length > 0 && !isGenerating && generatedFiles.length === 0)) {
     return (
-      <div className="min-h-screen bg-[var(--md-dark-2)] flex items-center justify-center px-4 sm:px-8 py-12">
-        {/* Ambient glow */}
-        <div className="fixed inset-0 pointer-events-none">
-          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-[#4FACFF]/[0.06] blur-3xl rounded-full" />
-          <div className="absolute bottom-1/3 right-1/3 w-[300px] h-[200px] bg-[#A855F7]/[0.05] blur-3xl rounded-full" />
-        </div>
-
+      <div className="min-h-screen bg-[var(--md-bg)] flex items-center justify-center px-4 sm:px-8 py-12">
         <div className="relative max-w-md w-full">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#4FACFF]/10 border border-[#4FACFF]/20 mb-4">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#4FACFF] animate-pulse" />
-              <span className="text-[11px] font-mono text-[#4FACFF]">
+            <div className="inline-flex items-center gap-2 mb-4">
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--md-accent)] animate-pulse" />
+              <span className="text-[11px] font-mono uppercase tracking-[0.14em] text-[var(--md-accent)]">
                 {isGenerating ? `File ${currentFileIndex + 1} of ${fileStatuses.length}` : 'Processing…'}
               </span>
             </div>
-            <h2 className="text-xl font-bold text-white mb-1" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
-              {isGenerating ? 'Generating your files…' : 'Finalizing…'}
+            <h2 className="text-xl font-display font-semibold text-[var(--md-text)] mb-1">
+              {isGenerating ? 'Filing your flight plan…' : 'Finalizing…'}
             </h2>
-            <p className="text-[13px] text-white/40">Calling Claude claude-sonnet-4-6 · Token optimizer running</p>
+            <p className="text-[13px] text-[var(--md-text-secondary)]">Calling Claude claude-sonnet-4-6 · Token optimizer running</p>
           </div>
 
           {/* File status cards */}
@@ -511,54 +505,54 @@ export default function GeneratePage() {
                 key={f.type}
                 className="flex items-center justify-between rounded-xl border px-4 py-3.5 transition-all duration-300"
                 style={{
-                  borderColor: f.status === 'generating' ? 'rgba(79,172,255,0.3)'
-                    : f.status === 'done' ? 'rgba(45,212,191,0.25)'
-                    : f.status === 'error' ? 'rgba(239,68,68,0.25)'
-                    : 'rgba(255,255,255,0.07)',
-                  background: f.status === 'generating' ? 'rgba(79,172,255,0.06)'
-                    : f.status === 'done' ? 'rgba(45,212,191,0.05)'
-                    : f.status === 'error' ? 'rgba(239,68,68,0.05)'
-                    : 'rgba(255,255,255,0.03)',
+                  borderColor: f.status === 'generating' ? 'color-mix(in oklab, var(--md-accent) 35%, transparent)'
+                    : f.status === 'done' ? 'color-mix(in oklab, var(--md-go) 30%, transparent)'
+                    : f.status === 'error' ? 'color-mix(in oklab, var(--md-caution) 30%, transparent)'
+                    : 'var(--md-border)',
+                  background: f.status === 'generating' ? 'var(--md-accent-dim)'
+                    : f.status === 'done' ? 'var(--md-go-dim)'
+                    : f.status === 'error' ? 'var(--md-caution-dim)'
+                    : 'var(--md-surface)',
                 }}
               >
                 <div className="flex items-center gap-3">
                   <div
                     className="w-7 h-7 rounded-lg flex items-center justify-center"
                     style={{
-                      background: f.status === 'generating' ? 'rgba(79,172,255,0.15)'
-                        : f.status === 'done' ? 'rgba(45,212,191,0.15)'
-                        : 'rgba(255,255,255,0.05)',
+                      background: f.status === 'generating' ? 'var(--md-accent-dim)'
+                        : f.status === 'done' ? 'var(--md-go-dim)'
+                        : 'var(--md-surface-2)',
                     }}
                   >
                     {f.status === 'pending' && (
-                      <span className="w-2 h-2 rounded-full bg-white/20" />
+                      <span className="w-2 h-2 rounded-full bg-[var(--md-text-tertiary)]" />
                     )}
                     {f.status === 'generating' && (
-                      <svg className="animate-spin w-3.5 h-3.5 text-[#4FACFF]" fill="none" viewBox="0 0 24 24">
+                      <svg className="animate-spin w-3.5 h-3.5 text-[var(--md-accent)]" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                       </svg>
                     )}
                     {f.status === 'done' && (
-                      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="#2DD4BF" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" className="text-[var(--md-go)]">
                         <path d="m4.5 12.75 6 6 9-13.5" />
                       </svg>
                     )}
                     {f.status === 'error' && (
-                      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="#EF4444" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" className="text-[var(--md-caution)]">
                         <path d="M18 6 6 18M6 6l12 12" />
                       </svg>
                     )}
                   </div>
-                  <span className="text-[13px] font-mono font-medium text-white/70">{f.filename}</span>
+                  <span className="text-[13px] font-mono font-medium text-[var(--md-text-secondary)]">{f.filename}</span>
                 </div>
                 <span className="text-[11px] font-mono">
-                  {f.status === 'pending' && <span className="text-white/20">waiting</span>}
-                  {f.status === 'generating' && <span className="text-[#4FACFF]">streaming…</span>}
+                  {f.status === 'pending' && <span className="text-[var(--md-text-tertiary)]">waiting</span>}
+                  {f.status === 'generating' && <span className="text-[var(--md-accent)]">streaming…</span>}
                   {f.status === 'done' && (
-                    <span className="text-[#2DD4BF]">{f.tokenCount !== undefined ? `${f.tokenCount} tok` : 'done'}</span>
+                    <span className="text-[var(--md-go)]">{f.tokenCount !== undefined ? `${f.tokenCount} tok` : 'done'}</span>
                   )}
-                  {f.status === 'error' && <span className="text-red-400">failed</span>}
+                  {f.status === 'error' && <span className="text-[var(--md-caution)]">failed</span>}
                 </span>
               </div>
             ))}
@@ -566,23 +560,19 @@ export default function GeneratePage() {
 
           {/* Streaming skeleton */}
           {isGenerating && (
-            <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] overflow-hidden" aria-hidden>
-              <div className="px-4 py-2.5 border-b border-white/[0.06] flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#FF5F57]/40" />
-                <span className="w-2 h-2 rounded-full bg-[#FEBC2E]/40" />
-                <span className="w-2 h-2 rounded-full bg-[#28C840]/40" />
-                <span className="ml-2 text-[10px] font-mono text-white/20">{fileStatuses[currentFileIndex]?.filename ?? '…'}</span>
+            <div className="rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)] overflow-hidden" aria-hidden>
+              <div className="px-4 py-2.5 border-b border-[var(--md-border)] flex items-center gap-1.5">
+                <span className="terminal-dot bg-[var(--md-caution)]" />
+                <span className="terminal-dot bg-[var(--md-accent)]" />
+                <span className="terminal-dot bg-[var(--md-go)]" />
+                <span className="ml-2 text-[10px] font-mono text-[var(--md-text-tertiary)]">{fileStatuses[currentFileIndex]?.filename ?? '…'}</span>
               </div>
               <div className="p-4 space-y-2">
                 {[80, 55, 70, 40, 65, 75, 45, 60].map((w, i) => (
                   <div
                     key={i}
-                    className="h-2 rounded-full"
-                    style={{
-                      width: `${w}%`,
-                      background: 'rgba(255,255,255,0.06)',
-                      animation: `pulse 1.5s ease-in-out ${i * 100}ms infinite`,
-                    }}
+                    className="skeleton h-2"
+                    style={{ width: `${w}%` }}
                   />
                 ))}
               </div>
@@ -590,9 +580,9 @@ export default function GeneratePage() {
           )}
 
           {error && !isGenerating && (
-            <div className="rounded-xl border border-red-500/20 bg-red-500/[0.06] px-4 py-3">
-              <p className="text-sm text-red-400 font-medium mb-1">Generation failed</p>
-              <p className="text-xs text-red-400/70">{error}</p>
+            <div className="rounded-xl border border-[var(--md-caution)]/30 bg-[var(--md-caution-dim)] px-4 py-3">
+              <p className="text-sm text-[var(--md-caution)] font-medium mb-1">Generation failed</p>
+              <p className="text-xs text-[var(--md-caution)]/80">{error}</p>
             </div>
           )}
         </div>
@@ -629,23 +619,18 @@ export default function GeneratePage() {
   const reviewReaderLabel = readerAudienceOptions.find(o => o.id === readerAudience)?.label ?? readerAudience;
 
   return (
-    <div className="min-h-screen bg-[var(--md-dark-2)] relative overflow-hidden">
+    <div className="min-h-screen bg-[var(--md-bg)] relative">
       <LabsBreadcrumb page="Generate" />
-      {/* Background ambience */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#4FACFF]/[0.04] blur-3xl rounded-full" />
-        <div className="absolute bottom-0 right-1/4 w-[400px] h-[200px] bg-[#A855F7]/[0.04] blur-3xl rounded-full" />
-      </div>
 
       {/* Page header */}
-      <div className="relative border-b border-white/[0.05] bg-[var(--md-dark-2)] px-4 sm:px-8 py-4">
+      <div className="relative border-b border-[var(--md-border)] bg-[var(--md-bg)] px-4 sm:px-8 py-4">
         <div className="max-w-xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src="/mdpilot-logo.svg" alt="MDPilot" width={40} height={40} className="w-10 h-10 object-contain drop-shadow-[0_0_8px_rgba(79,172,255,0.3)]" />
-            <span className="text-[14px] font-semibold text-white/80" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Generate</span>
+            <img src="/mdpilot-logo.webp" alt="MDPilot" width={40} height={40} className="w-10 h-10 object-contain" />
+            <span className="text-[14px] font-display font-semibold text-[var(--md-text)]">Generate</span>
           </div>
           <div className="flex items-center gap-3">
-            <a href="/" className="text-[12px] text-white/30 hover:text-white/55 transition-colors">← Home</a>
+            <a href="/" className="text-[12px] text-[var(--md-text-tertiary)] hover:text-[var(--md-text-secondary)] transition-colors duration-150">← Home</a>
           </div>
         </div>
       </div>
@@ -655,7 +640,7 @@ export default function GeneratePage() {
 
         {step === 0 && (
           <div className="max-w-xl mx-auto mb-5 text-center">
-            <button onClick={() => setShowTemplates(true)} className="text-[12px] text-white/35 hover:text-[#4FACFF] transition-colors cursor-pointer">
+            <button onClick={() => setShowTemplates(true)} className="text-[12px] text-[var(--md-text-secondary)] hover:text-[var(--md-accent)] transition-colors duration-150 cursor-pointer">
               Or start from a template →
             </button>
           </div>
@@ -668,8 +653,8 @@ export default function GeneratePage() {
         {/* ── Step 0: What are you building? ───────────────────────────────── */}
         {step === 0 && (
           <div>
-            <h2 className="text-xl font-bold text-white mb-1" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>What are you building?</h2>
-            <p className="text-[13px] text-white/40 mb-6">Pick the closest one. Don&apos;t worry about being exact.</p>
+            <h2 className="text-xl font-display font-semibold text-[var(--md-text)] mb-1">What are you building?</h2>
+            <p className="text-[13px] text-[var(--md-text-secondary)] mb-6">Pick the closest one. Don&apos;t worry about being exact.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {buildOptions.map(opt => (
                 <WizardOptionCard
@@ -680,14 +665,14 @@ export default function GeneratePage() {
                   selected={projectType === opt.id}
                   onClick={() => setProjectType(opt.id)}
                   indicatorType="multi"
-                  accentColor="#4FACFF"
+                  accentColor="var(--md-accent)"
                 />
               ))}
             </div>
             {projectType === 'other' && (
               <textarea value={projectDescription} onChange={e => setProjectDescription(e.target.value)}
                 placeholder="Describe your project in a sentence or two…" rows={3}
-                className="mt-4 w-full rounded-xl border border-[#4FACFF]/30 bg-[#4FACFF]/[0.04] p-4 text-sm resize-none focus:outline-none text-white/80 placeholder:text-white/25 transition-colors"
+                className="mt-4 w-full rounded-xl border border-[var(--md-accent)]/40 bg-[var(--md-surface)] p-4 text-sm resize-none focus:outline-none text-[var(--md-text)] placeholder:text-[var(--md-text-tertiary)] transition-colors duration-200"
                 autoFocus
               />
             )}
@@ -697,8 +682,8 @@ export default function GeneratePage() {
         {/* ── Step 1: Who is it for? ───────────────────────────────────────── */}
         {step === 1 && (
           <div>
-            <h2 className="text-xl font-bold text-white mb-1" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Who is it for?</h2>
-            <p className="text-[13px] text-white/40 mb-6">This decides which files matter.</p>
+            <h2 className="text-xl font-display font-semibold text-[var(--md-text)] mb-1">Who is it for?</h2>
+            <p className="text-[13px] text-[var(--md-text-secondary)] mb-6">This decides which files matter.</p>
             <div className="flex flex-col gap-2.5">
               {audienceOptions.map(opt => (
                 <WizardOptionCard
@@ -709,7 +694,7 @@ export default function GeneratePage() {
                   selected={audience === opt.id}
                   onClick={() => setAudience(opt.id)}
                   indicatorType="single"
-                  accentColor="#4FACFF"
+                  accentColor="var(--md-accent)"
                 />
               ))}
             </div>
@@ -719,8 +704,8 @@ export default function GeneratePage() {
         {/* ── Step 2: Which AI tools? ──────────────────────────────────────── */}
         {step === 2 && (
           <div>
-            <h2 className="text-xl font-bold text-white mb-1" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Which AI tools do you use?</h2>
-            <p className="text-[13px] text-white/40 mb-6">Pick any that apply. We&apos;ll generate files tuned for exactly these tools.</p>
+            <h2 className="text-xl font-display font-semibold text-[var(--md-text)] mb-1">Which AI tools do you use?</h2>
+            <p className="text-[13px] text-[var(--md-text-secondary)] mb-6">Pick any that apply. We&apos;ll generate files tuned for exactly these tools.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {aiToolOptions.map(opt => (
                 <WizardOptionCard
@@ -731,7 +716,7 @@ export default function GeneratePage() {
                   selected={aiTools.includes(opt.id)}
                   onClick={() => toggleAiTool(opt.id)}
                   indicatorType="multi"
-                  accentColor="#2DD4BF"
+                  accentColor="var(--md-go)"
                 />
               ))}
             </div>
@@ -741,24 +726,24 @@ export default function GeneratePage() {
         {/* ── Step 3: Tech stack ───────────────────────────────────────────── */}
         {step === 3 && (
           <div>
-            <h2 className="text-xl font-bold text-white mb-1" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Paste your tech stack</h2>
-            <p className="text-[13px] text-white/40 mb-6">
+            <h2 className="text-xl font-display font-semibold text-[var(--md-text)] mb-1">Paste your tech stack</h2>
+            <p className="text-[13px] text-[var(--md-text-secondary)] mb-6">
               Paste your{' '}
-              <code className="font-mono text-[11px] bg-white/[0.07] px-1.5 py-0.5 rounded text-white/60">package.json</code>,{' '}
-              <code className="font-mono text-[11px] bg-white/[0.07] px-1.5 py-0.5 rounded text-white/60">requirements.txt</code>, or just type what you use.
+              <code className="font-mono text-[11px] bg-[var(--md-surface-2)] px-1.5 py-0.5 rounded text-[var(--md-text-secondary)]">package.json</code>,{' '}
+              <code className="font-mono text-[11px] bg-[var(--md-surface-2)] px-1.5 py-0.5 rounded text-[var(--md-text-secondary)]">requirements.txt</code>, or just type what you use.
             </p>
             <textarea value={rawStackInput}
               onChange={e => { setRawStackInput(e.target.value); setDetectedStack(detectStack(e.target.value)); }}
               placeholder={"e.g. Next.js + Supabase + Tailwind\nor paste your package.json here…"}
               rows={9}
-              className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] p-4 text-sm font-mono resize-none focus:outline-none focus:border-[#4FACFF]/40 transition-colors text-white/70 placeholder:text-white/20"
+              className="w-full rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)] p-4 text-sm font-mono resize-none focus:outline-none focus:border-[var(--md-accent)] transition-colors duration-200 text-[var(--md-text)] placeholder:text-[var(--md-text-tertiary)]"
             />
             {detectedStack.length > 0 && (
               <div className="mt-3">
-                <p className="text-[11px] text-white/30 mb-2">Detected:</p>
+                <p className="text-[11px] text-[var(--md-text-tertiary)] mb-2">Detected:</p>
                 <div className="flex flex-wrap gap-1.5">
                   {detectedStack.map(label => (
-                    <span key={label} className="inline-flex items-center gap-1 text-[11px] font-mono px-2.5 py-1 rounded-full bg-[#2DD4BF]/10 text-[#2DD4BF] border border-[#2DD4BF]/20">
+                    <span key={label} className="inline-flex items-center gap-1 text-[11px] font-mono px-2.5 py-1 rounded-[6px] bg-[var(--md-go-dim)] text-[var(--md-go)]">
                       <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                       </svg>
@@ -769,19 +754,19 @@ export default function GeneratePage() {
               </div>
             )}
             {rawStackInput.trim().length > 10 && detectedStack.length === 0 && (
-              <p className="mt-3 text-[11px] text-white/40 bg-[#FBBF24]/[0.08] border border-[#FBBF24]/20 rounded-lg px-3 py-2">
+              <p className="mt-3 text-[11px] text-[var(--md-text-secondary)] bg-[var(--md-accent-dim)] border border-[var(--md-accent)]/20 rounded-lg px-3 py-2">
                 We couldn&apos;t detect your stack automatically — we&apos;ll generate based on your other answers.
               </p>
             )}
-            <p className="mt-4 text-[11px] text-white/25 italic">Tip: even &ldquo;I use React and a Python backend&rdquo; works fine.</p>
+            <p className="mt-4 text-[11px] text-[var(--md-text-tertiary)] italic">Tip: even &ldquo;I use React and a Python backend&rdquo; works fine.</p>
           </div>
         )}
 
         {/* ── Step 4: Output style (reader audience) ───────────────────────── */}
         {step === 4 && (
           <div>
-            <h2 className="text-xl font-bold text-white mb-1" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Who will read the output?</h2>
-            <p className="text-[13px] text-white/40 mb-6">
+            <h2 className="text-xl font-display font-semibold text-[var(--md-text)] mb-1">Who will read the output?</h2>
+            <p className="text-[13px] text-[var(--md-text-secondary)] mb-6">
               We&apos;ll tune the language and depth for this reader. Default stays lean for AI agents.
             </p>
 
@@ -795,7 +780,7 @@ export default function GeneratePage() {
                   selected={readerAudience === opt.id}
                   onClick={() => handleSelectReaderAudience(opt.id)}
                   indicatorType="single"
-                  accentColor="#4FACFF"
+                  accentColor="var(--md-accent)"
                   badge={
                     opt.id === 'ai_agent' ? 'default' :
                     opt.id === 'non_technical' ? 'goal-guided →' :
@@ -808,15 +793,15 @@ export default function GeneratePage() {
 
             {readerAudience !== 'ai_agent' && (
               <>
-                <div className="rounded-xl border border-white/8 bg-white/[0.02] p-4 mb-3">
+                <div className="rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)] p-4 mb-3">
                   <p className="text-xs font-medium text-[var(--md-text-secondary)] mb-2.5">Language level</p>
                   <div className="flex gap-2">
                     {readingLevels.map(lvl => (
                       <button key={lvl.id} onClick={() => setReadingLevel(lvl.id)}
-                        className={`flex-1 rounded-lg border py-2 text-xs font-medium transition-all ${
+                        className={`flex-1 rounded-lg border py-2 text-xs font-medium transition-all duration-200 cursor-pointer ${
                           readingLevel === lvl.id
-                            ? 'border-[#4FACFF]/50 bg-[#4FACFF]/8 text-[#4FACFF]'
-                            : 'border-white/8 bg-white/[0.02] text-[var(--md-text-tertiary)] hover:text-[var(--md-text-secondary)]'
+                            ? 'border-[var(--md-accent)] bg-[var(--md-accent-dim)] text-[var(--md-accent)]'
+                            : 'border-[var(--md-border)] bg-[var(--md-surface)] text-[var(--md-text-secondary)] hover:text-[var(--md-text)]'
                         }`}
                       >
                         {lvl.label}
@@ -825,47 +810,47 @@ export default function GeneratePage() {
                   </div>
                 </div>
                 {(readerAudience === 'non_technical' || readerAudience === 'learner') && (
-                  <div className="rounded-xl border border-white/8 bg-white/[0.02] px-4 py-3">
+                  <div className="rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)] px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] px-2 py-0.5 rounded-full bg-[#4FACFF]/10 text-[#4FACFF] font-medium">Auto-on</span>
+                      <span className="text-[11px] px-2 py-0.5 rounded-[6px] bg-[var(--md-accent-dim)] text-[var(--md-accent)] font-medium">Auto-on</span>
                       <p className="text-xs text-[var(--md-text-secondary)]">Glossary + &ldquo;why this matters&rdquo; callouts included</p>
                     </div>
                   </div>
                 )}
                 {readerAudience === 'team' && (
-                  <div className="rounded-xl border border-white/8 bg-white/[0.02] p-4 mb-3">
+                  <div className="rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)] p-4 mb-3">
                     <label className="flex items-center justify-between cursor-pointer gap-4">
                       <div>
                         <p className="text-xs font-medium text-[var(--md-text-secondary)]">Include reasoning notes</p>
                         <p className="text-[11px] text-[var(--md-text-tertiary)] mt-0.5">Adds &ldquo;why this matters&rdquo; callouts for onboarding clarity</p>
                       </div>
                       <button role="switch" aria-checked={includeReasoning} onClick={() => setIncludeReasoning(v => !v)}
-                        className={`relative w-10 h-5.5 rounded-full border transition-all shrink-0 ${
-                          includeReasoning ? 'bg-[#4FACFF]/80 border-[#4FACFF]/50' : 'bg-white/5 border-white/15'
+                        className={`relative w-10 h-5.5 rounded-full border transition-all duration-200 shrink-0 cursor-pointer ${
+                          includeReasoning ? 'bg-[var(--md-accent)] border-[var(--md-accent)]' : 'bg-[var(--md-surface-2)] border-[var(--md-border-strong)]'
                         }`}
                       >
-                        <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${includeReasoning ? 'left-5' : 'left-0.5'}`} />
+                        <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-[var(--md-text)] shadow transition-all duration-200 ${includeReasoning ? 'left-5' : 'left-0.5'}`} />
                       </button>
                     </label>
                   </div>
                 )}
-                <div className="rounded-xl border border-white/8 bg-white/[0.02] p-4">
+                <div className="rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)] p-4">
                   <label className="flex items-center justify-between cursor-pointer gap-4">
                     <div>
                       <p className="text-xs font-medium text-[var(--md-text-secondary)]">Human voice</p>
                       <p className="text-[11px] text-[var(--md-text-tertiary)] mt-0.5">
                         Natural prose for README, CONTRIBUTING, DESIGN — no em dashes or AI-isms.
                         {(readerAudience === 'non_technical' || readerAudience === 'learner') && (
-                          <span className="ml-1 text-[#4FACFF]">Auto-on for this audience.</span>
+                          <span className="ml-1 text-[var(--md-accent)]">Auto-on for this audience.</span>
                         )}
                       </p>
                     </div>
                     <button role="switch" aria-checked={humanVoice} onClick={() => setHumanVoice(v => !v)}
-                      className={`relative w-10 h-5.5 rounded-full border transition-all shrink-0 ${
-                        humanVoice ? 'bg-[#4FACFF]/80 border-[#4FACFF]/50' : 'bg-white/5 border-white/15'
+                      className={`relative w-10 h-5.5 rounded-full border transition-all duration-200 shrink-0 cursor-pointer ${
+                        humanVoice ? 'bg-[var(--md-accent)] border-[var(--md-accent)]' : 'bg-[var(--md-surface-2)] border-[var(--md-border-strong)]'
                       }`}
                     >
-                      <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${humanVoice ? 'left-5' : 'left-0.5'}`} />
+                      <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-[var(--md-text)] shadow transition-all duration-200 ${humanVoice ? 'left-5' : 'left-0.5'}`} />
                     </button>
                   </label>
                 </div>
@@ -885,8 +870,8 @@ export default function GeneratePage() {
             {showGoalFirst ? (
               /* ── Goal-first path ─────────────────────────────────────── */
               <div>
-                <h2 className="text-xl font-bold text-white mb-1" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>What are you trying to do?</h2>
-                <p className="text-[13px] text-white/40 mb-5">
+                <h2 className="text-xl font-display font-semibold text-[var(--md-text)] mb-1">What are you trying to do?</h2>
+                <p className="text-[13px] text-[var(--md-text-secondary)] mb-5">
                   Describe your goal in plain language — we&apos;ll figure out which files actually help.
                 </p>
 
@@ -897,17 +882,17 @@ export default function GeneratePage() {
                       onChange={e => setGoal(e.target.value)}
                       placeholder={"e.g. \"I want to share my side project so a developer can pick it up\"\n     \"I want an AI assistant to help me code this\"\n     \"I need to explain this project to my investors\""}
                       rows={5}
-                      className="w-full rounded-xl border border-white/8 bg-white/[0.02] p-4 text-sm resize-none focus:outline-none focus:border-[#4FACFF]/50 transition-colors text-[var(--md-text)] placeholder:text-white/20 leading-relaxed"
+                      className="w-full rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)] p-4 text-sm resize-none focus:outline-none focus:border-[var(--md-accent)] transition-colors duration-200 text-[var(--md-text)] placeholder:text-[var(--md-text-tertiary)] leading-relaxed"
                       autoFocus
                     />
                     <div className="flex items-center gap-3 mt-3">
                       <button
                         onClick={() => void handleGetRecommendations()}
                         disabled={goal.trim().length < 10 || isRecommending}
-                        className={`flex-1 rounded-xl py-2.5 text-sm font-semibold transition-all ${
+                        className={`flex-1 rounded-[10px] py-2.5 text-sm font-semibold transition-all duration-200 ${
                           goal.trim().length >= 10 && !isRecommending
-                            ? 'bg-[#4FACFF]/80 text-white hover:bg-[#4FACFF]'
-                            : 'bg-white/5 text-[var(--md-text-tertiary)] cursor-not-allowed'
+                            ? 'bg-[var(--md-accent)] text-[var(--md-accent-ink)] shadow-[var(--shadow-sm)] hover:bg-[var(--md-accent-strong)] hover:-translate-y-px cursor-pointer'
+                            : 'bg-[var(--md-surface-2)] text-[var(--md-text-tertiary)] cursor-not-allowed'
                         }`}
                       >
                         {isRecommending ? (
@@ -922,7 +907,7 @@ export default function GeneratePage() {
                       </button>
                       <button
                         onClick={() => { setUserRequestedGoalFirst(false); if (readerAudience === 'non_technical') handleSelectReaderAudience('ai_agent'); }}
-                        className="text-xs text-[var(--md-text-tertiary)] hover:text-[var(--md-text-secondary)] transition-colors whitespace-nowrap"
+                        className="text-xs text-[var(--md-text-secondary)] hover:text-[var(--md-text)] transition-colors duration-150 whitespace-nowrap cursor-pointer"
                       >
                         I know what I need
                       </button>
@@ -942,14 +927,14 @@ export default function GeneratePage() {
                       <p className="text-sm text-[var(--md-text-secondary)]">Based on your goal, here&apos;s what we&apos;d generate:</p>
                       <button
                         onClick={() => { setRecommendations(null); setSelectedFiles([]); }}
-                        className="text-xs text-[var(--md-text-tertiary)] hover:text-[var(--md-text-secondary)] transition-colors"
+                        className="text-xs text-[var(--md-text-secondary)] hover:text-[var(--md-text)] transition-colors duration-150 cursor-pointer"
                       >
                         ← Change goal
                       </button>
                     </div>
 
-                    <div className="rounded-xl bg-[#4FACFF]/[0.06] border border-[#4FACFF]/15 px-3 py-2 mb-4 flex items-start gap-2">
-                      <span className="text-[11px] text-[#4FACFF]/60 mt-0.5 shrink-0">Your goal</span>
+                    <div className="rounded-xl bg-[var(--md-accent-dim)] border border-[var(--md-accent)]/20 px-3 py-2 mb-4 flex items-start gap-2">
+                      <span className="text-[11px] font-mono text-[var(--md-accent)] mt-0.5 shrink-0">Your goal</span>
                       <p className="text-xs text-[var(--md-text-secondary)] italic">&ldquo;{goal}&rdquo;</p>
                     </div>
 
@@ -961,20 +946,20 @@ export default function GeneratePage() {
                         const selected = selectedFiles.includes(fileType);
                         return (
                           <button key={rec.fileType} onClick={() => supported && toggleFile(fileType)} disabled={!supported}
-                            className={`flex items-start gap-3 rounded-xl border-l-[3px] border p-4 text-left w-full transition-all ${
+                            className={`flex items-start gap-3 rounded-xl border-l-[3px] border p-4 text-left w-full transition-all duration-200 ${
                               !supported
-                                ? 'opacity-40 cursor-not-allowed border-l-transparent border-white/8 bg-white/[0.01]'
+                                ? 'opacity-40 cursor-not-allowed border-l-transparent border-[var(--md-border)] bg-[var(--md-surface)]'
                                 : selected
-                                  ? 'border-l-[#4FACFF] border-[#4FACFF]/20 bg-[#4FACFF]/[0.06]'
-                                  : 'border-l-transparent border-white/8 bg-white/[0.02] hover:border-l-[#4FACFF]/40 hover:bg-white/[0.04]'
+                                  ? 'border-l-[var(--md-accent)] border-[var(--md-accent)]/20 bg-[var(--md-accent-dim)] cursor-pointer'
+                                  : 'border-l-transparent border-[var(--md-border)] bg-[var(--md-surface)] hover:border-l-[var(--md-accent)]/40 hover:bg-[var(--md-surface-2)] cursor-pointer'
                             }`}
                           >
-                            <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 mt-0.5 transition-all ${
-                              selected && supported ? 'bg-[#4FACFF] border-[#4FACFF]' : 'border-white/20'
+                            <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 mt-0.5 transition-all text-[var(--md-accent-ink)] ${
+                              selected && supported ? 'bg-[var(--md-accent)] border-[var(--md-accent)]' : 'border-[var(--md-border-strong)]'
                             }`}>
                               {selected && supported && (
                                 <svg width="9" height="9" viewBox="0 0 9 9" fill="none">
-                                  <path d="M1.5 4.5l2 2L7.5 2" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                  <path d="M1.5 4.5l2 2L7.5 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
                               )}
                             </span>
@@ -987,7 +972,7 @@ export default function GeneratePage() {
                                   this is {rec.fileType.toUpperCase()}.md
                                 </span>
                               </div>
-                              <p className="text-xs text-[var(--md-text-tertiary)] leading-relaxed">{rec.whyPlain}</p>
+                              <p className="text-xs text-[var(--md-text-secondary)] leading-relaxed">{rec.whyPlain}</p>
                             </div>
                           </button>
                         );
@@ -996,10 +981,10 @@ export default function GeneratePage() {
 
                     {/* Skipped — collapsed */}
                     {recommendations.skipped.length > 0 && (
-                      <div className="border-t border-white/6 pt-3">
+                      <div className="border-t border-[var(--md-border)] pt-3">
                         <button
                           onClick={() => setSkippedExpanded(s => !s)}
-                          className="flex items-center gap-1.5 text-xs text-[var(--md-text-tertiary)] hover:text-[var(--md-text-secondary)] transition-colors w-full text-left"
+                          className="flex items-center gap-1.5 text-xs text-[var(--md-text-secondary)] hover:text-[var(--md-text)] transition-colors duration-150 w-full text-left cursor-pointer"
                         >
                           <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
                             className={`transition-transform ${skippedExpanded ? 'rotate-90' : ''}`}>
@@ -1015,16 +1000,16 @@ export default function GeneratePage() {
                               const selected = selectedFiles.includes(fileType);
                               return (
                                 <button key={rec.fileType} onClick={() => supported && toggleFile(fileType)} disabled={!supported}
-                                  className={`flex items-start gap-3 rounded-lg border p-3 text-left w-full transition-all opacity-60 hover:opacity-90 ${
-                                    selected ? 'border-[#4FACFF]/20 bg-[#4FACFF]/[0.04]' : 'border-white/6 bg-white/[0.01]'
+                                  className={`flex items-start gap-3 rounded-lg border p-3 text-left w-full transition-all duration-200 opacity-60 hover:opacity-90 cursor-pointer ${
+                                    selected ? 'border-[var(--md-accent)]/20 bg-[var(--md-accent-dim)]' : 'border-[var(--md-border)] bg-[var(--md-surface)]'
                                   }`}
                                 >
-                                  <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center shrink-0 mt-0.5 transition-all ${
-                                    selected ? 'bg-[#4FACFF] border-[#4FACFF]' : 'border-white/20'
+                                  <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center shrink-0 mt-0.5 transition-all text-[var(--md-accent-ink)] ${
+                                    selected ? 'bg-[var(--md-accent)] border-[var(--md-accent)]' : 'border-[var(--md-border-strong)]'
                                   }`}>
                                     {selected && (
                                       <svg width="8" height="8" viewBox="0 0 9 9" fill="none">
-                                        <path d="M1.5 4.5l2 2L7.5 2" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                        <path d="M1.5 4.5l2 2L7.5 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                       </svg>
                                     )}
                                   </span>
@@ -1056,36 +1041,36 @@ export default function GeneratePage() {
             ) : (
               /* ── Normal file picker ──────────────────────────────────── */
               <div>
-                <h2 className="text-xl font-bold text-white mb-1" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Here&apos;s what we&apos;ll generate</h2>
-                <p className="text-[13px] text-white/40 mb-6">We picked these based on your answers. Toggle anything on or off.</p>
+                <h2 className="text-xl font-display font-semibold text-[var(--md-text)] mb-1">Here&apos;s what we&apos;ll generate</h2>
+                <p className="text-[13px] text-[var(--md-text-secondary)] mb-6">We picked these based on your answers. Toggle anything on or off.</p>
                 <div className="flex flex-col gap-2.5">
                   {recommendedFiles.map(f => {
                     const selected = selectedFiles.includes(f.type);
                     const disabled = !!f.v2;
                     return (
                       <button key={f.type} onClick={() => !disabled && toggleFile(f.type)} disabled={disabled}
-                        className={`flex items-center gap-4 rounded-xl border-l-[3px] border border-[var(--md-border)] p-4 text-left w-full transition-all ${
+                        className={`flex items-center gap-4 rounded-xl border-l-[3px] border border-[var(--md-border)] p-4 text-left w-full transition-all duration-200 ${
                           disabled ? 'opacity-50 cursor-not-allowed'
-                            : selected ? 'border-l-[var(--md-teal)] bg-[var(--md-teal-light)] border-[var(--md-teal)]/30'
-                            : 'border-l-transparent bg-[var(--md-surface)] hover:border-l-[var(--md-teal)]/50'
+                            : selected ? 'border-l-[var(--md-go)] bg-[var(--md-go-dim)] border-[var(--md-go)]/30 cursor-pointer'
+                            : 'border-l-transparent bg-[var(--md-surface)] hover:border-l-[var(--md-go)]/50 cursor-pointer'
                         }`}
                       >
-                        <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-all ${
-                          disabled ? 'border-[var(--md-border)] bg-black/5'
-                            : selected ? 'bg-[var(--md-teal)] border-[var(--md-teal)]'
-                            : 'border-[var(--md-border)]'
+                        <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-all text-[var(--md-accent-ink)] ${
+                          disabled ? 'border-[var(--md-border)] bg-[var(--md-surface-2)]'
+                            : selected ? 'bg-[var(--md-go)] border-[var(--md-go)]'
+                            : 'border-[var(--md-border-strong)]'
                         }`}>
                           {selected && !disabled && (
                             <svg width="9" height="9" viewBox="0 0 9 9" fill="none">
-                              <path d="M1.5 4.5l2 2L7.5 2" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                              <path d="M1.5 4.5l2 2L7.5 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                           )}
                         </span>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-0.5">
-                            <span className="text-sm font-mono font-semibold">{f.name}</span>
-                            {f.recommended && !f.v2 && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[var(--md-blue-light)] text-[var(--md-blue)]">Recommended</span>}
-                            {f.v2 && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/6 text-[var(--md-text-tertiary)]">v2</span>}
+                            <span className="text-sm font-mono font-semibold text-[var(--md-text)]">{f.name}</span>
+                            {f.recommended && !f.v2 && <span className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--md-accent-dim)] text-[var(--md-accent)]">Recommended</span>}
+                            {f.v2 && <span className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--md-surface-2)] text-[var(--md-text-tertiary)]">v2</span>}
                           </div>
                           <p className="text-xs text-[var(--md-text-secondary)]">{f.why}</p>
                         </div>
@@ -1101,7 +1086,7 @@ export default function GeneratePage() {
                 <div className="mt-5 text-center">
                   <button
                     onClick={() => setUserRequestedGoalFirst(true)}
-                    className="text-xs text-[var(--md-text-tertiary)] hover:text-[#4FACFF] transition-colors"
+                    className="text-xs text-[var(--md-text-secondary)] hover:text-[var(--md-accent)] transition-colors duration-150 cursor-pointer"
                   >
                     Not sure what you need? Describe your goal instead →
                   </button>
@@ -1114,13 +1099,13 @@ export default function GeneratePage() {
         {/* ── Step 6: Review & generate ────────────────────────────────────── */}
         {step === 6 && (
           <div>
-            <h2 className="text-xl font-bold text-white mb-1" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Ready to generate</h2>
-            <p className="text-[13px] text-white/40 mb-4">
+            <h2 className="text-xl font-display font-semibold text-[var(--md-text)] mb-1">Pre-flight check</h2>
+            <p className="text-[13px] text-[var(--md-text-secondary)] mb-4">
               {selectedFiles.filter(t => V1_SUPPORTED.includes(t)).length} file{selectedFiles.filter(t => V1_SUPPORTED.includes(t)).length !== 1 ? 's' : ''} queued.
             </p>
             {templateName && (
-              <p className="text-xs text-[#4FACFF] bg-[#4FACFF]/[0.08] rounded-lg px-3 py-2 mb-6">
-                ✦ Pre-filled from template: <span className="font-medium">{templateName}</span>.
+              <p className="text-xs text-[var(--md-accent)] bg-[var(--md-accent-dim)] rounded-lg px-3 py-2 mb-6">
+                Pre-filled from template: <span className="font-medium">{templateName}</span>.
               </p>
             )}
             <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] divide-y divide-white/[0.05] mb-6 overflow-hidden">
@@ -1135,17 +1120,17 @@ export default function GeneratePage() {
                 { label: 'Files',      value: `${selectedFiles.filter(t => V1_SUPPORTED.includes(t)).length} file${selectedFiles.filter(t => V1_SUPPORTED.includes(t)).length !== 1 ? 's' : ''} queued` },
               ].map(row => (
                 <div key={row.label} className="flex items-start gap-4 px-4 py-3">
-                  <span className="text-[11px] font-mono text-white/25 w-20 shrink-0 pt-0.5">{row.label}</span>
-                  <span className="text-[13px] text-white/70">{row.value}</span>
+                  <span className="text-[11px] font-mono text-[var(--md-text-tertiary)] w-20 shrink-0 pt-0.5">{row.label}</span>
+                  <span className="text-[13px] text-[var(--md-text-secondary)]">{row.value}</span>
                 </div>
               ))}
             </div>
             {providers.length > 0 && (
-              <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4 mb-6">
+              <div className="rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)] p-4 mb-6">
                 <ModelSelector selected={selectedProvider} onChange={setSelectedProvider} available={providers} />
               </div>
             )}
-            <p className="text-[11px] text-center text-white/25">One API call per file — takes about 5–15 seconds total.</p>
+            <p className="text-[11px] text-center text-[var(--md-text-tertiary)]">One API call per file — takes about 5–15 seconds total.</p>
           </div>
         )}
       </Stepper>

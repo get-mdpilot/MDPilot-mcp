@@ -23,18 +23,18 @@ export default function ImageToPromptDocsPage() {
 
       <div className="mb-8">
         <div className="section-label mb-4 w-fit">Labs</div>
-        <h1 className="text-[clamp(1.6rem,4vw,2.4rem)] font-black text-white tracking-[-0.04em] mb-3 leading-tight">
+        <h1 className="text-[clamp(1.6rem,4vw,2.4rem)] font-semibold text-[var(--md-text)] tracking-[-0.015em] mb-3 leading-tight">
           Image → Prompt
         </h1>
-        <p className="text-white/45 text-[15px] leading-relaxed">
+        <p className="text-[var(--md-text-secondary)] text-[15px] leading-relaxed">
           Upload any image and get a detailed recreation prompt formatted for five different image
           generation tools, plus a negative prompt and a tag list.
         </p>
       </div>
 
       {/* When to use */}
-      <div className="mb-8 p-4 rounded-xl border border-white/[0.07] bg-white/[0.02]">
-        <h2 className="text-[13px] font-semibold text-white/70 mb-2">When to use it</h2>
+      <div className="mb-8 p-4 rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)]">
+        <h2 className="text-[13px] font-semibold text-[var(--md-text-secondary)] mb-2">When to use it</h2>
         <ul className="space-y-1.5">
           {[
             'Recreate a visual style or scene you\'ve seen and want to reproduce',
@@ -43,8 +43,8 @@ export default function ImageToPromptDocsPage() {
             'Extract structured visual attributes (lighting, composition, medium) from a reference image',
           ].map((item, i) => (
             <li key={i} className="flex items-start gap-2">
-              <span className="w-1 h-1 rounded-full bg-[#A855F7]/60 mt-2 shrink-0" />
-              <span className="text-[12px] text-white/45 leading-relaxed">{item}</span>
+              <span className="w-1 h-1 rounded-full bg-[var(--md-info)]/60 mt-2 shrink-0" />
+              <span className="text-[12px] text-[var(--md-text-tertiary)] leading-relaxed">{item}</span>
             </li>
           ))}
         </ul>
@@ -52,7 +52,7 @@ export default function ImageToPromptDocsPage() {
 
       {/* How to */}
       <div className="mb-8">
-        <h2 className="text-[15px] font-bold text-white mb-4">How to use it</h2>
+        <h2 className="text-[15px] font-semibold text-[var(--md-text)] mb-4">How to use it</h2>
         <div className="space-y-3">
           {[
             { n: '1', title: 'Upload an image', desc: 'Click to upload or drag and drop. Supported: JPEG, PNG, GIF, WebP. The image is analysed by a vision model (Gemini or Groq Llama 4 Scout depending on which key you have configured).' },
@@ -60,12 +60,12 @@ export default function ImageToPromptDocsPage() {
             { n: '3', title: 'Copy the prompt for your target tool', desc: 'Switch between tabs for FLUX, Stable Diffusion, Midjourney, DALL-E, and Gemini. Each is formatted for that specific tool\'s prompt conventions. The negative prompt and tag list are in separate sections.' },
           ].map(step => (
             <div key={step.n} className="flex items-start gap-3">
-              <span className="shrink-0 w-6 h-6 rounded-full bg-[#A855F7]/10 border border-[#A855F7]/18 flex items-center justify-center text-[10px] font-mono font-bold text-[#A855F7]/55 mt-0.5">
+              <span className="shrink-0 w-6 h-6 rounded-full bg-[var(--md-info)]/10 border border-[var(--md-info)]/18 flex items-center justify-center text-[10px] font-mono font-bold text-[var(--md-info)]/80 mt-0.5">
                 {step.n}
               </span>
               <div>
-                <p className="text-[13px] font-semibold text-white/70 mb-0.5">{step.title}</p>
-                <p className="text-[12px] text-white/40 leading-relaxed">{step.desc}</p>
+                <p className="text-[13px] font-semibold text-[var(--md-text-secondary)] mb-0.5">{step.title}</p>
+                <p className="text-[12px] text-[var(--md-text-tertiary)] leading-relaxed">{step.desc}</p>
               </div>
             </div>
           ))}
@@ -74,26 +74,26 @@ export default function ImageToPromptDocsPage() {
 
       {/* Output formats */}
       <div className="mb-8">
-        <h2 className="text-[15px] font-bold text-white mb-3">Output formats</h2>
+        <h2 className="text-[15px] font-semibold text-[var(--md-text)] mb-3">Output formats</h2>
         <div className="space-y-2">
           {OUTPUTS.map(o => (
-            <div key={o.label} className="flex items-start gap-3 p-3 rounded-lg border border-white/[0.06] bg-white/[0.02]">
-              <code className="text-[11px] font-mono font-bold text-[#A855F7]/65 shrink-0 mt-0.5 w-28">{o.label}</code>
-              <p className="text-[12px] text-white/40 leading-relaxed">{o.desc}</p>
+            <div key={o.label} className="flex items-start gap-3 p-3 rounded-lg border border-[var(--md-border)] bg-[var(--md-surface)]">
+              <code className="text-[11px] font-mono font-bold text-[var(--md-info)]/65 shrink-0 mt-0.5 w-28">{o.label}</code>
+              <p className="text-[12px] text-[var(--md-text-tertiary)] leading-relaxed">{o.desc}</p>
             </div>
           ))}
         </div>
-        <p className="text-[12px] text-white/30 mt-2">
+        <p className="text-[12px] text-[var(--md-text-tertiary)] mt-2">
           A negative prompt and a flat tag list are also generated — useful for style-mixing and LoRA workflows.
         </p>
       </div>
 
       {/* Analysis fields */}
       <div className="mb-8">
-        <h2 className="text-[15px] font-bold text-white mb-3">Analysis attributes</h2>
+        <h2 className="text-[15px] font-semibold text-[var(--md-text)] mb-3">Analysis attributes</h2>
         <div className="flex flex-wrap gap-1.5">
           {ANALYSIS_FIELDS.map(f => (
-            <span key={f} className="text-[11px] font-mono px-2 py-0.5 rounded bg-white/[0.05] border border-white/[0.09] text-white/40">
+            <span key={f} className="text-[11px] font-mono px-2 py-0.5 rounded bg-[var(--md-surface-2)] border border-[var(--md-border)] text-[var(--md-text-tertiary)]">
               {f}
             </span>
           ))}
@@ -101,20 +101,20 @@ export default function ImageToPromptDocsPage() {
       </div>
 
       {/* MCP */}
-      <div className="p-4 rounded-xl border border-[#34D399]/[0.15] bg-[#34D399]/[0.03] mb-6">
-        <p className="text-[12px] text-white/45 leading-relaxed">
-          <span className="text-[#34D399]/70 font-semibold">Via MCP:</span> Use the{' '}
-          <code className="text-[11px] font-mono bg-white/[0.06] px-1 rounded text-white/55">image_to_prompt</code> tool
+      <div className="p-4 rounded-xl border border-[var(--md-go)]/[0.15] bg-[var(--md-go)]/[0.03] mb-6">
+        <p className="text-[12px] text-[var(--md-text-tertiary)] leading-relaxed">
+          <span className="text-[var(--md-go)]/70 font-semibold">Via MCP:</span> Use the{' '}
+          <code className="text-[11px] font-mono bg-[var(--md-surface-2)] px-1 rounded text-[var(--md-text-secondary)]">image_to_prompt</code> tool
           and pass a local image path. The server reads the file directly — no upload needed.{' '}
-          <Link href="/docs/mcp" className="text-[#4FACFF]/60 hover:text-[#4FACFF] transition-colors">MCP setup →</Link>
+          <Link href="/docs/mcp" className="text-[var(--md-accent)]/60 hover:text-[var(--md-accent)] transition-colors">MCP setup →</Link>
         </p>
       </div>
 
-      <div className="pt-6 border-t border-white/[0.05] flex items-center gap-4">
-        <Link href="/docs/convert" className="text-[12px] font-mono text-white/25 hover:text-white/50 transition-colors">
+      <div className="pt-6 border-t border-[var(--md-border)] flex items-center gap-4">
+        <Link href="/docs/convert" className="text-[12px] font-mono text-[var(--md-text-tertiary)] hover:text-[var(--md-text-secondary)] transition-colors">
           ← Convert mode
         </Link>
-        <Link href="/docs/interview-primer" className="text-[12px] font-mono text-white/25 hover:text-white/50 transition-colors">
+        <Link href="/docs/interview-primer" className="text-[12px] font-mono text-[var(--md-text-tertiary)] hover:text-[var(--md-text-secondary)] transition-colors">
           Interview primer →
         </Link>
       </div>

@@ -1,29 +1,41 @@
 import type { Metadata } from 'next';
-import { Space_Grotesk, DM_Sans, DM_Mono } from 'next/font/google';
+import { Fraunces, IBM_Plex_Sans, IBM_Plex_Mono, B612 } from 'next/font/google';
 import './globals.css';
 import Nav from '@/components/Nav';
-import GlowCursor from '@/components/GlowCursor';
 
-const spaceGrotesk = Space_Grotesk({
+// Variable font with optical + character axes: opsz drives the high-contrast
+// display cut at headline sizes; SOFT/WONK give the hand-set quirk (.em-wonk).
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  axes: ['SOFT', 'WONK', 'opsz'],
+  variable: '--font-display',
+  display: 'swap',
+  preload: true,
+});
+
+const plexSans = IBM_Plex_Sans({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
-  variable: '--font-space-grotesk',
+  variable: '--font-body',
   display: 'swap',
   preload: true,
 });
 
-const dmSans = DM_Sans({
+const plexMono = IBM_Plex_Mono({
   subsets: ['latin'],
-  weight: ['400', '500', '700'],
-  variable: '--font-dm-sans',
+  weight: ['400', '500', '600'],
+  variable: '--font-mono',
   display: 'swap',
-  preload: true,
+  preload: false,
 });
 
-const dmMono = DM_Mono({
+// Brand wordmark only — B612 was designed by Airbus for cockpit instrument
+// displays. "MDPilot" set in the actual aircraft font; nothing else uses it.
+const b612 = B612({
   subsets: ['latin'],
-  weight: ['400', '500'],
-  variable: '--font-dm-mono',
+  weight: ['400', '700'],
+  variable: '--font-brand',
   display: 'swap',
   preload: false,
 });
@@ -50,117 +62,99 @@ export const metadata: Metadata = {
   },
 };
 
+const FOOTER_COLS: { heading: string; links: [string, string][] }[] = [
+  {
+    heading: 'Flight deck',
+    links: [
+      ['Task', '/task'],
+      ['Hangar — Labs', '/labs'],
+      ['Generate', '/generate'],
+      ['Convert', '/convert'],
+      ['Explain', '/explain'],
+      ['Image → Prompt', '/image-to-prompt'],
+      ['Interview Primer', '/interview-primer'],
+    ],
+  },
+  {
+    heading: 'Field manual',
+    links: [
+      ['Docs', '/docs'],
+      ['MCP server', '/docs/mcp'],
+      ['AGENTS.md spec', '/docs/files'],
+      ['CLAUDE.md guide', '/docs/generate'],
+      ['Token optimization', '/docs/token-optimizer'],
+      ['Logbook — Blog', '/blog'],
+    ],
+  },
+  {
+    heading: 'Company',
+    links: [
+      ['GitHub', 'https://github.com/get-mdpilot'],
+      ['Feedback', 'https://github.com/get-mdpilot/Feedback/issues/new/choose'],
+      ['Report a bug', 'https://github.com/get-mdpilot/Feedback/issues/new/choose'],
+      ['Privacy Policy', '/privacy'],
+      ['Terms of Service', '/terms'],
+    ],
+  },
+];
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${dmSans.variable} ${dmMono.variable} scroll-smooth`}>
-      <body className="min-h-screen bg-[var(--md-dark)] text-white antialiased">
-        <GlowCursor />
+    <html lang="en" className={`${fraunces.variable} ${plexSans.variable} ${plexMono.variable} ${b612.variable} scroll-smooth`}>
+      <body className="min-h-screen bg-[var(--md-bg)] text-[var(--md-text)] antialiased">
         <Nav />
         <main>{children}</main>
 
-        {/* Footer */}
-        <footer className="border-t border-white/6 bg-[var(--md-dark-2)]">
-          <div className="max-w-6xl mx-auto px-6 py-14">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-10 mb-12">
+        {/* Footer — the logbook */}
+        <footer className="border-t border-[var(--md-border)] bg-[var(--md-surface)]">
+          <div className="max-w-6xl mx-auto px-5 sm:px-8 py-16">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-8 gap-y-12 mb-14">
               {/* Brand */}
               <div className="col-span-2 sm:col-span-1">
                 <div className="flex items-center gap-2.5 mb-4">
-                  <img src="/mdpilot-logo.svg" alt="MDPilot" width={40} height={40} className="w-10 h-10 object-contain drop-shadow-[0_0_6px_rgba(79,172,255,0.20)]" />
-                  <span className="font-[Space_Grotesk] font-semibold text-white">MDPilot</span>
+                  <img src="/mdpilot-logo.webp" alt="MDPilot" width={36} height={36} className="w-9 h-9 object-contain" />
+                  <span className="font-brand text-[16px] font-bold text-[var(--md-text)]">MDPilot</span>
                 </div>
-                <p className="text-sm text-white/40 leading-relaxed max-w-[200px]">
-                  Markdown intelligence platform for AI-native development teams.
+                <p className="text-sm text-[var(--md-text-secondary)] leading-relaxed max-w-[220px]">
+                  A flight deck for markdown. Brief your AI agent properly, every time.
+                </p>
+                <p className="mt-5 font-mono text-[11px] text-[var(--md-text-tertiary)] leading-relaxed">
+                  Bengaluru, India
+                  <br />
+                  12.97° N · 77.59° E
                 </p>
               </div>
 
-              {/* Product */}
-              <div>
-                <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-4">Product</p>
-                <ul className="space-y-2.5">
-                  <li>
-                    <a href="/task" className="text-sm text-white/70 hover:text-white font-medium transition-colors">Task</a>
-                  </li>
-                  <li>
-                    <a href="/labs" className="text-sm text-white/50 hover:text-white transition-colors">Labs</a>
-                  </li>
-                  {/* Labs tools */}
-                  <li className="pl-3 border-l border-white/[0.06]">
-                    <a href="/generate" className="text-xs text-white/30 hover:text-white/60 transition-colors">Generate</a>
-                  </li>
-                  <li className="pl-3 border-l border-white/[0.06]">
-                    <a href="/convert" className="text-xs text-white/30 hover:text-white/60 transition-colors">Convert</a>
-                  </li>
-                  <li className="pl-3 border-l border-white/[0.06]">
-                    <a href="/explain" className="text-xs text-white/30 hover:text-white/60 transition-colors">Explain</a>
-                  </li>
-                  <li className="pl-3 border-l border-white/[0.06]">
-                    <a href="/image-to-prompt" className="text-xs text-white/30 hover:text-white/60 transition-colors">Image → Prompt</a>
-                  </li>
-                  <li className="pl-3 border-l border-white/[0.06]">
-                    <a href="/interview-primer" className="text-xs text-white/30 hover:text-white/60 transition-colors">Interview Primer</a>
-                  </li>
-                  <li className="pt-1">
-                    <a href="/docs" className="text-sm text-white/50 hover:text-white transition-colors">Docs</a>
-                  </li>
-                  <li className="pl-3 border-l border-white/[0.06]">
-                    <a href="/docs/mcp" className="text-xs text-white/30 hover:text-white/60 transition-colors">MCP server</a>
-                  </li>
-                  <li>
-                    <a href="/blog" className="text-sm text-white/50 hover:text-white transition-colors">Blog</a>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Resources */}
-              <div>
-                <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-4">Resources</p>
-                <ul className="space-y-2.5">
-                  {[['AGENTS.md spec', '/docs/files'], ['CLAUDE.md guide', '/docs/generate'], ['Token optimization', '/docs/token-optimizer']].map(([label, href]) => (
-                    <li key={label}>
-                      <a href={href} className="text-sm text-white/50 hover:text-white transition-colors">{label}</a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Company + Legal */}
-              <div>
-                <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-4">Company</p>
-                <ul className="space-y-2.5">
-                  {[['GitHub', 'https://github.com/get-mdpilot/md-pilot'], ['mdpilot.in', 'https://mdpilot.in']].map(([label, href]) => (
-                    <li key={label}>
-                      <a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" className="text-sm text-white/50 hover:text-white transition-colors">{label}</a>
-                    </li>
-                  ))}
-                </ul>
-                <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mt-6 mb-4">Support</p>
-                <ul className="space-y-2.5">
-                  <li>
-                    <a href="https://github.com/get-mdpilot/md-pilot/issues/new/choose" target="_blank" rel="noopener noreferrer" className="text-sm text-white/50 hover:text-white transition-colors">Feedback</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/get-mdpilot/md-pilot/issues/new/choose" target="_blank" rel="noopener noreferrer" className="text-sm text-white/50 hover:text-white transition-colors">Report a bug</a>
-                  </li>
-                </ul>
-                <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mt-6 mb-4">Legal</p>
-                <ul className="space-y-2.5">
-                  <li><a href="/privacy" className="text-sm text-white/50 hover:text-white transition-colors">Privacy Policy</a></li>
-                  <li><a href="/terms" className="text-sm text-white/50 hover:text-white transition-colors">Terms of Service</a></li>
-                </ul>
-              </div>
+              {FOOTER_COLS.map(col => (
+                <div key={col.heading}>
+                  <p className="font-mono text-[11px] font-medium text-[var(--md-text-tertiary)] uppercase tracking-[0.14em] mb-4">
+                    {col.heading}
+                  </p>
+                  <ul className="space-y-2.5">
+                    {col.links.map(([label, href]) => (
+                      <li key={label + href}>
+                        <a
+                          href={href}
+                          target={href.startsWith('http') ? '_blank' : undefined}
+                          rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                          className="text-sm text-[var(--md-text-secondary)] hover:text-[var(--md-accent)] transition-colors duration-200"
+                        >
+                          {label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
 
-            <div className="border-t border-white/6 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <p className="text-xs text-white/25">
-                © 2026 MDPilot. Ship better markdown files, faster.
-                <span className="mx-2 text-white/15">·</span>
-                <a href="/privacy" className="hover:text-white/50 transition-colors">Privacy</a>
-                <span className="mx-2 text-white/15">·</span>
-                <a href="/terms" className="hover:text-white/50 transition-colors">Terms</a>
+            <div className="border-t border-[var(--md-border)] pt-7 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <p className="font-mono text-[11px] text-[var(--md-text-tertiary)]">
+                © 2026 Viveon Gizit Pvt Ltd · MIT license
               </p>
-              <div className="flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-[var(--md-green)] animate-pulse" />
-                <span className="text-xs text-white/25">All systems operational</span>
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--md-go)]" />
+                <span className="font-mono text-[11px] text-[var(--md-text-tertiary)]">Cleared for takeoff — all systems operational</span>
               </div>
             </div>
           </div>

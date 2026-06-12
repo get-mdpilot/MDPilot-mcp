@@ -346,11 +346,11 @@ export default function TaskPage() {
   return (
     <div className="min-h-screen bg-[var(--md-dark-2)] px-4 sm:px-8 py-12">
       {/* Page logo header */}
-      <div className="max-w-xl mx-auto flex items-center gap-3 mb-8 pb-6 border-b border-white/[0.06]">
-        <img src="/mdpilot-logo.svg" alt="MDPilot" width={44} height={44} className="w-11 h-11 object-contain drop-shadow-[0_0_10px_rgba(79,172,255,0.3)]" />
+      <div className="max-w-xl mx-auto flex items-center gap-3 mb-8 pb-6 border-b border-[var(--md-border)]">
+        <img src="/mdpilot-logo.webp" alt="MDPilot" width={44} height={44} className="w-11 h-11 object-contain" />
         <div>
-          <p className="text-[15px] font-bold text-white leading-tight" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Task</p>
-          <p className="text-[11px] text-white/35 font-mono">Turn any task into an agent-ready prompt</p>
+          <p className="font-display text-[16px] font-semibold text-[var(--md-text)] leading-tight">Flight Deck</p>
+          <p className="text-[11px] text-[var(--md-text-tertiary)] font-mono">Turn any task into an agent-ready prompt</p>
         </div>
       </div>
       <Stepper
@@ -401,7 +401,7 @@ export default function TaskPage() {
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   <span className="text-[11px] text-[var(--md-text-tertiary)]">Auto-detected:</span>
                   {autoStack.map(s => (
-                    <span key={s} className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-[#2DD4BF]/[0.10] text-[#2DD4BF]">{s}</span>
+                    <span key={s} className="text-[11px] font-mono px-2 py-0.5 rounded bg-[var(--md-go-dim)] text-[var(--md-go)]">{s}</span>
                   ))}
                 </div>
               )}

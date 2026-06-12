@@ -135,8 +135,10 @@ mdpilot/
 │   │           └── route.ts     ← Claude API pipe
 │   ├── components/
 │   │   ├── ui/                  ← Button, Card, Input
+│   │   ├── fx/                  ← cockpit instruments (FlipWord, ZuluClock, Altimeter, RadarScope, ApproachLights, Reveal)
+│   │   ├── Hero.tsx             ← Night Approach hero
+│   │   ├── Nav.tsx              ← navigation
 │   │   ├── Stepper.tsx          ← wizard stepper
-│   │   ├── ModeSelector.tsx     ← home page cards
 │   │   └── TokenMeter.tsx       ← before/after meter
 │   ├── lib/
 │   │   ├── anthropic.ts         ← Anthropic client (server only)

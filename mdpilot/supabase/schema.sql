@@ -77,12 +77,21 @@ alter table usage_events        enable row level security;
 alter table generation_feedback enable row level security;
 alter table training_samples    enable row level security;
 
+-- Policies are dropped first so the whole file is safe to re-run
+-- (create policy has no "if not exists" — a bare re-run aborts on 42710).
+
 -- Public read for prompt library (anon can read active prompts)
+drop policy if exists "read active prompts" on prompt_templates;
+drop policy if exists "read roles"          on role_definitions;
+drop policy if exists "read skills"         on skill_patterns;
 create policy "read active prompts" on prompt_templates for select using (is_active = true);
 create policy "read roles"          on role_definitions for select using (true);
 create policy "read skills"         on skill_patterns   for select using (true);
 
 -- Telemetry: anon can insert only (no read)
+drop policy if exists "insert events"   on usage_events;
+drop policy if exists "insert feedback" on generation_feedback;
+drop policy if exists "insert samples"  on training_samples;
 create policy "insert events"   on usage_events        for insert with check (true);
 create policy "insert feedback" on generation_feedback for insert with check (true);
 -- Samples: insert allowed only when consented = true
@@ -124,6 +133,8 @@ alter table eval_runs          enable row level security;
 alter table gold_examples      enable row level security;
 alter table repo_context_cache enable row level security;
 
+drop policy if exists "read gold examples" on gold_examples;
+drop policy if exists "insert eval runs"   on eval_runs;
 create policy "read gold examples" on gold_examples for select using (true);
 create policy "insert eval runs"   on eval_runs     for insert with check (true);
 

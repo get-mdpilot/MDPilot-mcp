@@ -14,19 +14,19 @@ export default function DataConsent({ checked, onChange }: DataConsentProps) {
         <span
           onClick={() => onChange(!checked)}
           className={`mt-0.5 w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-all ${
-            checked ? 'bg-[#4FACFF] border-[#4FACFF]' : 'border-[var(--md-border)]'
+            checked ? 'bg-[var(--md-accent)] border-[var(--md-accent)]' : 'border-[var(--md-border-strong)]'
           }`}
         >
           {checked && (
             <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
-              <path d="M2 6l2.5 2.5L10 3" stroke="#07070f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M2 6l2.5 2.5L10 3" stroke="var(--md-accent-ink)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           )}
         </span>
         <input type="checkbox" checked={checked} onChange={e => onChange(e.target.checked)} className="sr-only" />
         <span className="text-xs text-[var(--md-text-secondary)] leading-relaxed">
           Help improve MDPilot — share this generation (anonymized, PII-scrubbed) to train better prompts.{' '}
-          <Link href="/privacy" target="_blank" className="text-[#4FACFF] hover:underline">What we collect</Link>
+          <Link href="/privacy" target="_blank" className="text-[var(--md-accent)] hover:underline">What we collect</Link>
         </span>
       </label>
     </div>

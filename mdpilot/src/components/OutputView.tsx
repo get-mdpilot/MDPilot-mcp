@@ -174,26 +174,25 @@ export default function OutputView({
   };
 
   return (
-    <div className="min-h-screen bg-[var(--md-dark-2)]">
+    <div className="min-h-screen bg-[var(--md-bg)]">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-8 pt-24">
 
         {/* ── Page header ──────────────────────────────────────────────── */}
         <div className="flex items-center gap-3 mb-5 flex-wrap">
           <button
             onClick={onBack}
-            className="flex items-center gap-1.5 text-[13px] text-white/40 hover:text-white/80 transition-colors shrink-0 cursor-pointer"
+            className="flex items-center gap-1.5 text-[13px] text-[var(--md-text-secondary)] hover:text-[var(--md-text)] transition-colors shrink-0 cursor-pointer"
           >
             <ChevronLeft size={15} />
             {backLabel.replace(/←\s*/, '')}
           </button>
 
           <div className="flex-1 min-w-0">
-            <h1 className="text-[15px] font-semibold text-white truncate"
-              style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+            <h1 className="font-display font-semibold text-[15px] text-[var(--md-text)] truncate">
               {title}
             </h1>
-            <p className="text-[11px] text-white/30 mt-0.5">
-              {generatedFiles.length} file{generatedFiles.length > 1 ? 's' : ''} generated
+            <p className="text-[11px] text-[var(--md-text-tertiary)] mt-0.5">
+              Cleared for takeoff — {generatedFiles.length} file{generatedFiles.length > 1 ? 's' : ''} generated
             </p>
           </div>
 
@@ -201,14 +200,14 @@ export default function OutputView({
           <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={() => handleCopy(displayContent)}
-              className="flex items-center gap-1.5 text-[12px] px-3 py-1.5 rounded-lg border border-white/[0.10] text-white/60 hover:text-white hover:border-white/20 hover:bg-white/[0.04] transition-all cursor-pointer"
+              className="flex items-center gap-1.5 text-[12px] px-3 py-1.5 rounded-[10px] border border-[var(--md-border-strong)] text-[var(--md-text-secondary)] hover:text-[var(--md-text)] hover:border-[var(--md-accent)] hover:bg-[var(--md-accent-dim)] transition-all duration-200 cursor-pointer"
             >
-              {copied ? <Check size={13} className="text-[#34D399]" /> : <Copy size={13} />}
+              {copied ? <Check size={13} className="text-[var(--md-go)]" /> : <Copy size={13} />}
               {copied ? 'Copied' : 'Copy'}
             </button>
             <button
               onClick={() => handleDownload(activeFile.filename, displayContent)}
-              className="flex items-center gap-1.5 text-[12px] px-3 py-1.5 rounded-lg border border-white/[0.10] text-white/60 hover:text-white hover:border-white/20 hover:bg-white/[0.04] transition-all cursor-pointer"
+              className="flex items-center gap-1.5 text-[12px] px-3 py-1.5 rounded-[10px] border border-[var(--md-border-strong)] text-[var(--md-text-secondary)] hover:text-[var(--md-text)] hover:border-[var(--md-accent)] hover:bg-[var(--md-accent-dim)] transition-all duration-200 cursor-pointer"
             >
               <Download size={13} />
               .md
@@ -216,7 +215,7 @@ export default function OutputView({
             {generatedFiles.length > 1 && (
               <button
                 onClick={() => void handleZip()}
-                className="flex items-center gap-1.5 text-[12px] px-3 py-1.5 rounded-lg bg-[#4FACFF] text-[#07070f] font-semibold hover:bg-[#6FBFFF] transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 text-[12px] px-3 py-1.5 rounded-[10px] bg-[var(--md-accent)] text-[var(--md-accent-ink)] font-semibold hover:bg-[var(--md-accent-strong)] hover:-translate-y-px transition-all duration-200 shadow-[var(--shadow-sm)] cursor-pointer"
               >
                 <FileArchive size={13} />
                 Download .zip
@@ -236,16 +235,16 @@ export default function OutputView({
 
         {/* ── Error states ─────────────────────────────────────────────── */}
         {fileStatuses.some(s => s.status === 'error') && (
-          <div className="mb-4 rounded-xl border border-[#FF6B6B]/25 bg-[#FF6B6B]/[0.06] px-4 py-3 space-y-2">
+          <div className="mb-4 rounded-[var(--md-radius)] border border-[var(--md-caution)]/40 bg-[var(--md-caution-dim)] px-4 py-3 space-y-2">
             {fileStatuses.filter(s => s.status === 'error').map(s => (
               <div key={s.type} className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2 text-[13px] text-[#FF6B6B] min-w-0">
+                <div className="flex items-center gap-2 text-[13px] text-[var(--md-caution)] min-w-0">
                   <AlertCircle size={14} className="shrink-0" />
                   <span className="truncate">{s.filename} — {s.error}</span>
                 </div>
                 <button
                   onClick={() => onRetry(s.type)}
-                  className="flex items-center gap-1.5 text-[12px] px-3 py-1 rounded-lg border border-[#FF6B6B]/40 text-[#FF6B6B] hover:bg-[#FF6B6B]/10 transition-colors shrink-0 cursor-pointer"
+                  className="flex items-center gap-1.5 text-[12px] px-3 py-1 rounded-[10px] border border-[var(--md-caution)]/50 text-[var(--md-caution)] hover:bg-[var(--md-caution-dim)] transition-colors shrink-0 cursor-pointer"
                 >
                   <RotateCcw size={11} />
                   Retry
@@ -257,27 +256,27 @@ export default function OutputView({
 
         {/* ── Agent prompt card (task mode) ────────────────────────────── */}
         {agentPrompt && (
-          <div className="mb-4 rounded-xl border border-[#A855F7]/30 bg-[#A855F7]/[0.06] overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#A855F7]/15">
-              <span className="text-[12px] font-semibold text-[#A855F7] flex items-center gap-1.5">
+          <div className="mb-4 rounded-[var(--md-radius)] border border-[var(--md-info)]/40 bg-[var(--md-info-dim)] overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-2.5 border-b border-[var(--md-info)]/20">
+              <span className="text-[12px] font-semibold text-[var(--md-info)] flex items-center gap-1.5">
                 <Sparkles size={13} />
                 Agent prompt — paste into Claude Code, Cursor, or Copilot
               </span>
               <button
                 onClick={() => handleCopyAgent(agentPrompt)}
-                className="text-[11px] px-3 py-1 rounded-lg bg-[#A855F7] text-white hover:opacity-90 transition-opacity shrink-0 cursor-pointer"
+                className="text-[11px] px-3 py-1 rounded-[10px] bg-[var(--md-info)] text-[var(--md-bg)] font-medium hover:opacity-90 transition-opacity shrink-0 cursor-pointer"
               >
                 {agentCopied ? 'Copied' : 'Copy prompt'}
               </button>
             </div>
-            <pre className="px-4 py-3 text-[11px] font-mono leading-relaxed whitespace-pre-wrap text-[#A855F7]/80 max-h-36 overflow-auto">
+            <pre className="px-4 py-3 text-[11px] font-mono leading-relaxed whitespace-pre-wrap text-[var(--md-text-secondary)] max-h-36 overflow-auto">
               {agentPrompt}
             </pre>
           </div>
         )}
 
         {/* ── File tabs ────────────────────────────────────────────────── */}
-        <div className="flex items-end gap-0 border-b border-white/[0.07] overflow-x-auto">
+        <div className="flex items-end gap-0 border-b border-[var(--md-border)] overflow-x-auto">
           {generatedFiles.map((f, i) => {
             const isActive   = activeTab === i;
             const optTok     = f.optimizedTokenCount ?? f.tokenCount;
@@ -293,20 +292,20 @@ export default function OutputView({
                 onClick={() => { setActiveTab(i); setExpandedHowTo(null); setShowBadges(false); }}
                 className={`relative flex items-center gap-2 px-4 py-2.5 text-[13px] font-mono border-b-2 -mb-px transition-colors whitespace-nowrap cursor-pointer ${
                   isActive
-                    ? 'border-[#4FACFF] text-white bg-white/[0.02]'
-                    : 'border-transparent text-white/35 hover:text-white/70 hover:bg-white/[0.02]'
+                    ? 'border-[var(--md-accent)] text-[var(--md-text)] bg-[var(--md-surface)]'
+                    : 'border-transparent text-[var(--md-text-tertiary)] hover:text-[var(--md-text-secondary)] hover:bg-[var(--md-surface)]'
                 }`}
               >
                 {f.filename}
                 <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-sans tabular-nums ${
                   isActive
-                    ? 'bg-[#4FACFF]/15 text-[#4FACFF]'
-                    : 'bg-white/[0.06] text-white/30'
+                    ? 'bg-[var(--md-accent-dim)] text-[var(--md-accent)]'
+                    : 'bg-[var(--md-surface-2)] text-[var(--md-text-tertiary)]'
                 }`}>
                   {shownTok.toLocaleString()}t
                 </span>
                 {savedPct > 0 && (
-                  <span className="text-[9px] font-sans text-[#2DD4BF]/70 hidden sm:inline">
+                  <span className="text-[9px] font-sans text-[var(--md-go)] hidden sm:inline">
                     −{savedPct}%
                   </span>
                 )}
@@ -348,33 +347,33 @@ export default function OutputView({
         )}
 
         {/* ── Bottom info strip ────────────────────────────────────────── */}
-        <div className="flex items-center justify-between px-1 pt-2 pb-1 text-[11px] text-white/25">
+        <div className="flex items-center justify-between px-1 pt-2 pb-1 text-[11px] text-[var(--md-text-tertiary)]">
           <span className="font-mono">{activeFile.filename} · {displayTokens.toLocaleString()} tokens</span>
           {viewMode === 'optimized' && activeFile.optimizedTokenCount != null && activeFile.tokenCount > 0 && (
-            <span className="text-[#2DD4BF]/70">
+            <span className="text-[var(--md-go)]">
               ↓ {((1 - activeFile.optimizedTokenCount / activeFile.tokenCount) * 100).toFixed(0)}% smaller
             </span>
           )}
         </div>
 
         {/* ── How to use ───────────────────────────────────────────────── */}
-        <div className="mt-3 rounded-xl border border-white/[0.07] bg-white/[0.02] overflow-hidden">
+        <div className="mt-3 rounded-[var(--md-radius)] border border-[var(--md-border)] bg-[var(--md-surface)] overflow-hidden">
           <button
             onClick={() => setExpandedHowTo(p => p === activeFile.type ? null : activeFile.type)}
-            className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-white/[0.03] transition-colors cursor-pointer"
+            className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-[var(--md-surface-2)] transition-colors cursor-pointer"
           >
-            <span className="flex items-center gap-2 text-[13px] font-medium text-white/70">
-              <Info size={14} className="text-[#4FACFF] shrink-0" />
+            <span className="flex items-center gap-2 text-[13px] font-medium text-[var(--md-text-secondary)]">
+              <Info size={14} className="text-[var(--md-accent)] shrink-0" />
               How to use this file
             </span>
             {expandedHowTo === activeFile.type
-              ? <ChevronUp size={14} className="text-white/30" />
-              : <ChevronDown size={14} className="text-white/30" />
+              ? <ChevronUp size={14} className="text-[var(--md-text-tertiary)]" />
+              : <ChevronDown size={14} className="text-[var(--md-text-tertiary)]" />
             }
           </button>
           {expandedHowTo === activeFile.type && (
-            <div className="px-4 pb-4 pt-1 border-t border-white/[0.06]">
-              <pre className="text-[12px] text-white/45 leading-relaxed whitespace-pre-wrap font-sans">
+            <div className="px-4 pb-4 pt-1 border-t border-[var(--md-border)]">
+              <pre className="text-[12px] text-[var(--md-text-secondary)] leading-relaxed whitespace-pre-wrap font-sans">
                 {activeFile.howToUse}
               </pre>
             </div>
@@ -384,15 +383,15 @@ export default function OutputView({
         {/* ── Feedback ─────────────────────────────────────────────────── */}
         {eventId && (
           <div className="mt-3 space-y-3">
-            <div className="flex items-center gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] px-4 py-3">
-              <span className="text-[12px] text-white/35">Was this useful?</span>
+            <div className="flex items-center gap-3 rounded-[var(--md-radius)] border border-[var(--md-border)] bg-[var(--md-surface)] px-4 py-3">
+              <span className="text-[12px] text-[var(--md-text-secondary)]">Was this useful?</span>
               <div className="flex gap-1.5">
                 <button
                   onClick={() => handleThumbs('up')}
-                  className={`flex items-center gap-1.5 text-[12px] px-3 py-1.5 rounded-lg border transition-colors cursor-pointer ${
+                  className={`flex items-center gap-1.5 text-[12px] px-3 py-1.5 rounded-[10px] border transition-colors cursor-pointer ${
                     thumbs === 'up'
-                      ? 'border-[#2DD4BF]/40 bg-[#2DD4BF]/10 text-[#2DD4BF]'
-                      : 'border-white/[0.08] text-white/35 hover:text-white/70 hover:bg-white/[0.05]'
+                      ? 'border-[var(--md-go)]/50 bg-[var(--md-go-dim)] text-[var(--md-go)]'
+                      : 'border-[var(--md-border)] text-[var(--md-text-tertiary)] hover:text-[var(--md-text-secondary)] hover:bg-[var(--md-surface-2)]'
                   }`}
                   aria-label="Thumbs up"
                 >
@@ -401,10 +400,10 @@ export default function OutputView({
                 </button>
                 <button
                   onClick={() => handleThumbs('down')}
-                  className={`flex items-center gap-1.5 text-[12px] px-3 py-1.5 rounded-lg border transition-colors cursor-pointer ${
+                  className={`flex items-center gap-1.5 text-[12px] px-3 py-1.5 rounded-[10px] border transition-colors cursor-pointer ${
                     thumbs === 'down'
-                      ? 'border-[#FF6B6B]/40 bg-[#FF6B6B]/10 text-[#FF6B6B]'
-                      : 'border-white/[0.08] text-white/35 hover:text-white/70 hover:bg-white/[0.05]'
+                      ? 'border-[var(--md-caution)]/50 bg-[var(--md-caution-dim)] text-[var(--md-caution)]'
+                      : 'border-[var(--md-border)] text-[var(--md-text-tertiary)] hover:text-[var(--md-text-secondary)] hover:bg-[var(--md-surface-2)]'
                   }`}
                   aria-label="Thumbs down"
                 >
@@ -413,7 +412,7 @@ export default function OutputView({
                 </button>
               </div>
               {thumbs && (
-                <span className="text-[11px] text-white/25 ml-auto">Thanks for the feedback</span>
+                <span className="text-[11px] text-[var(--md-text-tertiary)] ml-auto">Thanks for the feedback</span>
               )}
             </div>
             <DataConsent checked={consent} onChange={handleConsent} />

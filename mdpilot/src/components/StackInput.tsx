@@ -63,7 +63,7 @@ export default function StackInput({ value, onChange, detectedStack, onDetect }:
         onChange={handleChange}
         placeholder={'e.g. Next.js + Supabase + Tailwind\nor paste your package.json here…'}
         rows={5}
-        className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] p-4 text-sm font-mono resize-none focus:outline-none focus:border-[#4FACFF]/50 transition-colors text-[var(--md-text)] placeholder:text-white/20"
+        className="w-full rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)] p-4 text-sm font-mono resize-none focus:outline-none focus:border-[var(--md-accent)] transition-colors duration-200 text-[var(--md-text)] placeholder:text-[var(--md-text-tertiary)]"
       />
       {detectedStack.length > 0 && (
         <div className="mt-2.5">
@@ -71,7 +71,7 @@ export default function StackInput({ value, onChange, detectedStack, onDetect }:
           <div className="flex flex-wrap gap-1.5">
             {detectedStack.map(label => (
               <span key={label}
-                className="inline-flex items-center gap-1 text-[11px] font-mono px-2.5 py-1 rounded-full bg-[#2DD4BF]/[0.10] text-[#2DD4BF]">
+                className="inline-flex items-center gap-1 text-[11px] font-mono px-2.5 py-1 rounded-[6px] bg-[var(--md-go-dim)] text-[var(--md-go)]">
                 <svg width="9" height="9" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                 </svg>

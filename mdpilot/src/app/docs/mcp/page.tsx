@@ -11,15 +11,15 @@ export const metadata: Metadata = {
 /* ─── Code block ─────────────────────────────────────────────────────────── */
 function CodeBlock({ children, label }: { children: string; label?: string }) {
   return (
-    <div className="rounded-xl border border-white/[0.08] bg-[#0a0a18] overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2 border-b border-white/[0.06] bg-white/[0.02]">
+    <div className="rounded-xl border border-[var(--md-border)] bg-[var(--md-bg)] overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--md-border)] bg-[var(--md-surface)]">
         <div className="flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#4FACFF]/40" />
-          {label && <span className="text-[10px] font-mono text-white/30 tracking-wide">{label}</span>}
+          <span className="w-1.5 h-1.5 rounded-full bg-[var(--md-accent)]/40" />
+          {label && <span className="text-[10px] font-mono text-[var(--md-text-tertiary)] tracking-wide">{label}</span>}
         </div>
         <CopyButton text={children} variant="docs" />
       </div>
-      <pre className="p-4 text-[12.5px] font-mono leading-relaxed overflow-x-auto text-white/70 whitespace-pre">
+      <pre className="p-4 text-[12.5px] font-mono leading-relaxed overflow-x-auto text-[var(--md-text-secondary)] whitespace-pre">
         <code>{children}</code>
       </pre>
     </div>
@@ -31,7 +31,7 @@ function DocSection({ id, children }: { id: string; children: React.ReactNode })
   return (
     <section id={id} className="scroll-mt-24 pt-10 first:pt-0">
       {children}
-      <div className="mt-8 border-b border-white/[0.05]" />
+      <div className="mt-8 border-b border-[var(--md-border)]" />
     </section>
   );
 }
@@ -113,22 +113,22 @@ export default function McpSetupPage() {
       <div className="mb-10">
         <div className="flex items-center gap-2 mb-4">
           <div className="section-label w-fit">MCP server</div>
-          <span className="text-[9px] font-mono px-1.5 py-0.5 rounded-full bg-[#34D399]/12 text-[#34D399]/75 border border-[#34D399]/20">
+          <span className="text-[9px] font-mono px-1.5 py-0.5 rounded-[5px] bg-[var(--md-go)]/12 text-[var(--md-go)]/75 border border-[var(--md-go)]/20">
             live
           </span>
         </div>
-        <h1 className="text-[clamp(1.6rem,4vw,2.4rem)] font-black text-white tracking-[-0.04em] mb-3 leading-tight">
+        <h1 className="text-[clamp(1.6rem,4vw,2.4rem)] font-semibold text-[var(--md-text)] tracking-[-0.015em] mb-3 leading-tight">
           MDPilot MCP server — setup
         </h1>
-        <p className="text-white/45 text-[15px] leading-relaxed">
+        <p className="text-[var(--md-text-secondary)] text-[15px] leading-relaxed">
           Run MDPilot as an MCP server so your AI agent can generate files, check drift, and optimize
           markdown directly from inside your IDE — without leaving the conversation.
         </p>
       </div>
 
       {/* On-page nav */}
-      <nav aria-label="Page sections" className="mb-10 p-4 rounded-xl border border-white/[0.07] bg-white/[0.02]">
-        <p className="text-[10px] font-mono text-white/25 uppercase tracking-wider mb-3">On this page</p>
+      <nav aria-label="Page sections" className="mb-10 p-4 rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)]">
+        <p className="text-[10px] font-mono text-[var(--md-text-tertiary)] uppercase tracking-wider mb-3">On this page</p>
         <ol className="space-y-1.5">
           {[
             ['what-it-is', 'What it is'],
@@ -141,7 +141,7 @@ export default function McpSetupPage() {
             <li key={id}>
               <a
                 href={`#${id}`}
-                className="text-[13px] text-white/40 hover:text-[#4FACFF]/80 transition-colors"
+                className="text-[13px] text-[var(--md-text-secondary)] hover:text-[var(--md-accent)] transition-colors"
               >
                 {label}
               </a>
@@ -152,8 +152,8 @@ export default function McpSetupPage() {
 
       {/* 1. What it is */}
       <DocSection id="what-it-is">
-        <h2 className="text-[16px] font-bold text-white mb-3">What it is</h2>
-        <p className="text-white/50 text-[14px] leading-relaxed">
+        <h2 className="text-[16px] font-semibold text-[var(--md-text)] mb-3">What it is</h2>
+        <p className="text-[var(--md-text-secondary)] text-[14px] leading-relaxed">
           MDPilot runs as an MCP (Model Context Protocol) server, which means your AI agent can call it as
           a tool directly from Claude Code, Cursor, Windsurf, or Goose — without opening a browser. The key
           advantage: the server reads your actual repo on disk, so generated AGENTS.md, CLAUDE.md, and TASK.md
@@ -163,33 +163,33 @@ export default function McpSetupPage() {
 
       {/* 2. Prerequisites */}
       <DocSection id="prerequisites">
-        <h2 className="text-[16px] font-bold text-white mb-3">Prerequisites</h2>
+        <h2 className="text-[16px] font-semibold text-[var(--md-text)] mb-3">Prerequisites</h2>
         <ul className="space-y-2.5 mb-5">
-          <li className="flex items-start gap-3 p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-            <span className="shrink-0 w-5 h-5 mt-0.5 rounded-full bg-[#4FACFF]/12 border border-[#4FACFF]/25 flex items-center justify-center text-[9px] font-mono font-bold text-[#4FACFF]/70">
+          <li className="flex items-start gap-3 p-3.5 rounded-xl bg-[var(--md-surface)] border border-[var(--md-border)]">
+            <span className="shrink-0 w-5 h-5 mt-0.5 rounded-full bg-[var(--md-accent)]/12 border border-[var(--md-accent)]/25 flex items-center justify-center text-[9px] font-mono font-bold text-[var(--md-accent)]/70">
               1
             </span>
             <div>
-              <p className="text-[13px] font-semibold text-white/80 mb-0.5">Node.js 20+</p>
-              <p className="text-[13px] text-white/55 leading-relaxed">
-                Check with <code className="text-[11px] font-mono bg-white/[0.06] px-1 rounded text-white/55">node --version</code>.
+              <p className="text-[13px] font-semibold text-[var(--md-text-secondary)] mb-0.5">Node.js 20+</p>
+              <p className="text-[13px] text-[var(--md-text-secondary)] leading-relaxed">
+                Check with <code className="text-[11px] font-mono bg-[var(--md-surface-2)] px-1 rounded text-[var(--md-text-secondary)]">node --version</code>.
                 The MCP server is ESM and requires Node 20 or later.
               </p>
             </div>
           </li>
-          <li className="flex items-start gap-3 p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-            <span className="shrink-0 w-5 h-5 mt-0.5 rounded-full bg-[#4FACFF]/12 border border-[#4FACFF]/25 flex items-center justify-center text-[9px] font-mono font-bold text-[#4FACFF]/70">
+          <li className="flex items-start gap-3 p-3.5 rounded-xl bg-[var(--md-surface)] border border-[var(--md-border)]">
+            <span className="shrink-0 w-5 h-5 mt-0.5 rounded-full bg-[var(--md-accent)]/12 border border-[var(--md-accent)]/25 flex items-center justify-center text-[9px] font-mono font-bold text-[var(--md-accent)]/70">
               2
             </span>
             <div>
-              <p className="text-[13px] font-semibold text-white/80 mb-1">An AI API key — any one of these</p>
+              <p className="text-[13px] font-semibold text-[var(--md-text-secondary)] mb-1">An AI API key — any one of these</p>
               <div className="space-y-2 mb-2">
                 {[
                   {
                     key: 'GROQ_API_KEY',
                     label: 'Groq',
                     badge: 'free tier',
-                    badgeColor: '#34D399',
+                    badgeColor: 'var(--md-go)',
                     url: 'https://console.groq.com',
                     urlLabel: 'console.groq.com',
                     note: 'Llama 3.3 70B — fast, generous free tier, recommended.',
@@ -198,7 +198,7 @@ export default function McpSetupPage() {
                     key: 'NVIDIA_API_KEY',
                     label: 'NVIDIA NIM',
                     badge: 'free tier',
-                    badgeColor: '#34D399',
+                    badgeColor: 'var(--md-go)',
                     url: 'https://build.nvidia.com',
                     urlLabel: 'build.nvidia.com',
                     note: 'Llama 3.3 70B via NVIDIA API catalog.',
@@ -207,7 +207,7 @@ export default function McpSetupPage() {
                     key: 'ANTHROPIC_API_KEY',
                     label: 'Anthropic',
                     badge: 'paid',
-                    badgeColor: '#CC785C',
+                    badgeColor: 'var(--md-accent)',
                     url: 'https://console.anthropic.com',
                     urlLabel: 'console.anthropic.com',
                     note: 'Claude 3.5 Haiku.',
@@ -216,30 +216,30 @@ export default function McpSetupPage() {
                     key: 'OPENAI_API_KEY',
                     label: 'OpenAI',
                     badge: 'paid',
-                    badgeColor: '#CC785C',
+                    badgeColor: 'var(--md-accent)',
                     url: 'https://platform.openai.com',
                     urlLabel: 'platform.openai.com',
                     note: 'GPT-4o.',
                   },
                 ].map(({ key, label, badge, badgeColor, url, urlLabel, note }) => (
-                  <div key={key} className="flex items-start gap-2.5 p-2.5 rounded-lg bg-white/[0.025] border border-white/[0.05]">
+                  <div key={key} className="flex items-start gap-2.5 p-2.5 rounded-lg bg-[var(--md-surface)] border border-[var(--md-border)]">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <code className="text-[11px] font-mono text-[#4FACFF]/70">{key}</code>
+                        <code className="text-[11px] font-mono text-[var(--md-accent)]/70">{key}</code>
                         <span
-                          className="text-[9px] font-mono px-1.5 py-0.5 rounded-full border"
+                          className="text-[9px] font-mono px-1.5 py-0.5 rounded-[5px] border"
                           style={{
-                            color: `${badgeColor}cc`,
-                            backgroundColor: `${badgeColor}15`,
-                            borderColor: `${badgeColor}30`,
+                            color: badgeColor,
+                            backgroundColor: `color-mix(in srgb, ${badgeColor} 8%, transparent)`,
+                            borderColor: `color-mix(in srgb, ${badgeColor} 25%, transparent)`,
                           }}
                         >
                           {badge}
                         </span>
                       </div>
-                      <p className="text-[11px] text-white/35 leading-relaxed">
+                      <p className="text-[11px] text-[var(--md-text-tertiary)] leading-relaxed">
                         {note}{' '}
-                        <a href={url} target="_blank" rel="noopener noreferrer" className="text-[#4FACFF]/50 hover:text-[#4FACFF] transition-colors">
+                        <a href={url} target="_blank" rel="noopener noreferrer" className="text-[var(--md-accent)]/80 hover:text-[var(--md-accent)] transition-colors">
                           {urlLabel} →
                         </a>
                       </p>
@@ -247,7 +247,7 @@ export default function McpSetupPage() {
                   </div>
                 ))}
               </div>
-              <p className="text-[11px] text-white/30 leading-relaxed">
+              <p className="text-[11px] text-[var(--md-text-tertiary)] leading-relaxed">
                 The server tries keys in this order: Groq → NVIDIA → Anthropic → OpenAI. Set exactly one.
                 Calls are billed to your key — MDPilot does not proxy them.
               </p>
@@ -256,13 +256,13 @@ export default function McpSetupPage() {
         </ul>
 
         {/* No-key note */}
-        <div className="p-3.5 rounded-xl border border-white/[0.07] bg-white/[0.02]">
-          <p className="text-[12px] text-white/50 leading-relaxed">
-            <span className="text-white/70 font-semibold">No key?</span>{' '}
+        <div className="p-3.5 rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)]">
+          <p className="text-[12px] text-[var(--md-text-tertiary)] leading-relaxed">
+            <span className="text-[var(--md-text-secondary)] font-semibold">No key?</span>{' '}
             The three non-AI tools —{' '}
-            <code className="text-[11px] font-mono bg-white/[0.06] px-1 rounded text-white/55">analyze_project</code>,{' '}
-            <code className="text-[11px] font-mono bg-white/[0.06] px-1 rounded text-white/55">optimize_markdown</code>, and{' '}
-            <code className="text-[11px] font-mono bg-white/[0.06] px-1 rounded text-white/55">check_drift</code>{' '}
+            <code className="text-[11px] font-mono bg-[var(--md-surface-2)] px-1 rounded text-[var(--md-text-secondary)]">analyze_project</code>,{' '}
+            <code className="text-[11px] font-mono bg-[var(--md-surface-2)] px-1 rounded text-[var(--md-text-secondary)]">optimize_markdown</code>, and{' '}
+            <code className="text-[11px] font-mono bg-[var(--md-surface-2)] px-1 rounded text-[var(--md-text-secondary)]">check_drift</code>{' '}
             — work without any key. Only the generation tools need one.
           </p>
         </div>
@@ -270,19 +270,16 @@ export default function McpSetupPage() {
 
       {/* 3. Install + configure */}
       <DocSection id="install">
-        <h2 className="text-[16px] font-bold text-white mb-1">Install &amp; configure</h2>
-        <p className="text-[13px] text-white/40 mb-5 leading-relaxed">
+        <h2 className="text-[16px] font-semibold text-[var(--md-text)] mb-1">Install &amp; configure</h2>
+        <p className="text-[13px] text-[var(--md-text-secondary)] mb-5 leading-relaxed">
           Two methods — npx is the recommended one-liner. From source is for contributors or local dev.
         </p>
 
         {/* ── Fastest setup callout ─────────────────────────────────────────── */}
-        <div className="mb-8 p-5 rounded-2xl border border-[#34D399]/[0.22] bg-[#34D399]/[0.04] relative overflow-hidden">
-          {/* Soft glow */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#34D399]/[0.06] to-transparent pointer-events-none" />
-
+        <div className="mb-8 p-5 rounded-2xl border border-[var(--md-go)]/[0.22] bg-[var(--md-go)]/[0.04] relative overflow-hidden">
           <div className="relative">
             <div className="flex items-center gap-2 mb-3">
-              <span className="inline-flex items-center gap-1.5 text-[9px] font-mono font-bold tracking-widest uppercase px-2 py-0.5 rounded-full bg-[#34D399]/15 text-[#34D399]/80 border border-[#34D399]/25">
+              <span className="inline-flex items-center gap-1.5 text-[9px] font-mono font-bold tracking-widest uppercase px-2 py-0.5 rounded-[5px] bg-[var(--md-go)]/15 text-[var(--md-go)]/80 border border-[var(--md-go)]/25">
                 <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
                   <path d="M13 2L4.09 12.97 11 13l-1 9 8.91-10.97H12L13 2z" />
                 </svg>
@@ -290,61 +287,61 @@ export default function McpSetupPage() {
               </span>
             </div>
 
-            <p className="text-[14px] font-medium text-white/80 leading-snug mb-1">
+            <p className="text-[14px] font-medium text-[var(--md-text-secondary)] leading-snug mb-1">
               One command — detects your editor, gets you a free API key, writes the config.
             </p>
-            <p className="text-[13px] text-white/55 leading-relaxed mb-1">
-              Bring your own key or get a free one: works with <strong className="text-white/75">Groq</strong> (free), <strong className="text-white/75">NVIDIA NIM</strong> (free), <strong className="text-white/75">Anthropic (Claude)</strong>, or <strong className="text-white/75">OpenAI</strong>.
+            <p className="text-[13px] text-[var(--md-text-secondary)] leading-relaxed mb-1">
+              Bring your own key or get a free one: works with <strong className="text-[var(--md-text-secondary)]">Groq</strong> (free), <strong className="text-[var(--md-text-secondary)]">NVIDIA NIM</strong> (free), <strong className="text-[var(--md-text-secondary)]">Anthropic (Claude)</strong>, or <strong className="text-[var(--md-text-secondary)]">OpenAI</strong>.
             </p>
-            <p className="text-[13px] text-white/55 leading-relaxed mb-4">
+            <p className="text-[13px] text-[var(--md-text-secondary)] leading-relaxed mb-4">
               No account on MDPilot. No billing. Your key stays on your machine.
             </p>
 
             {/* Command */}
-            <div className="rounded-xl border border-white/[0.08] bg-[#060612] overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-2 border-b border-white/[0.06] bg-white/[0.02]">
+            <div className="rounded-xl border border-[var(--md-border)] bg-[var(--md-bg)] overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--md-border)] bg-[var(--md-surface)]">
                 <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#34D399]/40" />
-                  <span className="text-[10px] font-mono text-white/25 tracking-wide">terminal</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--md-go)]/40" />
+                  <span className="text-[10px] font-mono text-[var(--md-text-tertiary)] tracking-wide">terminal</span>
                 </div>
                 <CopyButton text="npx -y mdpilot-mcp setup" variant="docs" />
               </div>
-              <pre className="px-4 py-3 text-[13px] font-mono leading-relaxed text-[#34D399]/80 whitespace-pre">
-                <code><span className="text-white/25">$</span> npx -y mdpilot-mcp setup</code>
+              <pre className="px-4 py-3 text-[13px] font-mono leading-relaxed text-[var(--md-go)]/80 whitespace-pre">
+                <code><span className="text-[var(--md-text-tertiary)]">$</span> npx -y mdpilot-mcp setup</code>
               </pre>
             </div>
 
-            <p className="mt-3 text-[11px] text-white/30 leading-relaxed">
+            <p className="mt-3 text-[11px] text-[var(--md-text-tertiary)] leading-relaxed">
               Runs interactively — walks you through getting a free{' '}
               <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer"
-                className="text-[#34D399]/50 hover:text-[#34D399] transition-colors">Groq key</a>
+                className="text-[var(--md-go)]/80 hover:text-[var(--md-go)] transition-colors">Groq key</a>
               {' '}and registers the server for your editor.
               Or pass flags to skip prompts:{' '}
-              <code className="text-[11px] font-mono bg-white/[0.06] px-1 rounded text-white/45">
+              <code className="text-[11px] font-mono bg-[var(--md-surface-2)] px-1 rounded text-[var(--md-text-tertiary)]">
                 --key gsk_… --client claude
               </code>
             </p>
           </div>
         </div>
 
-        <p className="text-[11px] font-mono text-white/20 uppercase tracking-widest mb-5">
+        <p className="text-[11px] font-mono text-[var(--md-text-tertiary)] uppercase tracking-widest mb-5">
           Manual setup
         </p>
 
         {/* Method A */}
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-[11px] font-mono font-bold text-white/50 bg-white/[0.05] border border-white/[0.09] px-2 py-0.5 rounded">
+            <span className="text-[11px] font-mono font-bold text-[var(--md-text-tertiary)] bg-[var(--md-surface-2)] border border-[var(--md-border)] px-2 py-0.5 rounded">
               Method A
             </span>
-            <span className="text-[12px] text-white/50 font-medium">npx</span>
-            <span className="text-[9px] font-mono px-1.5 py-0.5 rounded-full bg-[#34D399]/12 text-[#34D399]/70 border border-[#34D399]/20">
+            <span className="text-[12px] text-[var(--md-text-tertiary)] font-medium">npx</span>
+            <span className="text-[9px] font-mono px-1.5 py-0.5 rounded-[5px] bg-[var(--md-go)]/12 text-[var(--md-go)]/70 border border-[var(--md-go)]/20">
               recommended
             </span>
           </div>
-          <p className="text-[13px] text-white/50 mb-3 leading-relaxed">
+          <p className="text-[13px] text-[var(--md-text-secondary)] mb-3 leading-relaxed">
             Add this block to your client&apos;s MCP config file. Replace{' '}
-            <code className="text-[11px] font-mono bg-white/[0.06] px-1 rounded text-[#4FACFF]/70">gsk_...</code>
+            <code className="text-[11px] font-mono bg-[var(--md-surface-2)] px-1 rounded text-[var(--md-accent)]/70">gsk_...</code>
             {' '}with your actual Groq key (or swap the env key for whichever provider you use). No install step — npx pulls the package automatically.
           </p>
           <CodeBlock label="mcp config (Method A — npx)">{NPN_CONFIG}</CodeBlock>
@@ -353,47 +350,47 @@ export default function McpSetupPage() {
         {/* Method B */}
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-[11px] font-mono font-bold text-white/50 bg-white/[0.05] border border-white/[0.09] px-2 py-0.5 rounded">
+            <span className="text-[11px] font-mono font-bold text-[var(--md-text-tertiary)] bg-[var(--md-surface-2)] border border-[var(--md-border)] px-2 py-0.5 rounded">
               Method B
             </span>
-            <span className="text-[12px] text-white/50 font-medium">From source</span>
-            <span className="text-[9px] font-mono px-1.5 py-0.5 rounded-full bg-white/[0.07] text-white/30 border border-white/[0.09]">
+            <span className="text-[12px] text-[var(--md-text-tertiary)] font-medium">From source</span>
+            <span className="text-[9px] font-mono px-1.5 py-0.5 rounded-[5px] bg-[var(--md-surface-2)] text-[var(--md-text-tertiary)] border border-[var(--md-border)]">
               contributors / local dev
             </span>
           </div>
-          <p className="text-[13px] text-white/50 mb-3 leading-relaxed">
+          <p className="text-[13px] text-[var(--md-text-secondary)] mb-3 leading-relaxed">
             Build the package first, then point the config at the compiled output.
           </p>
           <CodeBlock label="1. Build from source">{BUILD_COMMANDS}</CodeBlock>
           <div className="mt-3">
             <CodeBlock label="2. mcp config (Method B — from source)">{SOURCE_CONFIG}</CodeBlock>
           </div>
-          <p className="text-[13px] text-white/50 mt-2">
-            Replace <code className="text-[11px] font-mono bg-white/[0.06] px-1 rounded text-white/50">/absolute/path/to/packages/mcp/dist/index.js</code> with
+          <p className="text-[13px] text-[var(--md-text-secondary)] mt-2">
+            Replace <code className="text-[11px] font-mono bg-[var(--md-surface-2)] px-1 rounded text-[var(--md-text-tertiary)]">/absolute/path/to/packages/mcp/dist/index.js</code> with
             the actual absolute path on your machine.
           </p>
         </div>
 
         {/* Per-client steps */}
-        <h3 className="text-[14px] font-bold text-white mb-4">Per-client setup</h3>
+        <h3 className="text-[14px] font-semibold text-[var(--md-text)] mb-4">Per-client setup</h3>
         <div className="space-y-4">
 
           {/* Claude Code */}
-          <div className="p-4 rounded-xl border border-white/[0.07] bg-white/[0.02]">
+          <div className="p-4 rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)]">
             <div className="flex items-center gap-2 mb-3">
-              <span className="w-2 h-2 rounded-full bg-[#CC785C]/70" />
-              <span className="text-[13px] font-semibold text-white/75">Claude Code</span>
+              <span className="w-2 h-2 rounded-full bg-[var(--md-accent)]/70" />
+              <span className="text-[13px] font-semibold text-[var(--md-text-secondary)]">Claude Code</span>
             </div>
-            <p className="text-[13px] text-white/55 mb-3">
+            <p className="text-[13px] text-[var(--md-text-secondary)] mb-3">
               Use the CLI shortcut or add the JSON config to{' '}
-              <code className="text-[11px] font-mono bg-white/[0.06] px-1 rounded text-white/55">~/.claude/mcp.json</code>.
+              <code className="text-[11px] font-mono bg-[var(--md-surface-2)] px-1 rounded text-[var(--md-text-secondary)]">~/.claude/mcp.json</code>.
             </p>
             <CodeBlock label="Claude Code CLI">{CLAUDE_CODE_CLI}</CodeBlock>
-            <div className="mt-3 p-3 rounded-lg border border-white/[0.06] bg-white/[0.02]">
-              <p className="text-[11px] text-white/40 leading-relaxed">
-                <span className="text-white/60 font-semibold">Switching from local path to npx?</span>{' '}
+            <div className="mt-3 p-3 rounded-lg border border-[var(--md-border)] bg-[var(--md-surface)]">
+              <p className="text-[11px] text-[var(--md-text-tertiary)] leading-relaxed">
+                <span className="text-[var(--md-text-secondary)] font-semibold">Switching from local path to npx?</span>{' '}
                 Run the CLI command above — it re-registers the connector under the same name{' '}
-                <code className="text-[10px] font-mono bg-white/[0.06] px-1 rounded text-white/55">mdpilot</code>.
+                <code className="text-[10px] font-mono bg-[var(--md-surface-2)] px-1 rounded text-[var(--md-text-secondary)]">mdpilot</code>.
                 Claude reconnects automatically; no need to rename it in the Connectors panel.
               </p>
             </div>
@@ -401,71 +398,71 @@ export default function McpSetupPage() {
               href="https://docs.anthropic.com/en/docs/claude-code/mcp"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 mt-2 text-[11px] text-[#4FACFF]/50 hover:text-[#4FACFF]/80 transition-colors"
+              className="inline-flex items-center gap-1 mt-2 text-[11px] text-[var(--md-accent)]/80 hover:text-[var(--md-accent)] transition-colors"
             >
               Claude Code MCP docs →
             </a>
           </div>
 
           {/* Cursor */}
-          <div className="p-4 rounded-xl border border-white/[0.07] bg-white/[0.02]">
+          <div className="p-4 rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)]">
             <div className="flex items-center gap-2 mb-3">
-              <span className="w-2 h-2 rounded-full bg-[#CDD6F4]/50" />
-              <span className="text-[13px] font-semibold text-white/75">Cursor</span>
+              <span className="w-2 h-2 rounded-full bg-[var(--md-text)]/50" />
+              <span className="text-[13px] font-semibold text-[var(--md-text-secondary)]">Cursor</span>
             </div>
-            <p className="text-[13px] text-white/55 mb-1">
+            <p className="text-[13px] text-[var(--md-text-secondary)] mb-1">
               Open Cursor Settings → MCP → Add new server. Paste the JSON config block from Method A above.
             </p>
             <a
               href="https://docs.cursor.com/context/model-context-protocol"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-[11px] text-[#4FACFF]/50 hover:text-[#4FACFF]/80 transition-colors"
+              className="inline-flex items-center gap-1 text-[11px] text-[var(--md-accent)]/80 hover:text-[var(--md-accent)] transition-colors"
             >
               Cursor MCP docs →
             </a>
           </div>
 
           {/* Windsurf */}
-          <div className="p-4 rounded-xl border border-white/[0.07] bg-white/[0.02]">
+          <div className="p-4 rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)]">
             <div className="flex items-center gap-2 mb-3">
-              <span className="w-2 h-2 rounded-full bg-[#06B6D4]/70" />
-              <span className="text-[13px] font-semibold text-white/75">Windsurf</span>
+              <span className="w-2 h-2 rounded-full bg-[var(--md-go)]/70" />
+              <span className="text-[13px] font-semibold text-[var(--md-text-secondary)]">Windsurf</span>
             </div>
-            <p className="text-[13px] text-white/55 mb-1">
+            <p className="text-[13px] text-[var(--md-text-secondary)] mb-1">
               Open Windsurf Settings → Cascade → MCP Servers. Add a new entry using the JSON config block from Method A above.
             </p>
             <a
               href="https://docs.windsurf.com/windsurf/mcp"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-[11px] text-[#4FACFF]/50 hover:text-[#4FACFF]/80 transition-colors"
+              className="inline-flex items-center gap-1 text-[11px] text-[var(--md-accent)]/80 hover:text-[var(--md-accent)] transition-colors"
             >
               Windsurf MCP docs →
             </a>
           </div>
 
           {/* Goose */}
-          <div className="p-4 rounded-xl border border-white/[0.07] bg-white/[0.02]">
+          <div className="p-4 rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)]">
             <div className="flex items-center gap-2 mb-3">
-              <span className="w-2 h-2 rounded-full bg-[#F59E0B]/70" />
-              <span className="text-[13px] font-semibold text-white/75">Goose</span>
+              <span className="w-2 h-2 rounded-full bg-[var(--md-accent)]/70" />
+              <span className="text-[13px] font-semibold text-[var(--md-text-secondary)]">Goose</span>
             </div>
-            <p className="text-[13px] text-white/55 mb-1">
+            <p className="text-[13px] text-[var(--md-text-secondary)] mb-1">
               Add MDPilot as a stdio extension: set type to{' '}
-              <code className="text-[11px] font-mono bg-white/[0.06] px-1 rounded text-white/55">stdio</code>,
+              <code className="text-[11px] font-mono bg-[var(--md-surface-2)] px-1 rounded text-[var(--md-text-secondary)]">stdio</code>,
               command to{' '}
-              <code className="text-[11px] font-mono bg-white/[0.06] px-1 rounded text-white/55">npx</code>,
+              <code className="text-[11px] font-mono bg-[var(--md-surface-2)] px-1 rounded text-[var(--md-text-secondary)]">npx</code>,
               args to{' '}
-              <code className="text-[11px] font-mono bg-white/[0.06] px-1 rounded text-white/55">["-y", "mdpilot-mcp"]</code>,
+              <code className="text-[11px] font-mono bg-[var(--md-surface-2)] px-1 rounded text-[var(--md-text-secondary)]">["-y", "mdpilot-mcp"]</code>,
               and env to your AI provider key (e.g.{' '}
-              <code className="text-[11px] font-mono bg-white/[0.06] px-1 rounded text-white/55">GROQ_API_KEY</code>).
+              <code className="text-[11px] font-mono bg-[var(--md-surface-2)] px-1 rounded text-[var(--md-text-secondary)]">GROQ_API_KEY</code>).
             </p>
             <a
               href="https://block.github.io/goose/docs/tutorials/custom-extensions"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-[11px] text-[#4FACFF]/50 hover:text-[#4FACFF]/80 transition-colors"
+              className="inline-flex items-center gap-1 text-[11px] text-[var(--md-accent)]/80 hover:text-[var(--md-accent)] transition-colors"
             >
               Goose MCP extensions docs →
             </a>
@@ -476,21 +473,21 @@ export default function McpSetupPage() {
 
       {/* 4. Tools */}
       <DocSection id="tools">
-        <h2 className="text-[16px] font-bold text-white mb-4">The 8 tools</h2>
+        <h2 className="text-[16px] font-semibold text-[var(--md-text)] mb-4">The 8 tools</h2>
         <div className="space-y-2">
           {TOOLS.map((tool, i) => (
             <div
               key={tool.name}
-              className="flex items-start gap-4 p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.04] hover:border-white/[0.09] transition-all duration-150"
+              className="flex items-start gap-4 p-4 rounded-xl bg-[var(--md-surface)] border border-[var(--md-border)] hover:bg-[var(--md-surface-2)] hover:border-[var(--md-border)] transition-all duration-150"
             >
-              <span className="shrink-0 text-[9px] font-mono font-bold text-white/20 mt-0.5 w-4 text-right">
+              <span className="shrink-0 text-[9px] font-mono font-bold text-[var(--md-text-tertiary)] mt-0.5 w-4 text-right">
                 {String(i + 1).padStart(2, '0')}
               </span>
               <div className="min-w-0">
-                <code className="text-[12px] font-mono font-semibold text-[#4FACFF]/75 break-all">
+                <code className="text-[12px] font-mono font-semibold text-[var(--md-accent)]/75 break-all">
                   {tool.name}
                 </code>
-                <p className="text-[13px] text-white/55 leading-relaxed mt-0.5">{tool.desc}</p>
+                <p className="text-[13px] text-[var(--md-text-secondary)] leading-relaxed mt-0.5">{tool.desc}</p>
               </div>
             </div>
           ))}
@@ -499,33 +496,33 @@ export default function McpSetupPage() {
 
       {/* 5. Quick start */}
       <DocSection id="quick-start">
-        <h2 className="text-[16px] font-bold text-white mb-3">Quick start — try it in 60 seconds</h2>
-        <p className="text-[14px] text-white/55 mb-5 leading-relaxed">
+        <h2 className="text-[16px] font-semibold text-[var(--md-text)] mb-3">Quick start — try it in 60 seconds</h2>
+        <p className="text-[14px] text-[var(--md-text-secondary)] mb-5 leading-relaxed">
           Once the server is configured, open any repo in your IDE and try these prompts. Copy and paste them directly into Claude Code, Cursor, or Windsurf.
         </p>
         <div className="space-y-3">
           {[
             {
               label: 'Generate instruction files',
-              accent: '#4FACFF',
+              accent: 'var(--md-accent)',
               prompt: '"Use mdpilot to analyze this project and generate an AGENTS.md. Write it to disk."',
               note: 'Calls analyze_project → generate_md_file. References your real scripts and paths.',
             },
             {
               label: 'Turn a task into a prompt',
-              accent: '#CC785C',
+              accent: 'var(--md-accent)',
               prompt: '"Use mdpilot to turn this ticket into a TASK.md: [paste your ticket here]"',
               note: 'Calls generate_task_file. Pick execution mode: Guide, AI Exec, or Context.',
             },
             {
               label: 'Explain this codebase',
-              accent: '#A855F7',
+              accent: 'var(--md-info)',
               prompt: '"Use mdpilot to generate a WALKTHROUGH.md for src/lib/auth.ts tuned for a new team member."',
               note: 'Calls explain_code. Audience options: ai_agent, team, learner, non_technical.',
             },
             {
               label: 'Check for stale docs',
-              accent: '#2DD4BF',
+              accent: 'var(--md-go)',
               prompt: '"Use mdpilot to check my docs for drift, then patch any stale sections."',
               note: 'Calls check_drift → update_docs. Only rewrites outdated parts.',
             },
@@ -533,15 +530,18 @@ export default function McpSetupPage() {
             <div
               key={label}
               className="p-4 rounded-xl border"
-              style={{ borderColor: `${accent}22`, background: `${accent}08` }}
+              style={{
+                borderColor: `color-mix(in srgb, ${accent} 14%, transparent)`,
+                background: `color-mix(in srgb, ${accent} 3%, transparent)`,
+              }}
             >
               <p className="text-[10px] font-mono uppercase tracking-wider mb-2" style={{ color: `${accent}80` }}>
                 {label}
               </p>
-              <p className="text-[13px] text-white/80 leading-relaxed font-mono mb-2">
+              <p className="text-[13px] text-[var(--md-text-secondary)] leading-relaxed font-mono mb-2">
                 {prompt}
               </p>
-              <p className="text-[11px] text-white/35 leading-relaxed">{note}</p>
+              <p className="text-[11px] text-[var(--md-text-tertiary)] leading-relaxed">{note}</p>
             </div>
           ))}
         </div>
@@ -549,16 +549,16 @@ export default function McpSetupPage() {
 
       {/* 6. Feedback */}
       <section id="feedback" className="scroll-mt-24 pt-10">
-        <div className="p-5 rounded-xl border border-[#A855F7]/[0.18] bg-[#A855F7]/[0.04]">
-          <h2 className="text-[14px] font-bold text-white/80 mb-2">Found a bug or have feedback?</h2>
-          <p className="text-[14px] text-white/55 leading-relaxed mb-3">
+        <div className="p-5 rounded-xl border border-[var(--md-info)]/[0.18] bg-[var(--md-info)]/[0.04]">
+          <h2 className="text-[14px] font-semibold text-[var(--md-text-secondary)] mb-2">Found a bug or have feedback?</h2>
+          <p className="text-[14px] text-[var(--md-text-secondary)] leading-relaxed mb-3">
             This is a pre-launch tester build. If something breaks or you have suggestions, we want to know.
           </p>
           <a
-            href="https://github.com/get-mdpilot/md-pilot/issues/new/choose"
+            href="https://github.com/get-mdpilot/Feedback/issues/new/choose"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-[13px] text-[#A855F7]/70 hover:text-[#A855F7] transition-colors font-medium"
+            className="inline-flex items-center gap-1.5 text-[13px] text-[var(--md-info)]/70 hover:text-[var(--md-info)] transition-colors font-medium"
           >
             Report an issue or share feedback →
             <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
@@ -568,10 +568,10 @@ export default function McpSetupPage() {
         </div>
 
         {/* Back to docs */}
-        <div className="mt-8 pt-6 border-t border-white/[0.05]">
+        <div className="mt-8 pt-6 border-t border-[var(--md-border)]">
           <Link
             href="/docs"
-            className="text-[12px] font-mono text-white/25 hover:text-white/50 transition-colors"
+            className="text-[12px] font-mono text-[var(--md-text-tertiary)] hover:text-[var(--md-text-secondary)] transition-colors"
           >
             ← Back to docs
           </Link>

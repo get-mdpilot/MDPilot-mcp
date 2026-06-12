@@ -57,13 +57,15 @@ Installed via `uipro init --ai claude`. Auto-activates for UI/UX tasks.
 - Stack-specific templates in `data/stacks/nextjs.csv`
 - **Always consult the skill data before writing UI** — use `SKILL.md` for the reasoning engine
 
-### UI design principles for MDPilot
-- Style: modern glassmorphism + subtle 3D depth (perspective transforms, layered shadows)
-- Images: use Unsplash CDN (`images.unsplash.com`) — configured in `next.config.ts`
-- Hero: dark gradient mesh (`#0a0a14` → `#1a1030`) with floating 3D file cards
-- Cards: `backdrop-blur-xl bg-white/5 border border-white/10` for glass effect
-- Hover: CSS perspective tilt (`perspective(800px) rotateY/X`) for depth
-- Never use flat, purely-white card designs — every surface needs depth or texture
+### UI design principles for MDPilot — "Night Approach" system
+The whole site runs on the design system defined in `src/app/globals.css`. Read it before writing UI.
+- Palette: warm ink surfaces (`--md-bg #12100D`, `--md-surface`, `--md-surface-2`), bone text (`--md-text*`), ONE amber accent (`--md-accent #E6A23C`), muted olive success (`--md-go`), clay caution (`--md-caution`), slate info (`--md-info`). Always use the CSS vars, never raw hexes.
+- Type: headlines `font-display` (Fraunces serif, `font-semibold` max — never font-black); body IBM Plex Sans (default); labels/readouts `font-mono` (IBM Plex Mono, uppercase, tracked). The "MDPilot" wordmark next to the logo uses `.font-brand` (B612 — the typeface Airbus designed for cockpit displays); nothing else uses it.
+- Depth: hairline borders (`--md-border`, `--md-border-strong`) and soft paper shadows (`--shadow-sm/md/lg`). NO colored glows, gradients, glassmorphism, particles, shimmer, conic borders, or perspective tilt — these are the "AI-generated" tells the redesign removed.
+- Motion: "instruments move, chrome doesn't" — expressive effects are allowed ONLY as cockpit instruments (split-flap FlipWord, radar scope, approach lights, altimeter, Zulu clock — see `src/components/fx/`); UI chrome stays calm (150–300ms, transform/opacity, hover = 1px lift, never scale). Fraunces is loaded with SOFT/WONK/opsz axes — use `.em-wonk` for the italic amber emphasis word in headlines.
+- Buttons: solid amber `bg-[var(--md-accent)] text-[var(--md-accent-ink)] rounded-[10px]`; ghost = `.btn-ghost`. No pill-shaped buttons.
+- Section labels: `<p className="section-label">` (mono uppercase amber + rule line).
+- Brand voice (aviation, light touch): Task = Flight Deck, Labs = Hangar, Docs = Field Manual, Blog = Logbook, CTA = "File a flight plan", status = "Cleared for takeoff".
 
 ## Stack
 

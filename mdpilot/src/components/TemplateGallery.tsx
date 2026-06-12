@@ -90,11 +90,11 @@ export default function TemplateGallery({ onSelect, onClose }: TemplateGalleryPr
             <button
               key={t.id}
               onClick={() => onSelect(t)}
-              className="text-left rounded-xl border border-white/[0.07] bg-white/[0.03] p-4 hover:border-[#4FACFF]/40 hover:bg-white/[0.05] hover:-translate-y-[1px] transition-all duration-200"
+              className="text-left rounded-[10px] border border-[var(--md-border)] bg-[var(--md-surface)] p-4 hover:border-[var(--md-accent)] hover:bg-[var(--md-surface-2)] hover:-translate-y-[1px] transition-all duration-200 cursor-pointer"
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-semibold" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>{t.name}</span>
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-white/[0.06] text-[var(--md-text-tertiary)] shrink-0">
+                <span className="text-sm font-semibold text-[var(--md-text)]">{t.name}</span>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--md-surface-2)] text-[var(--md-text-tertiary)] shrink-0">
                   {t.files.length} files
                 </span>
               </div>

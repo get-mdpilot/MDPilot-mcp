@@ -30,7 +30,7 @@ export default function ModelSelector({ selected, onChange, available }: ModelSe
 
   return (
     <div>
-      <p className="text-[11px] font-mono text-[var(--md-text-tertiary)] uppercase tracking-wider mb-2">Model</p>
+      <p className="section-label mb-2.5">Model</p>
       <div className="flex flex-wrap gap-2">
         {ORDER.map(id => {
           const p          = PROVIDER_INFO[id];
@@ -42,22 +42,21 @@ export default function ModelSelector({ selected, onChange, available }: ModelSe
               onClick={() => isAvailable && onChange(id)}
               disabled={!isAvailable}
               title={isAvailable ? `${p.label} · ${p.desc}` : `Set up the ${p.desc} API key to use ${p.label}`}
-              className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-sm font-medium border transition-all duration-200 ${
+              className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[10px] text-sm font-medium border transition-all duration-200 ${
                 !isAvailable
-                  ? 'opacity-35 cursor-not-allowed border-white/[0.06] text-[var(--md-text-tertiary)]'
+                  ? 'opacity-35 cursor-not-allowed border-[var(--md-border)] text-[var(--md-text-tertiary)]'
                   : isSelected
-                  ? 'text-white border-transparent'
-                  : 'border-white/[0.10] text-[var(--md-text-secondary)] hover:text-[var(--md-text)] hover:border-white/[0.2]'
+                  ? 'border-[var(--md-accent)] bg-[var(--md-accent-dim)] text-[var(--md-accent)] cursor-pointer'
+                  : 'border-[var(--md-border-strong)] text-[var(--md-text-secondary)] hover:text-[var(--md-text)] hover:border-[var(--md-accent)] cursor-pointer'
               }`}
-              style={isSelected && isAvailable ? { background: p.color, boxShadow: `0 0 16px ${p.color}55` } : undefined}
             >
-              <span style={!isSelected && isAvailable ? { color: p.color } : undefined}>{p.icon}</span>
+              <span>{p.icon}</span>
               {p.label}
             </button>
           );
         })}
       </div>
-      <p className="text-[11px] text-[var(--md-text-tertiary)] mt-2">
+      <p className="text-[11px] text-[var(--md-text-secondary)] mt-2.5">
         Using <span className="font-mono">{info.model}</span> · {info.desc}
       </p>
     </div>

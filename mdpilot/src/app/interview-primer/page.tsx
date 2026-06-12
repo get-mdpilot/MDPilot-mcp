@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Lightbulb } from 'lucide-react';
 import { LabsBreadcrumb } from '@/components/ui/labs-breadcrumb';
 
 type Level = 'junior' | 'mid' | 'senior' | 'staff';
@@ -56,38 +57,38 @@ export default function InterviewPrimerPage() {
 
   if (output) {
     return (
-      <div className="min-h-screen bg-[var(--md-dark-2)] px-4 sm:px-8 py-12">
+      <div className="min-h-screen bg-[var(--md-bg)] px-4 sm:px-8 py-12">
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-xl font-semibold">Interview Primer</h1>
+              <h1 className="font-display font-semibold text-xl">Interview Primer</h1>
               <p className="text-sm text-[var(--md-text-secondary)] mt-0.5">{role} · {LEVEL_OPTIONS.find(l => l.id === level)?.label}</p>
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setOutput(null)}
-                className="text-sm text-[var(--md-text-tertiary)] hover:text-[var(--md-text)] transition-colors px-3 py-1.5"
+                className="text-sm text-[var(--md-text-secondary)] hover:text-[var(--md-text)] transition-colors px-3 py-1.5 cursor-pointer"
               >
                 ← Back
               </button>
               <button
                 onClick={() => void handleCopy()}
-                className="text-sm bg-[#4FACFF]/80 text-white rounded-lg px-4 py-1.5 hover:bg-[#4FACFF] transition-colors"
+                className="text-sm bg-[var(--md-accent)] text-[var(--md-accent-ink)] font-semibold rounded-[10px] px-4 py-1.5 hover:bg-[var(--md-accent-strong)] hover:-translate-y-px transition-all duration-200 shadow-[var(--shadow-sm)] cursor-pointer"
               >
                 {copied ? 'Copied!' : 'Copy prompt'}
               </button>
             </div>
           </div>
 
-          <div className="rounded-xl border border-[var(--md-blue)]/20 bg-[var(--md-blue)]/5 px-4 py-3 mb-4 flex items-start gap-2">
-            <span className="text-sm mt-0.5">💡</span>
+          <div className="rounded-[var(--md-radius)] border border-[var(--md-info)]/40 bg-[var(--md-info-dim)] px-4 py-3 mb-4 flex items-start gap-2">
+            <Lightbulb size={14} className="text-[var(--md-info)] mt-0.5 shrink-0" aria-hidden />
             <p className="text-xs text-[var(--md-text-secondary)] leading-relaxed">
               Copy this prompt and paste it into Claude, ChatGPT, or any AI assistant before your interview. It sets the AI up as your personal interview coach.
             </p>
           </div>
 
-          <div className="rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)] overflow-hidden">
-            <div className="px-4 py-2.5 border-b border-white/8 flex items-center gap-2">
+          <div className="rounded-[var(--md-radius)] border border-[var(--md-border)] bg-[var(--md-surface)] overflow-hidden">
+            <div className="px-4 py-2.5 border-b border-[var(--md-border)] flex items-center gap-2">
               <span className="text-xs font-mono text-[var(--md-text-tertiary)]">Interview coach prompt</span>
               <span className="ml-auto text-xs text-[var(--md-text-tertiary)]">{output.split(' ').length} words</span>
             </div>
@@ -107,16 +108,14 @@ export default function InterviewPrimerPage() {
   // ── Input form ────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-[var(--md-dark-2)] px-4 sm:px-8 py-12">
+    <div className="min-h-screen bg-[var(--md-bg)] px-4 sm:px-8 py-12">
       <LabsBreadcrumb page="Interview Primer" />
       <div className="max-w-xl mx-auto">
 
         {/* Header */}
         <div className="mb-8">
-          <div className="inline-flex items-center gap-2 text-xs font-mono px-2.5 py-1 rounded-full bg-[#4FACFF]/10 text-[#4FACFF] border border-[#4FACFF]/20 mb-3">
-            Interview primer
-          </div>
-          <h1 className="text-2xl font-semibold mb-1">Generate your AI interview coach</h1>
+          <p className="section-label mb-3">Interview primer</p>
+          <h1 className="font-display font-semibold text-2xl mb-1">Generate your AI interview coach</h1>
           <p className="text-sm text-[var(--md-text-secondary)]">
             Creates a ready-to-paste prompt that turns any AI model into a personalised interview coach for your specific role and level.
           </p>
@@ -125,14 +124,14 @@ export default function InterviewPrimerPage() {
         {/* Role input */}
         <div className="mb-5">
           <label className="block text-xs font-medium text-[var(--md-text-secondary)] mb-2">
-            Role title <span className="text-[var(--md-coral)]">*</span>
+            Role title <span className="text-[var(--md-caution)]">*</span>
           </label>
           <input
             type="text"
             value={role}
             onChange={e => setRole(e.target.value)}
             placeholder="e.g. Senior Frontend Engineer, Backend Engineer — Python, Staff SRE"
-            className="w-full rounded-xl border border-white/8 bg-white/[0.02] px-4 py-3 text-sm focus:outline-none focus:border-[#4FACFF]/50 transition-colors text-[var(--md-text)] placeholder:text-white/20"
+            className="w-full rounded-[var(--md-radius)] border border-[var(--md-border)] bg-[var(--md-surface)] px-4 py-3 text-sm focus:outline-none focus:border-[var(--md-accent)] transition-colors text-[var(--md-text)] placeholder:text-[var(--md-text-tertiary)]"
             autoFocus
           />
         </div>
@@ -147,20 +146,20 @@ export default function InterviewPrimerPage() {
                 <button
                   key={opt.id}
                   onClick={() => setLevel(opt.id)}
-                  className={`flex items-center gap-3 rounded-xl border p-3.5 text-left transition-all ${
+                  className={`flex items-center gap-3 rounded-[var(--md-radius)] border p-3.5 text-left transition-all duration-200 cursor-pointer ${
                     active
-                      ? 'border-[#4FACFF]/50 bg-[#4FACFF]/[0.07]'
-                      : 'border-white/8 bg-white/[0.02] hover:border-white/15 hover:bg-white/[0.04]'
+                      ? 'border-[var(--md-accent)] bg-[var(--md-accent-dim)]'
+                      : 'border-[var(--md-border)] bg-[var(--md-surface)] hover:border-[var(--md-border-strong)] hover:bg-[var(--md-surface-2)]'
                   }`}
                 >
                   <div className={`w-3.5 h-3.5 rounded-full border-2 shrink-0 flex items-center justify-center transition-all ${
-                    active ? 'border-[#4FACFF] bg-[#4FACFF]' : 'border-white/20'
+                    active ? 'border-[var(--md-accent)] bg-[var(--md-accent)]' : 'border-[var(--md-border-strong)]'
                   }`}>
-                    {active && <div className="w-1 h-1 rounded-full bg-white" />}
+                    {active && <div className="w-1 h-1 rounded-full bg-[var(--md-accent-ink)]" />}
                   </div>
                   <div>
                     <p className={`text-xs font-semibold ${active ? 'text-[var(--md-text)]' : 'text-[var(--md-text-secondary)]'}`}>{opt.label}</p>
-                    <p className={`text-[11px] ${active ? 'text-[var(--md-text-secondary)]' : 'text-[var(--md-text-tertiary)]'}`}>{opt.desc}</p>
+                    <p className="text-[11px] text-[var(--md-text-secondary)]">{opt.desc}</p>
                   </div>
                 </button>
               );
@@ -178,7 +177,7 @@ export default function InterviewPrimerPage() {
             onChange={e => setJd(e.target.value)}
             placeholder={"Paste the job description here.\n\nThe AI coach will tailor questions to the specific technologies, responsibilities, and scope mentioned."}
             rows={7}
-            className="w-full rounded-xl border border-white/8 bg-white/[0.02] p-4 text-sm font-mono resize-none focus:outline-none focus:border-[#4FACFF]/50 transition-colors text-[var(--md-text)] placeholder:text-white/20 leading-relaxed"
+            className="w-full rounded-[var(--md-radius)] border border-[var(--md-border)] bg-[var(--md-surface)] p-4 text-sm font-mono resize-none focus:outline-none focus:border-[var(--md-accent)] transition-colors text-[var(--md-text)] placeholder:text-[var(--md-text-tertiary)] leading-relaxed"
           />
         </div>
 
@@ -186,19 +185,19 @@ export default function InterviewPrimerPage() {
         <button
           onClick={() => void handleGenerate()}
           disabled={!canGenerate || isGenerating}
-          className={`w-full rounded-xl py-3 text-sm font-semibold transition-all ${
+          className={`w-full rounded-[10px] py-3 text-sm font-semibold transition-all duration-200 ${
             canGenerate && !isGenerating
-              ? 'bg-[#4FACFF]/80 text-white hover:bg-[#4FACFF]'
-              : 'bg-white/5 text-[var(--md-text-tertiary)] cursor-not-allowed'
+              ? 'bg-[var(--md-accent)] text-[var(--md-accent-ink)] hover:bg-[var(--md-accent-strong)] hover:-translate-y-px shadow-[var(--shadow-sm)] cursor-pointer'
+              : 'bg-[var(--md-surface-2)] text-[var(--md-text-tertiary)] cursor-not-allowed'
           }`}
         >
           {isGenerating ? (
             <span className="flex items-center justify-center gap-2">
-              <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+              <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24" aria-hidden>
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
               </svg>
-              Building your interview coach…
+              In flight… building your interview coach
             </span>
           ) : (
             'Generate interview primer'
@@ -210,14 +209,14 @@ export default function InterviewPrimerPage() {
         )}
 
         {error && (
-          <div className="mt-4 rounded-xl border border-[var(--md-coral)]/30 bg-[var(--md-coral-light)] px-4 py-3">
-            <p className="text-sm text-[var(--md-coral)] font-medium mb-0.5">Generation failed</p>
-            <p className="text-xs text-[var(--md-coral)]">{error}</p>
+          <div className="mt-4 rounded-[var(--md-radius)] border border-[var(--md-caution)]/40 bg-[var(--md-caution-dim)] px-4 py-3">
+            <p className="text-sm text-[var(--md-caution)] font-medium mb-0.5">Generation failed</p>
+            <p className="text-xs text-[var(--md-text-secondary)]">{error}</p>
           </div>
         )}
 
         {/* What you get */}
-        <div className="mt-8 rounded-xl border border-white/8 bg-white/[0.02] p-4">
+        <div className="mt-8 rounded-[var(--md-radius)] border border-[var(--md-border)] bg-[var(--md-surface)] p-4">
           <p className="text-xs font-medium text-[var(--md-text-secondary)] mb-3">What you get</p>
           <div className="space-y-2">
             {[
@@ -229,10 +228,10 @@ export default function InterviewPrimerPage() {
               'A structured practice session you can run with any AI',
             ].map(item => (
               <div key={item} className="flex items-start gap-2.5">
-                <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} className="text-[#4FACFF]/60 shrink-0 mt-0.5">
+                <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} className="text-[var(--md-go)] shrink-0 mt-0.5" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                 </svg>
-                <span className="text-[11px] text-[var(--md-text-tertiary)]">{item}</span>
+                <span className="text-[11px] text-[var(--md-text-secondary)]">{item}</span>
               </div>
             ))}
           </div>

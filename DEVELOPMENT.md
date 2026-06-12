@@ -30,7 +30,7 @@ mdpilot/
 │   │   ├── image-to-prompt/page.tsx        # Image → generation prompt
 │   │   ├── interview-primer/page.tsx        # Role + JD → AI coach prompt
 │   │   ├── labs/page.tsx                   # Labs hub
-│   │   ├── atmosphere/page.tsx             # 3D scroll-driven visual (Three.js)
+│   │   ├── atmosphere/page.tsx             # Night Approach design study — six design decisions
 │   │   ├── blog/[slug]/page.tsx            # Blog / long-form content
 │   │   ├── docs/                           # Docs hub (11 pages)
 │   │   │   ├── layout.tsx                  # Sidebar with 4 groups
@@ -58,6 +58,8 @@ mdpilot/
 │   │       ├── providers/route.ts          # AI provider health-check
 │   │       └── admin/prompts/route.ts      # Prompt admin (password-gated)
 │   ├── components/
+│   │   ├── Hero.tsx                        # Night Approach hero — FlipWord, flight plan card, runway
+│   │   ├── Nav.tsx                         # Navigation — aviation callsigns, ZuluClock, "File a flight plan" CTA
 │   │   ├── OutputView.tsx                  # Shared split-pane output (all modes)
 │   │   ├── Stepper.tsx                     # Wizard progress + validation
 │   │   ├── TokenMeter.tsx                  # Before/after token counts + per-pass log
@@ -69,15 +71,14 @@ mdpilot/
 │   │   ├── FileSelector.tsx                # File type selector
 │   │   ├── StackInput.tsx                  # Tech stack autocomplete
 │   │   ├── MarkdownEditor.tsx              # CodeMirror 6 wrapper
-│   │   ├── ModesSection.tsx                # Landing modes showcase
-│   │   ├── GlowCursor.tsx                  # Cursor glow effect
-│   │   ├── MouseHero.tsx                   # Mouse-tracking hero
-│   │   ├── MountainBackground.tsx          # SVG mountain scene
-│   │   ├── StatsCounterClient.tsx          # Animated stats counter
-│   │   ├── StreamingDemo.tsx               # Live streaming token demo
-│   │   ├── TokenVizClient.tsx              # Token visualization
 │   │   ├── DataConsent.tsx                 # Cookie/telemetry consent
-│   │   └── Nav.tsx                         # Navigation
+│   │   └── fx/                             # Cockpit instrument components ("instruments move, chrome doesn't")
+│   │       ├── FlipWord.tsx                # Split-flap departures board — word cycler
+│   │       ├── ZuluClock.tsx               # Live UTC clock (ticks every second)
+│   │       ├── Altimeter.tsx               # Scroll-driven altitude readout (FL35000 → WHEELS DOWN)
+│   │       ├── RadarScope.tsx              # Pure CSS rotating radar sweep with blips
+│   │       ├── ApproachLights.tsx          # Sequenced approach lighting strobes before CTA
+│   │       └── Reveal.tsx                  # IntersectionObserver scroll reveal
 │   ├── lib/
 │   │   ├── ai-client.ts                    # Multi-provider wrapper (Claude/GPT/Gemini/Groq/NVIDIA)
 │   │   ├── anthropic.ts                    # Anthropic client (server-side only)
@@ -253,14 +254,15 @@ Six cross-domain rules baked into `src/lib/prompts/task.ts` after real-world QA 
 |---|---|---|
 | Framework | Next.js 16 (App Router) | Server components + API routes |
 | Language | TypeScript strict | |
-| Styling | Tailwind CSS v4 | Dark-only glassmorphism system — no `dark:` variants |
+| Styling | Tailwind CSS v4 | Night Approach system — warm ink, Fraunces + IBM Plex, no glassmorphism, no `dark:` variants |
 | AI SDKs | `@anthropic-ai/sdk` + `openai` + `@google/generative-ai` + `groq-sdk` | NVIDIA NIM reuses `openai` with custom baseURL |
 | Editor | CodeMirror 6 | `@codemirror/lang-markdown` — not legacy CM5 |
 | Token counting | `js-tiktoken` | Browser-safe — not full `tiktoken` (needs WASM) |
 | File export | `jszip` + `file-saver` | |
 | Markdown render | `react-markdown` + `remark-gfm` | |
 | File conversion | `markitdown` CLI (Python `pipx`) | PDF, DOCX, CSV, HTML → markdown |
-| 3D / animation | `three.js` + `lenis` | |
+| Animation | `motion` (Framer Motion v12) | Cockpit instrument effects in `src/components/fx/` |
+| 3D | `three.js` | Available for future 3D effects |
 | Database | Supabase | Analytics, prompt versioning, feedback |
 
 ### MCP server
@@ -286,8 +288,9 @@ GOOGLE_API_KEY=...             # optional
 GROQ_API_KEY=gsk_...           # optional — free tier
 NVIDIA_API_KEY=nvapi-...       # optional — free tier
 
-SUPABASE_URL=https://....supabase.co
-SUPABASE_ANON_KEY=...
+NEXT_PUBLIC_SUPABASE_URL=https://....supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+SUPABASE_SERVICE_ROLE_KEY=...  # server-side only — seed/promote scripts + admin route
 ADMIN_PASSWORD=changeme        # gates /api/admin/prompts
 ```
 
@@ -309,8 +312,8 @@ GROQ_API_KEY=gsk_...           # free — recommended
 ### Web app
 
 ```bash
-git clone https://github.com/get-mdpilot/md-pilot
-cd md-pilot/mdpilot
+git clone https://github.com/get-mdpilot/MDPilot-mcp
+cd MDPilot-mcp/mdpilot
 npm install
 cp .env.example .env.local
 # fill in at least one AI key

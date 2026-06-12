@@ -36,19 +36,19 @@ export default function ExplainDocsPage() {
 
       <div className="mb-8">
         <div className="section-label mb-4 w-fit">Labs</div>
-        <h1 className="text-[clamp(1.6rem,4vw,2.4rem)] font-black text-white tracking-[-0.04em] mb-3 leading-tight">
+        <h1 className="text-[clamp(1.6rem,4vw,2.4rem)] font-semibold text-[var(--md-text)] tracking-[-0.015em] mb-3 leading-tight">
           Explain mode
         </h1>
-        <p className="text-white/45 text-[15px] leading-relaxed">
+        <p className="text-[var(--md-text-secondary)] text-[15px] leading-relaxed">
           Paste any code and choose who will read it — Explain mode generates a{' '}
-          <code className="text-[12px] font-mono bg-white/[0.06] px-1.5 py-0.5 rounded text-white/60">WALKTHROUGH.md</code>{' '}
+          <code className="text-[12px] font-mono bg-[var(--md-surface-2)] px-1.5 py-0.5 rounded text-[var(--md-text-secondary)]">WALKTHROUGH.md</code>{' '}
           tuned to that specific audience.
         </p>
       </div>
 
       {/* When to use */}
-      <div className="mb-8 p-4 rounded-xl border border-white/[0.07] bg-white/[0.02]">
-        <h2 className="text-[13px] font-semibold text-white/70 mb-2">When to use it</h2>
+      <div className="mb-8 p-4 rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)]">
+        <h2 className="text-[13px] font-semibold text-[var(--md-text-secondary)] mb-2">When to use it</h2>
         <ul className="space-y-1.5">
           {[
             'Onboarding a new developer — explain a complex module without a 1:1 session',
@@ -57,8 +57,8 @@ export default function ExplainDocsPage() {
             'Creating a WALKTHROUGH.md for an agent to orient itself in an unfamiliar codebase',
           ].map((item, i) => (
             <li key={i} className="flex items-start gap-2">
-              <span className="w-1 h-1 rounded-full bg-[#F97316]/60 mt-2 shrink-0" />
-              <span className="text-[12px] text-white/45 leading-relaxed">{item}</span>
+              <span className="w-1 h-1 rounded-full bg-[var(--md-accent)]/60 mt-2 shrink-0" />
+              <span className="text-[12px] text-[var(--md-text-tertiary)] leading-relaxed">{item}</span>
             </li>
           ))}
         </ul>
@@ -66,7 +66,7 @@ export default function ExplainDocsPage() {
 
       {/* How to */}
       <div className="mb-8">
-        <h2 className="text-[15px] font-bold text-white mb-4">How to use it</h2>
+        <h2 className="text-[15px] font-semibold text-[var(--md-text)] mb-4">How to use it</h2>
         <div className="space-y-3">
           {[
             { n: '1', title: 'Paste your code', desc: 'Paste a file, a function, a component, a directory listing, or any block of code. Minimum 30 characters. There\'s no maximum — paste as much as you need explained.' },
@@ -74,12 +74,12 @@ export default function ExplainDocsPage() {
             { n: '3', title: 'Generate and copy', desc: 'The walkthrough is rendered in the output — copy it or download as a .md file. Save it as WALKTHROUGH.md in the relevant directory.' },
           ].map(step => (
             <div key={step.n} className="flex items-start gap-3">
-              <span className="shrink-0 w-6 h-6 rounded-full bg-[#F97316]/10 border border-[#F97316]/18 flex items-center justify-center text-[10px] font-mono font-bold text-[#F97316]/55 mt-0.5">
+              <span className="shrink-0 w-6 h-6 rounded-full bg-[var(--md-accent)]/10 border border-[var(--md-accent)]/18 flex items-center justify-center text-[10px] font-mono font-bold text-[var(--md-accent)]/80 mt-0.5">
                 {step.n}
               </span>
               <div>
-                <p className="text-[13px] font-semibold text-white/70 mb-0.5">{step.title}</p>
-                <p className="text-[12px] text-white/40 leading-relaxed">{step.desc}</p>
+                <p className="text-[13px] font-semibold text-[var(--md-text-secondary)] mb-0.5">{step.title}</p>
+                <p className="text-[12px] text-[var(--md-text-tertiary)] leading-relaxed">{step.desc}</p>
               </div>
             </div>
           ))}
@@ -88,32 +88,32 @@ export default function ExplainDocsPage() {
 
       {/* Audiences */}
       <div className="mb-8">
-        <h2 className="text-[15px] font-bold text-white mb-4">The four audiences</h2>
+        <h2 className="text-[15px] font-semibold text-[var(--md-text)] mb-4">The four audiences</h2>
         <div className="space-y-2.5">
           {AUDIENCES.map(a => (
-            <div key={a.id} className="p-4 rounded-xl border border-white/[0.07] bg-white/[0.02]">
-              <p className="text-[13px] font-semibold text-white/70 mb-1">{a.label}</p>
-              <p className="text-[12px] text-white/40 leading-relaxed">{a.desc}</p>
+            <div key={a.id} className="p-4 rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)]">
+              <p className="text-[13px] font-semibold text-[var(--md-text-secondary)] mb-1">{a.label}</p>
+              <p className="text-[12px] text-[var(--md-text-tertiary)] leading-relaxed">{a.desc}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* MCP note */}
-      <div className="p-4 rounded-xl border border-[#34D399]/[0.15] bg-[#34D399]/[0.03] mb-6">
-        <p className="text-[12px] text-white/45 leading-relaxed">
-          <span className="text-[#34D399]/70 font-semibold">Via MCP:</span> Use the{' '}
-          <code className="text-[11px] font-mono bg-white/[0.06] px-1 rounded text-white/55">explain_code</code> tool
+      <div className="p-4 rounded-xl border border-[var(--md-go)]/[0.15] bg-[var(--md-go)]/[0.03] mb-6">
+        <p className="text-[12px] text-[var(--md-text-tertiary)] leading-relaxed">
+          <span className="text-[var(--md-go)]/70 font-semibold">Via MCP:</span> Use the{' '}
+          <code className="text-[11px] font-mono bg-[var(--md-surface-2)] px-1 rounded text-[var(--md-text-secondary)]">explain_code</code> tool
           and pass a file path or directory path — the server reads the actual files from your repo.{' '}
-          <Link href="/docs/mcp" className="text-[#4FACFF]/60 hover:text-[#4FACFF] transition-colors">MCP setup →</Link>
+          <Link href="/docs/mcp" className="text-[var(--md-accent)]/60 hover:text-[var(--md-accent)] transition-colors">MCP setup →</Link>
         </p>
       </div>
 
-      <div className="pt-6 border-t border-white/[0.05] flex items-center gap-4">
-        <Link href="/docs/generate" className="text-[12px] font-mono text-white/25 hover:text-white/50 transition-colors">
+      <div className="pt-6 border-t border-[var(--md-border)] flex items-center gap-4">
+        <Link href="/docs/generate" className="text-[12px] font-mono text-[var(--md-text-tertiary)] hover:text-[var(--md-text-secondary)] transition-colors">
           ← Generate mode
         </Link>
-        <Link href="/docs/convert" className="text-[12px] font-mono text-white/25 hover:text-white/50 transition-colors">
+        <Link href="/docs/convert" className="text-[12px] font-mono text-[var(--md-text-tertiary)] hover:text-[var(--md-text-secondary)] transition-colors">
           Convert mode →
         </Link>
       </div>

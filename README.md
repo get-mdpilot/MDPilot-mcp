@@ -101,8 +101,8 @@ Accepted keys (tried in order — Groq and NVIDIA are free):
 ## Quick local setup
 
 ```bash
-git clone https://github.com/get-mdpilot/md-pilot
-cd md-pilot/mdpilot
+git clone https://github.com/get-mdpilot/MDPilot-mcp
+cd MDPilot-mcp/mdpilot
 npm install
 cp .env.example .env.local   # add at least one AI key
 npm run dev                   # http://localhost:3000
@@ -128,6 +128,6 @@ Next.js 16 · TypeScript · Tailwind CSS v4 · Supabase · `@modelcontextprotoco
 ## Legal
 
 Operated by [Viveon Gizit Pvt Ltd](https://mdpilot.in) · Bengaluru, India — Product Owner: Mohan  
-[Privacy Policy](https://mdpilot.in/privacy) · [Terms of Service](https://mdpilot.in/terms) · [Report an issue](https://github.com/get-mdpilot/md-pilot/issues/new/choose)
+[Privacy Policy](https://mdpilot.in/privacy) · [Terms of Service](https://mdpilot.in/terms) · [Report an issue](https://github.com/get-mdpilot/Feedback/issues/new/choose)
 
 MIT license

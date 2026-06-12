@@ -36,7 +36,7 @@ export function CopyButton({ text, label = 'Copy', variant = 'seo', className }:
         onClick={handleCopy}
         aria-label={copied ? 'Copied' : 'Copy to clipboard'}
         className={`flex items-center gap-1 text-[10px] font-mono transition-all cursor-pointer ${
-          copied ? 'text-[#34D399]/80' : 'text-white/25 hover:text-white/60'
+          copied ? 'text-[var(--md-go)]' : 'text-[var(--md-text-tertiary)] hover:text-[var(--md-text-secondary)]'
         } ${className ?? ''}`}
       >
         {copied ? (
