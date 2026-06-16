@@ -56,9 +56,6 @@ export default function ModelSelector({ selected, onChange, available }: ModelSe
           );
         })}
       </div>
-      <p className="text-[11px] text-[var(--md-text-secondary)] mt-2.5">
-        Using <span className="font-mono">{info.model}</span> · {info.desc}
-      </p>
     </div>
   );
 }
