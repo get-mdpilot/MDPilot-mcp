@@ -442,6 +442,27 @@ export default function McpSetupPage() {
             </a>
           </div>
 
+          {/* VS Code / Cursor / Windsurf — Extension */}
+          <div className="p-4 rounded-xl border border-[var(--md-info)]/[0.22] bg-[var(--md-info)]/[0.03]">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-2 h-2 rounded-full bg-[var(--md-info)]/70" />
+              <span className="text-[13px] font-semibold text-[var(--md-text-secondary)]">VS Code / Cursor / Windsurf — Extension</span>
+              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded-[5px] bg-[var(--md-go)]/12 text-[var(--md-go)]/70 border border-[var(--md-go)]/20">new</span>
+            </div>
+            <p className="text-[13px] text-[var(--md-text-secondary)] mb-3 leading-relaxed">
+              Rather than configuring the MCP server, you can install the{' '}
+              <strong className="text-[var(--md-text)]">MDPilot VS Code extension</strong> — available on the VS Code Marketplace and compatible with Cursor and Windsurf.
+              No JSON config required: install, add your Groq key in settings, and press{' '}
+              <kbd className="text-[12px] font-mono bg-[var(--md-surface-2)] border border-[var(--md-border)] px-1 py-0.5 rounded text-[var(--md-text-secondary)]">Ctrl+Shift+P</kbd>.
+            </p>
+            <Link
+              href="/docs/vscode"
+              className="inline-flex items-center gap-1 text-[11px] text-[var(--md-info)]/70 hover:text-[var(--md-info)] transition-colors"
+            >
+              VS Code extension setup →
+            </Link>
+          </div>
+
           {/* Goose */}
           <div className="p-4 rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)]">
             <div className="flex items-center gap-2 mb-3">

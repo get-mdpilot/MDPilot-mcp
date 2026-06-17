@@ -1,0 +1,134 @@
+{
+  "name": "mdpilot",
+  "displayName": "MDPilot",
+  "description": "Give your AI agent the perfect starting point — generate AGENTS.md, CLAUDE.md, and expert-grade task prompts from inside your editor.",
+  "version": "0.1.2",
+  "publisher": "get-mdpilot",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["AI", "Other"],
+  "keywords": ["mcp", "agents", "claude", "cursor", "ai", "documentation", "agents.md"],
+  "icon": "assets/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/get-mdpilot/MDPilot-mcp"
+  },
+  "homepage": "https://mdpilot.in",
+  "activationEvents": ["onStartupFinished"],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "mdpilot.generateAgents",
+        "title": "MDPilot: Generate AGENTS.md",
+        "icon": "$(robot)"
+      },
+      {
+        "command": "mdpilot.generateClaude",
+        "title": "MDPilot: Generate CLAUDE.md"
+      },
+      {
+        "command": "mdpilot.generateReadme",
+        "title": "MDPilot: Generate README.md"
+      },
+      {
+        "command": "mdpilot.generateTask",
+        "title": "MDPilot: Generate Task Prompt"
+      },
+      {
+        "command": "mdpilot.checkDrift",
+        "title": "MDPilot: Check Docs for Drift",
+        "icon": "$(sync)"
+      },
+      {
+        "command": "mdpilot.saveContext",
+        "title": "MDPilot: Save Session Context"
+      },
+      {
+        "command": "mdpilot.loadContext",
+        "title": "MDPilot: Load Session Context"
+      },
+      {
+        "command": "mdpilot.setup",
+        "title": "MDPilot: Setup (get a free API key)"
+      },
+      {
+        "command": "mdpilot.openPanel",
+        "title": "MDPilot: Open Panel",
+        "icon": "$(book)"
+      },
+      {
+        "command": "mdpilot.clearKey",
+        "title": "MDPilot: Clear stored API key"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "mdpilot",
+          "title": "MDPilot",
+          "icon": "assets/icon-sidebar.svg"
+        }
+      ]
+    },
+    "views": {
+      "mdpilot": [
+        {
+          "type": "webview",
+          "id": "mdpilot.panel",
+          "name": "MDPilot"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "MDPilot",
+      "properties": {
+        "mdpilot.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Your AI provider key (Groq recommended — free at console.groq.com/keys). Can also be set via GROQ_API_KEY environment variable."
+        },
+        "mdpilot.provider": {
+          "type": "string",
+          "enum": ["groq", "nvidia", "anthropic", "openai"],
+          "default": "groq",
+          "description": "AI provider to use. Groq and NVIDIA have free tiers."
+        },
+        "mdpilot.autoCheckDrift": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically check for doc drift when opening a workspace."
+        }
+      }
+    },
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "mdpilot.generateAgents",
+          "group": "mdpilot"
+        },
+        {
+          "command": "mdpilot.checkDrift",
+          "group": "mdpilot"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "lint": "eslint src"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/vscode": "^1.85.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1"
+  }
+}

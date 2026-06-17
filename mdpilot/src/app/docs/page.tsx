@@ -25,9 +25,9 @@ export default function DocsPage() {
         </p>
       </div>
 
-      {/* Two ways card */}
+      {/* Three ways card */}
       <div className="mb-12">
-        <p className="text-[12px] font-mono text-[var(--md-text-tertiary)] uppercase tracking-wider mb-5">Two ways to use it</p>
+        <p className="text-[12px] font-mono text-[var(--md-text-tertiary)] uppercase tracking-wider mb-5">Three ways to use it</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
           {/* Browser */}
@@ -51,7 +51,7 @@ export default function DocsPage() {
             </p>
           </Link>
 
-          {/* Editor */}
+          {/* Editor — MCP */}
           <Link
             href="/docs/mcp"
             className="group p-6 rounded-2xl border border-[var(--md-go)]/[0.18] bg-[var(--md-go)]/[0.03] hover:border-[var(--md-go)]/38 hover:bg-[var(--md-go)]/[0.06] transition-all duration-200 card-interactive"
@@ -62,13 +62,35 @@ export default function DocsPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z" />
                 </svg>
               </div>
-              <span className="text-[14px] font-semibold text-[var(--md-go)]/85 group-hover:text-[var(--md-go)] transition-colors">In your editor</span>
+              <span className="text-[14px] font-semibold text-[var(--md-go)]/85 group-hover:text-[var(--md-go)] transition-colors">MCP server</span>
             </div>
             <p className="text-[14px] text-[var(--md-text-secondary)] leading-[1.7] mb-4">
-              Install the <strong className="text-[var(--md-text)]">MCP server</strong> for Claude Code, Cursor, Windsurf, or Goose. MDPilot reads your actual repo — files reference real scripts and paths.
+              Install the <strong className="text-[var(--md-text)]">MCP server</strong> for Claude Code, Cursor, Windsurf, or Goose. Your AI agent can call MDPilot tools mid-conversation.
             </p>
             <p className="text-[12px] font-mono text-[var(--md-go)]/70 group-hover:text-[var(--md-go)] transition-colors">
               MCP setup →
+            </p>
+          </Link>
+
+          {/* Editor — VS Code extension */}
+          <Link
+            href="/docs/vscode"
+            className="group p-6 rounded-2xl border border-[var(--md-info)]/[0.18] bg-[var(--md-info)]/[0.03] hover:border-[var(--md-info)]/38 hover:bg-[var(--md-info)]/[0.06] transition-all duration-200 card-interactive sm:col-span-2"
+          >
+            <div className="flex items-center gap-2.5 mb-4">
+              <div className="w-8 h-8 rounded-lg bg-[var(--md-info)]/12 border border-[var(--md-info)]/20 flex items-center justify-center">
+                <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} className="text-[var(--md-info)]/80">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.25 9.75 16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" />
+                </svg>
+              </div>
+              <span className="text-[14px] font-semibold text-[var(--md-info)]/85 group-hover:text-[var(--md-info)] transition-colors">VS Code extension</span>
+              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded-[5px] bg-[var(--md-go)]/12 text-[var(--md-go)]/75 border border-[var(--md-go)]/20">new</span>
+            </div>
+            <p className="text-[14px] text-[var(--md-text-secondary)] leading-[1.7] mb-4">
+              Install the <strong className="text-[var(--md-text)]">MDPilot extension</strong> from the VS Code Marketplace. Works in VS Code, Cursor, and Windsurf. No JSON config — press <kbd className="text-[12px] font-mono bg-[var(--md-surface-2)] border border-[var(--md-border)] px-1 py-0.5 rounded text-[var(--md-text-secondary)]">Ctrl+Shift+P</kbd> and start generating.
+            </p>
+            <p className="text-[12px] font-mono text-[var(--md-info)]/70 group-hover:text-[var(--md-info)] transition-colors">
+              Extension setup →
             </p>
           </Link>
 
@@ -171,6 +193,12 @@ export default function DocsPage() {
               desc: 'Install and configure for Claude Code, Cursor, Windsurf, or Goose. Works with any AI key.',
               accent: 'var(--md-go)',
             },
+            {
+              href: '/docs/vscode',
+              label: 'VS Code extension',
+              desc: 'Install from the VS Code Marketplace. Works in VS Code, Cursor, and Windsurf — no JSON config.',
+              accent: 'var(--md-info)',
+            },
           ].map(item => (
             <Link
               key={item.href}
@@ -197,6 +225,7 @@ export default function DocsPage() {
         <p className="text-[12px] font-mono text-[var(--md-text-tertiary)] uppercase tracking-wider mb-5">All reference docs</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           {[
+            { href: '/docs/vscode', label: 'VS Code extension', desc: 'Install from the Marketplace — VS Code, Cursor, Windsurf' },
             { href: '/docs/files', label: 'Files reference', desc: 'Every file MDPilot generates and when to use each' },
             { href: '/docs/token-optimizer', label: 'Token optimizer', desc: 'How the 5-pass optimizer cuts 20–40% without losing meaning' },
             { href: '/docs/drift', label: 'Drift detection', desc: 'Keep docs in sync as your codebase evolves' },

@@ -67,6 +67,8 @@ Then point your config at the compiled output:
 
 Full setup guide (all clients): **[mdpilot.in/docs/mcp](https://mdpilot.in/docs/mcp)**
 
+> **Prefer a native editor extension?** The [MDPilot VS Code extension](https://marketplace.visualstudio.com/items?itemName=get-mdpilot.mdpilot) works in VS Code, Cursor, and Windsurf with no JSON config — it auto-reads the key from this MCP config. [Extension setup →](https://mdpilot.in/docs/vscode)
+
 ---
 
 ## Prerequisites

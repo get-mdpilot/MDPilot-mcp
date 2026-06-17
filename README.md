@@ -2,7 +2,7 @@
 
 **Markdown intelligence platform** — generate production-grade AI instruction files, optimize tokens, and convert any file to markdown. Works in the browser and as an MCP server inside your IDE.
 
-[mdpilot.in](https://mdpilot.in) · [Docs](https://mdpilot.in/docs) · [MCP setup](https://mdpilot.in/docs/mcp) · [npm — mdpilot-mcp@0.3.1](https://www.npmjs.com/package/mdpilot-mcp)
+[mdpilot.in](https://mdpilot.in) · [Docs](https://mdpilot.in/docs) · [MCP setup](https://mdpilot.in/docs/mcp) · [VS Code extension](https://mdpilot.in/docs/vscode) · [npm — mdpilot-mcp@0.3.2](https://www.npmjs.com/package/mdpilot-mcp)
 
 ---
 
@@ -25,6 +25,26 @@ Every output runs through a **5-pass token optimizer** (20–40% reduction) and 
 - **Human voice** (`writingStyle: 'human'`) — natural prose for README, CONTRIBUTING, DESIGN; auto-enabled for non-technical and learner audiences; hard-ignored for agent files (AGENTS.md, CLAUDE.md, SKILL.md).
 - **Plan-first** (ai_exec mode) — generated agent prompts now always open with "Before executing: write a 3-5 line plan" + step-verify gates before the Response style line.
 - **Agent risk check** (ai_exec + riskCheck toggle) — appends "check your plan against the Watch-outs above" to the agent prompt block when Watch-outs are present.
+
+---
+
+## VS Code extension — no config required
+
+Install the **MDPilot extension** from the VS Code Marketplace. Works in VS Code, Cursor, and Windsurf. No JSON MCP config — just install, and the extension auto-reads your existing API key from `~/.cursor/mcp.json`, `~/.claude/mcp.json`, or env vars.
+
+```
+Ctrl+Shift+P → MDPilot: Generate AGENTS.md
+```
+
+| Command | What it does |
+|---|---|
+| `MDPilot: Generate AGENTS.md` | Verified AGENTS.md, written to disk |
+| `MDPilot: Generate CLAUDE.md` | CLAUDE.md for Claude Code / Cursor |
+| `MDPilot: Generate Task Prompt` | Ticket → TASK.md |
+| `MDPilot: Check Docs for Drift` | Flags stale commands and paths |
+| `MDPilot: Save / Load Session Context` | Persist session state across AI sessions |
+
+[Extension setup →](https://mdpilot.in/docs/vscode) · [Marketplace →](https://marketplace.visualstudio.com/items?itemName=get-mdpilot.mdpilot)
 
 ---
 

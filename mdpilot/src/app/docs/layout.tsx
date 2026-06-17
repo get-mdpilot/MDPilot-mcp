@@ -29,6 +29,7 @@ const SIDEBAR_SECTIONS: SidebarSection[] = [
     links: [
       { label: 'Task mode', href: '/docs/task', accent: true },
       { label: 'MCP server', href: '/docs/mcp', accent: true },
+      { label: 'VS Code extension', href: '/docs/vscode', accent: true },
     ],
   },
   {

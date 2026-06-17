@@ -11,6 +11,7 @@ Markdown intelligence platform at [mdpilot.in](https://mdpilot.in). Primary tool
 | `/labs` | Hangar — 5 secondary tools |
 | `/docs` | Field Manual — documentation hub (sidebar layout) |
 | `/docs/mcp` | MCP server setup — full guide, all 10 tools (live) |
+| `/docs/vscode` | VS Code extension setup — install, key resolution, commands |
 | `/docs/getting-started` | Getting started |
 | `/atmosphere` | Night Approach design study — six design decisions behind the site's look |
 | `/blog` | Logbook — blog index (empty state pending first post) |
@@ -108,9 +109,19 @@ pipx install 'markitdown[all]'
 | `POST /api/convert` | Convert file to markdown |
 | `GET  /api/providers` | List available AI providers |
 
+## VS Code extension (packages/vscode)
+
+Native editor extension — published to the VS Code Marketplace, works in VS Code, Cursor, and Windsurf. Auto-reads the API key from existing MCP config files — no extra setup if MCP server is already configured.
+
+```
+get-mdpilot.mdpilot  v0.1.2
+```
+
+[Extension setup →](https://mdpilot.in/docs/vscode)
+
 ## MCP server (packages/mcp)
 
-Exposes MDPilot generation as MCP tools for Claude Code and Cursor:
+Exposes MDPilot generation as MCP tools for Claude Code, Cursor, Windsurf, and Goose:
 
 | Tool | Description |
 |------|-------------|
@@ -122,6 +133,8 @@ Exposes MDPilot generation as MCP tools for Claude Code and Cursor:
 | `image_to_prompt` | Analyze an image and generate a recreation prompt |
 | `check_drift` | Detect where docs have gone stale |
 | `update_docs` | Patch stale sections in a doc file |
+| `save_context` | Persist session state to CONTEXT.md across sessions |
+| `load_context` | Load prior context with inline drift annotations |
 
 ## Key files
 
