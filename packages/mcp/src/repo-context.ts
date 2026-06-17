@@ -4,14 +4,13 @@ import { join } from 'path';
 import { tmpdir } from 'os';
 import { analyzeProject, type ProjectContext } from './analyze.js';
 import { countTokens } from './tokenizer.js';
+import { getContextBudget } from './ai-provider.js';
 
 export interface DeepRepoContext extends ProjectContext {
   packedSummary: string;
   packedTokens: number;
   suspiciousFiles: string[];
 }
-
-const TOKEN_BUDGET = 30_000;
 
 const IGNORE_PATTERNS = [
   '.env*', '*.pem', '*.key', '*.p12', '*.pfx', '*.cer', '*.crt',
@@ -68,18 +67,21 @@ export async function buildDeepContext(rootDir: string): Promise<DeepRepoContext
     try { unlinkSync(tmpOut); } catch { /* tmp cleanup — ignore */ }
   }
 
-  // Apply token budget — trim from the bottom (directory structure stays at top)
-  if (packedSummary && countTokens(packedSummary) > TOKEN_BUDGET) {
+  // Apply token budget — trim from the bottom (directory structure stays at top).
+  // Budget is sized to the active provider so free tiers don't overflow the
+  // per-minute token limit (e.g. Groq's 12k TPM).
+  const tokenBudget = getContextBudget();
+  if (packedSummary && countTokens(packedSummary) > tokenBudget) {
     const lines = packedSummary.split('\n');
-    let lo = 100, hi = lines.length;
+    let lo = Math.min(100, lines.length), hi = lines.length;
     while (lo < hi) {
       const mid = (lo + hi + 1) >> 1;
-      if (countTokens(lines.slice(0, mid).join('\n')) <= TOKEN_BUDGET) lo = mid;
+      if (countTokens(lines.slice(0, mid).join('\n')) <= tokenBudget) lo = mid;
       else hi = mid - 1;
     }
     packedSummary =
       lines.slice(0, lo).join('\n') +
-      '\n\n[... truncated — 30k token budget reached ...]';
+      `\n\n[... truncated — ${Math.round(tokenBudget / 1000)}k token budget reached ...]`;
   }
 
   return {

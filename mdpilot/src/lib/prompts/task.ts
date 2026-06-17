@@ -121,6 +121,20 @@ and produce files that let a developer or AI agent start coding with zero clarif
 <task>
 Parse the raw input and generate a TASK.md. Use the expertise block above to surface domain-specific watch-outs relevant to THIS specific task.
 
+<expert_analysis>
+Before writing any section, reason about this task the way a senior practitioner in
+its domain would:
+1. What IS this problem really? Name the specific sub-domain and the actual mechanism
+   involved — not the generic category. E.g. not "a frontend task" but "a render-
+   performance task about paint/composite cost and reflow triggers."
+2. What does an expert in THIS sub-domain know that a generalist would miss? State the
+   specific traps, mechanisms, and non-obvious factors that apply to THIS task.
+3. What would a non-expert get wrong here? Those become the watch-outs.
+Only after this analysis, write the sections — and let the analysis make the
+Implementation plan, Watch-outs, and Acceptance criteria specific to the real
+mechanism, not generic best-practice.
+</expert_analysis>
+
 SECTIONS:
 
 ## Task
@@ -224,6 +238,13 @@ Start by [first concrete step].
 </task>
 
 <quality_bar>
+- The output must read as written by someone who KNOWS this specific sub-domain, not
+  someone organizing it from outside. A practitioner in the field should recognize the
+  watch-outs as the real traps, not generic advice.
+- Implementation steps reference the actual mechanism (the specific API, the specific
+  failure mode), not category-level platitudes.
+- If the domain knowledge needed isn't available, say so explicitly with [NEEDS_EXPERT:
+  <what knowledge is missing>] rather than filling with generic content.
 - An AI agent reads this and asks 0 clarifying questions
 - Every requirement is independently testable
 - Watch-outs reference domain/language pitfalls from the expertise block that actually apply to THIS task — not every watch-out in the lens
@@ -255,6 +276,8 @@ DO NOT:
 - Omit the request chain when the task involves CDN, reverse proxy, or multi-hop routing — one line (Browser → CloudFront → ALB → nginx → Origin) prevents the agent from debugging the wrong layer
 - List something as out of scope only to avoid it — out of scope means "related but explicitly excluded"; do not use it as a "we won't touch this" list for things that were never candidates
 - Leave the decision log empty on setup/config tasks — capture the origin/target choice and rationale even if not stated in the input; missing this is the most costly gap on debug tasks
+- Fill sections with generic domain advice when the actual mechanism is unknown — use [NEEDS_EXPERT: <what is missing>] to flag the gap honestly rather than producing plausible-sounding but shallow content
+- Skip the expert_analysis step and jump straight to section generation — the analysis is what makes watch-outs specific; skipping it produces exactly the "structured but shallow" failure
 </anti_patterns>`;
 
 // ── Public API ─────────────────────────────────────────────────────────────────

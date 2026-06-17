@@ -1,11 +1,17 @@
 import * as vscode from 'vscode';
 import { createDriftStatusBar, setDriftStatus } from './statusBar';
 import * as commands from './commands';
-import { forgetStoredKey } from './keyManager';
+import { forgetStoredKey, getMaskedKey } from './keyManager';
+import { MDPilotPanelProvider } from './panelProvider';
 
-export function activate(context: vscode.ExtensionContext): void {
-  // Share context with commands so keyManager can use secret storage
+export async function activate(context: vscode.ExtensionContext): Promise<void> {
   commands.initContext(context);
+
+  // Register webview panel provider
+  const panelProvider = new MDPilotPanelProvider(context);
+  context.subscriptions.push(
+    vscode.window.registerWebviewViewProvider(MDPilotPanelProvider.viewId, panelProvider),
+  );
 
   const statusBar = createDriftStatusBar();
   context.subscriptions.push(statusBar);
@@ -30,9 +36,11 @@ export function activate(context: vscode.ExtensionContext): void {
       vscode.env.openExternal(vscode.Uri.parse('https://mdpilot.in/docs/vscode'));
     }),
     vscode.commands.registerCommand('mdpilot.openPanel', () => {
-      vscode.commands.executeCommand('mdpilot.panel.focus');
+      vscode.commands.executeCommand(`${MDPilotPanelProvider.viewId}.focus`);
     }),
     vscode.commands.registerCommand('mdpilot.clearKey', () => forgetStoredKey(context)),
+    vscode.commands.registerCommand('mdpilot.openSettings', () => panelProvider.revealSettings()),
+    vscode.commands.registerCommand('mdpilot.updateApiKey', () => panelProvider.revealSettings()),
   ];
 
   registrations.forEach(r => context.subscriptions.push(r));
@@ -44,6 +52,20 @@ export function activate(context: vscode.ExtensionContext): void {
     commands.checkDrift()
       .then(() => setDriftStatus(statusBar, 'clean'))
       .catch(() => setDriftStatus(statusBar, 'unknown'));
+  }
+
+  // First-run: surface Settings when no key is configured
+  const { keySource } = await getMaskedKey(context);
+  if (keySource === 'none') {
+    const action = await vscode.window.showInformationMessage(
+      'MDPilot: No API key configured. A free Groq key is all you need.',
+      'Open Settings',
+      'Get free Groq key',
+    );
+    if (action === 'Open Settings') panelProvider.revealSettings();
+    else if (action === 'Get free Groq key') {
+      vscode.env.openExternal(vscode.Uri.parse('https://console.groq.com/keys'));
+    }
   }
 }
 

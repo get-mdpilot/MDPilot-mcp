@@ -2,7 +2,7 @@
   "name": "mdpilot",
   "displayName": "MDPilot",
   "description": "Give your AI agent the perfect starting point — generate AGENTS.md, CLAUDE.md, and expert-grade task prompts from inside your editor.",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "publisher": "get-mdpilot",
   "engines": { "vscode": "^1.85.0" },
   "categories": ["AI", "Other"],
@@ -59,6 +59,15 @@
       {
         "command": "mdpilot.clearKey",
         "title": "MDPilot: Clear stored API key"
+      },
+      {
+        "command": "mdpilot.openSettings",
+        "title": "MDPilot: Open Settings",
+        "icon": "$(settings-gear)"
+      },
+      {
+        "command": "mdpilot.updateApiKey",
+        "title": "MDPilot: Update API Key"
       }
     ],
     "viewsContainers": {
@@ -101,6 +110,13 @@
       }
     },
     "menus": {
+      "view/title": [
+        {
+          "command": "mdpilot.openSettings",
+          "when": "view == mdpilot.panel",
+          "group": "navigation"
+        }
+      ],
       "explorer/context": [
         {
           "command": "mdpilot.generateAgents",

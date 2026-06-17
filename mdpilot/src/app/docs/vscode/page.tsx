@@ -42,6 +42,7 @@ const COMMANDS = [
   { cmd: 'MDPilot: Check Docs for Drift', desc: 'Scans AGENTS.md and CLAUDE.md for stale commands, missing files, and outdated sections.' },
   { cmd: 'MDPilot: Save Session Context', desc: 'Summarise your current session and save to .mdpilot-context.json.' },
   { cmd: 'MDPilot: Load Session Context', desc: 'Shows the last saved context in an output channel — paste into your next AI session.' },
+  { cmd: 'MDPilot: Open Settings', desc: 'Opens the Settings tab in the sidebar panel — provider, key, and status.' },
   { cmd: 'MDPilot: Setup', desc: 'Opens the setup docs and API key configuration.' },
 ];
 
@@ -72,6 +73,7 @@ export default function VsCodeDocsPage() {
         <ol className="space-y-1.5">
           {[
             ['install', 'Install'],
+            ['panel', 'Sidebar panel'],
             ['api-key', 'API key'],
             ['commands', 'Commands'],
             ['settings', 'Settings'],
@@ -143,11 +145,58 @@ export default function VsCodeDocsPage() {
         </div>
       </DocSection>
 
+      {/* Sidebar panel */}
+      <DocSection id="panel">
+        <h2 className="text-[16px] font-semibold text-[var(--md-text)] mb-3">Sidebar panel</h2>
+        <p className="text-[14px] text-[var(--md-text-secondary)] mb-5 leading-relaxed">
+          Click the <strong className="text-[var(--md-text)]">MDPilot</strong> icon in the activity bar to open a panel with two tabs.
+        </p>
+
+        <div className="space-y-3">
+          {/* Chat */}
+          <div className="p-4 rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)]">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="w-2 h-2 rounded-full bg-[var(--md-accent)]/70" />
+              <span className="text-[13px] font-semibold text-[var(--md-text-secondary)]">Chat</span>
+            </div>
+            <p className="text-[13px] text-[var(--md-text-secondary)] leading-relaxed mb-2">
+              Type what you want in plain language — the extension routes it to the right tool and shows the result inline:
+            </p>
+            <ul className="space-y-1 text-[13px] text-[var(--md-text-secondary)]">
+              {[
+                ['generate agents', 'writes AGENTS.md'],
+                ['generate readme', 'writes README.md'],
+                ['check drift', 'flags stale commands & paths'],
+                ['task: add rate limiting to /api/search', 'writes TASK.md'],
+              ].map(([cmd, what]) => (
+                <li key={cmd} className="flex flex-wrap items-baseline gap-x-2">
+                  <code className="text-[12px] font-mono text-[var(--md-accent)]/75 bg-[var(--md-surface-2)] px-1.5 py-0.5 rounded">{cmd}</code>
+                  <span className="text-[var(--md-text-tertiary)]">→ {what}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Settings */}
+          <div className="p-4 rounded-xl border border-[var(--md-border)] bg-[var(--md-surface)]">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="w-2 h-2 rounded-full bg-[var(--md-text)]/40" />
+              <span className="text-[13px] font-semibold text-[var(--md-text-secondary)]">Settings</span>
+            </div>
+            <p className="text-[13px] text-[var(--md-text-secondary)] leading-relaxed">
+              Pick your provider, see your masked key, paste a new one, or clear it — without touching <code className="text-[11px] font-mono bg-[var(--md-surface-2)] px-1 rounded">settings.json</code>.
+              Keys entered here are stored in the OS keychain (encrypted <strong className="text-[var(--md-text)]">SecretStorage</strong>), never in plain settings. The gear icon (⚙) in the panel title bar opens this tab directly.
+            </p>
+          </div>
+        </div>
+      </DocSection>
+
       {/* API key */}
       <DocSection id="api-key">
         <h2 className="text-[16px] font-semibold text-[var(--md-text)] mb-3">API key</h2>
         <p className="text-[14px] text-[var(--md-text-secondary)] mb-5 leading-relaxed">
           The extension calls the same AI provider as the MCP server. Groq is free — takes 60 seconds to get a key.
+          It resolves a key in this order: <strong className="text-[var(--md-text)]">Settings tab (keychain)</strong> → <code className="text-[11px] font-mono bg-[var(--md-surface-2)] px-1 rounded">mdpilot.apiKey</code> → env vars → existing <code className="text-[11px] font-mono bg-[var(--md-surface-2)] px-1 rounded">mcp.json</code> → workspace <code className="text-[11px] font-mono bg-[var(--md-surface-2)] px-1 rounded">.env</code> → prompt.
         </p>
 
         <div className="space-y-3">
@@ -225,7 +274,7 @@ export default function VsCodeDocsPage() {
               key: 'mdpilot.provider',
               type: 'enum',
               default: '"groq"',
-              desc: 'Provider to use: groq (default), nvidia, anthropic, openai. Groq and NVIDIA have free tiers.',
+              desc: 'Provider to use: groq (default), nvidia, anthropic, openai. Groq and NVIDIA have free tiers; on large repos, Anthropic or OpenAI avoid free-tier rate limits.',
             },
             {
               key: 'mdpilot.autoCheckDrift',

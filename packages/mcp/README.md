@@ -87,6 +87,8 @@ Set exactly one. Calls are billed to your key — MDPilot does not proxy them.
 
 > **No key?** The three non-AI tools (`analyze_project`, `optimize_markdown`, `check_drift`) work without any key. Only generation tools require one.
 
+> **Large repos?** The repo context sent to the model is auto-sized to the active provider's per-minute token limit (Groq 6k · NVIDIA 12k · Anthropic/OpenAI 30k), so free tiers won't return `413 Request too large`. For the richest context on a big codebase, use an Anthropic or OpenAI key.
+
 ---
 
 ## The 10 tools
@@ -134,6 +136,12 @@ Once configured, open any repo in your IDE and try:
 ## Security
 
 The server reads files from the repo path you pass to each tool. It does NOT read `.env` files or secrets. `writeToDisk` writes only to the project root you specify — never outside it.
+
+---
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for release notes. Latest: **0.3.3** — provider-aware context budget so free tiers don't hit `413`.
 
 ---
 

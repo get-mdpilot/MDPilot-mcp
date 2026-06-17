@@ -43,6 +43,18 @@ function resolve(): ResolvedProvider {
   );
 }
 
+/**
+ * Token budget for the packed repo context, sized to the active provider's
+ * per-minute limits. Free tiers (Groq 12k TPM, NVIDIA) must stay small so the
+ * full request (context + system prompt + output) fits in one window; paid
+ * providers have large context windows and can take much more.
+ */
+export function getContextBudget(): number {
+  if (process.env.GROQ_API_KEY) return 6_000;   // Groq free tier: 12k TPM total
+  if (process.env.NVIDIA_API_KEY) return 12_000; // NVIDIA NIM free tier
+  return 30_000;                                  // Anthropic / OpenAI
+}
+
 export async function generateText(
   system: string,
   user: string,

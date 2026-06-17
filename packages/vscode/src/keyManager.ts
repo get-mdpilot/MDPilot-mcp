@@ -131,3 +131,45 @@ export async function forgetStoredKey(context: vscode.ExtensionContext): Promise
   await context.secrets.delete(SECRET_KEY);
   vscode.window.showInformationMessage('MDPilot: stored key cleared.');
 }
+
+// ── Named exports for panel provider ─────────────────────────────────────────
+
+export async function getMaskedKey(context: vscode.ExtensionContext): Promise<{
+  maskedKey: string;
+  keySource: 'secret' | 'settings' | 'env' | 'none';
+}> {
+  const stored = await context.secrets.get(SECRET_KEY);
+  if (stored) return { maskedKey: '•••' + stored.slice(-4), keySource: 'secret' };
+
+  const config = vscode.workspace.getConfiguration('mdpilot');
+  const settingsKey = config.get<string>('apiKey') ?? '';
+  if (settingsKey) return { maskedKey: '•••' + settingsKey.slice(-4), keySource: 'settings' };
+
+  const hasEnv = ENV_PROVIDERS.some(([k]) => !!process.env[k]);
+  if (hasEnv) return { maskedKey: '(from environment)', keySource: 'env' };
+
+  return { maskedKey: '', keySource: 'none' };
+}
+
+export function getProvider(): string {
+  return vscode.workspace.getConfiguration('mdpilot').get<string>('provider') ?? 'groq';
+}
+
+export async function setProvider(provider: string): Promise<void> {
+  await vscode.workspace.getConfiguration('mdpilot').update(
+    'provider', provider, vscode.ConfigurationTarget.Global,
+  );
+}
+
+export async function setApiKey(
+  context: vscode.ExtensionContext,
+  key: string,
+  provider: string,
+): Promise<void> {
+  await context.secrets.store(SECRET_KEY, key);
+  await setProvider(provider);
+}
+
+export async function clearApiKey(context: vscode.ExtensionContext): Promise<void> {
+  await context.secrets.delete(SECRET_KEY);
+}

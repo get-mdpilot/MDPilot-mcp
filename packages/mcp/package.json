@@ -1,6 +1,6 @@
 {
   "name": "mdpilot-mcp",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "mcpName": "io.github.get-mdpilot/mdpilot-mcp",
   "description": "Give your AI agent the perfect starting point — generates AGENTS.md and CLAUDE.md from your real repo, verifies every command exists, detects doc drift, and saves session context. Free-tier friendly via Groq/NVIDIA.",
   "type": "module",
