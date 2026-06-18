@@ -7,10 +7,14 @@ import { MDPilotPanelProvider } from './panelProvider';
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
   commands.initContext(context);
 
-  // Register webview panel provider
+  // Register webview panel provider — retain context so tab/state survives hide/show
   const panelProvider = new MDPilotPanelProvider(context);
   context.subscriptions.push(
-    vscode.window.registerWebviewViewProvider(MDPilotPanelProvider.viewId, panelProvider),
+    vscode.window.registerWebviewViewProvider(
+      MDPilotPanelProvider.viewId,
+      panelProvider,
+      { webviewOptions: { retainContextWhenHidden: true } },
+    ),
   );
 
   const statusBar = createDriftStatusBar();

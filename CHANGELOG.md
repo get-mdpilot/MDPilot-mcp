@@ -11,6 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## 2026-06-18
 
+### VS Code extension `0.1.6`
+- Fixed Chat ↔ Settings tab switching (single source of truth, state persisted, gear
+  routing reliable). Added a workspace context bar with multi-root folder picker (its
+  path drives `rootDir`), and `@` file mentions — fuzzy file search scoped to the active
+  folder, inserted as chips, with content included as context for task generation.
+
 ### VS Code extension `0.1.5`
 - Panel UI polish — brand header + single amber accent, a chat empty state with
   suggestion chips, rich result bubbles (action · ✓ · tokens · Copy · Open file),

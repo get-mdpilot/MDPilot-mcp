@@ -3,6 +3,24 @@
 All notable changes to the **MDPilot** VS Code extension are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.1.6] — 2026-06-18
+
+### Fixed
+- **Tab switching** — Chat ↔ Settings now uses one `setActiveTab` source of truth, both
+  panels stay in the DOM, and the active tab persists via `setState` +
+  `retainContextWhenHidden`. The gear icon reliably opens Settings from either tab, and
+  the MDPILOT header returns to Chat.
+
+### Added
+- **Workspace context bar** — the Chat tab shows the folder tools run against
+  (`📁 <folder>`). In a multi-root workspace it's a picker; the chosen folder's path is
+  passed as `rootDir` to every tool call. Reacts to `onDidChangeWorkspaceFolders`; shows
+  a disabled state when no folder is open.
+- **`@` file mentions** — type `@` to fuzzy-search files in the active folder (`.md`
+  first), arrow/Enter or click to insert the path, with removable chips above the input.
+  On send, referenced files' content is read (scoped to the active folder, size-limited)
+  and included as context for task generation.
+
 ## [0.1.5] — 2026-06-18
 
 ### Changed

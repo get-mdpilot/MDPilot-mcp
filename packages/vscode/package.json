@@ -2,7 +2,7 @@
   "name": "mdpilot",
   "displayName": "MDPilot",
   "description": "Give your AI agent the perfect starting point — generate AGENTS.md, CLAUDE.md, and expert-grade task prompts from inside your editor.",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "publisher": "get-mdpilot",
   "engines": { "vscode": "^1.85.0" },
   "categories": ["AI", "Other"],
