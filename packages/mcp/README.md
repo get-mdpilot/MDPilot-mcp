@@ -141,7 +141,7 @@ The server reads files from the repo path you pass to each tool. It does NOT rea
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) for release notes. Latest: **0.3.3** — provider-aware context budget so free tiers don't hit `413`.
+See [CHANGELOG.md](CHANGELOG.md) for release notes. Latest: **0.3.4** — optimizer preserves insight-bearing lines (technical nouns) and logs `[NEEDS_EXPERT]` gaps.
 
 ---
 

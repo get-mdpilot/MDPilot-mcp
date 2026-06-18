@@ -43,6 +43,20 @@ function compressStructure(content: string): string {
   return result.trim();
 }
 
+// ── Insight protection ────────────────────────────────────────────────────────
+// A line is "insight-bearing" if it carries a specific technical noun — a CLI flag,
+// a dotted/scoped identifier, an ALL_CAPS constant, a region/zone code, a version,
+// a metric name, or an inline-code span. The prose-rewriting passes (verbose,
+// aggressive) must NEVER touch such a line: collapsing "us-east-1 only for CloudFront
+// certs" into "configure certs correctly" is exactly the expertise-flattening that
+// makes output read as "plain". Whitespace/structure passes are safe and still run.
+const TECHNICAL_TERM_RE =
+  /`[^`]+`|--?[a-z][\w-]+|\b[A-Z][A-Za-z]+(?:[A-Z][A-Za-z]+)+\b|\b[A-Z][A-Z0-9_]{2,}\b|\b[a-z]+-[a-z]+-\d\b|\bv?\d+\.\d+(?:\.\d+)?\b|[\w@/.]+\.[a-z]{2,}\b/;
+
+function hasTechnicalTerm(line: string): boolean {
+  return TECHNICAL_TERM_RE.test(line);
+}
+
 // ── Pass 3: Verbose compression ───────────────────────────────────────────────
 
 const VERBOSE_PATTERNS: [RegExp, string][] = [
@@ -80,11 +94,15 @@ const VERBOSE_PATTERNS: [RegExp, string][] = [
 ];
 
 function applyVerboseCompression(content: string): string {
-  let result = content;
-  for (const [re, repl] of VERBOSE_PATTERNS) {
-    result = result.replace(re, repl);
-  }
-  return result.replace(/  +/g, ' ').replace(/ +([.,;:])/g, '$1');
+  // Rewrite line-by-line so insight-bearing lines are skipped entirely.
+  let inFence = false;
+  return content.split('\n').map((line) => {
+    if (/^```|^~~~/.test(line)) { inFence = !inFence; return line; }
+    if (inFence || hasTechnicalTerm(line)) return line;
+    let out = line;
+    for (const [re, repl] of VERBOSE_PATTERNS) out = out.replace(re, repl);
+    return out.replace(/  +/g, ' ').replace(/ +([.,;:])/g, '$1');
+  }).join('\n');
 }
 
 // ── Pass 4: Line compression ──────────────────────────────────────────────────
@@ -134,8 +152,9 @@ function aggressiveCompress(content: string): string {
   const result = lines.map((line) => {
     // Track code fence state
     if (/^```|^~~~/.test(line)) { inFence = !inFence; return line; }
-    // Never touch lines inside code fences or command-like lines
-    if (inFence || PROTECTED_LINE_RE.test(line)) return line;
+    // Never touch lines inside code fences, command-like lines, or insight-bearing
+    // lines that carry a specific technical noun (flag, constant, version, metric…).
+    if (inFence || PROTECTED_LINE_RE.test(line) || hasTechnicalTerm(line)) return line;
     let out = line;
     for (const [re, repl] of AGGRESSIVE_PATTERNS) {
       out = out.replace(re, repl);

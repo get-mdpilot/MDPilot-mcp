@@ -20,6 +20,20 @@ const server = new McpServer({
   version: '1.0.0',
 });
 
+// ── Observability: surface [NEEDS_EXPERT: …] flags ────────────────────────────
+// When the model honestly admits it lacks specific domain knowledge, it emits a
+// [NEEDS_EXPERT: <gap>] flag instead of generic filler. Logging these to stderr
+// (captured in MCP client logs) turns them into a usage-driven lens-growth backlog:
+// the sub-domains flagged most often are the ones to deepen with REAL expertise.
+const NEEDS_EXPERT_RE = /\[NEEDS_EXPERT:\s*([^\]]+)\]/g;
+
+function logNeedsExpert(source: string, content: string): void {
+  const gaps = [...content.matchAll(NEEDS_EXPERT_RE)].map(m => m[1].trim());
+  for (const gap of gaps) {
+    console.error(`[mdpilot:needs-expert] source=${source} gap="${gap}"`);
+  }
+}
+
 // ── Compact formatting helpers ────────────────────────────────────────────────
 
 function compactFooter(file: string, tokensBefore: number, tokensAfter: number, extra = ''): string {
@@ -164,6 +178,7 @@ server.registerTool(
         raw = await generateFile(fileType, ctx, opts);
       }
 
+      logNeedsExpert(`generate_md_file:${fileType}`, raw);
       const { optimized, tokensBefore, tokensAfter } = optimizeMarkdown(raw);
 
       if (writeToDisk) {
@@ -243,6 +258,8 @@ server.registerTool(
         (experienceLevel ?? 'experienced') as McpExperienceLevel,
         riskCheck ?? false,
       );
+
+      logNeedsExpert('generate_task_file', content);
 
       if (verbose) {
         return { content: [{ type: 'text', text: content + `\n\n---\nGenerated TASK.md (${content.split(' ').length} words)` }] };

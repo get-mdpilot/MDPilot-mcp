@@ -114,7 +114,7 @@ pipx install 'markitdown[all]'
 Native editor extension — published to the VS Code Marketplace, works in VS Code, Cursor, and Windsurf. Auto-reads the API key from existing MCP config files — no extra setup if MCP server is already configured.
 
 ```
-get-mdpilot.mdpilot  v0.1.4
+get-mdpilot.mdpilot  v0.1.5
 ```
 
 [Extension setup →](https://mdpilot.in/docs/vscode)

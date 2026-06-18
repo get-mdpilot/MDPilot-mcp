@@ -2,12 +2,12 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
   "name": "io.github.get-mdpilot/mdpilot-mcp",
   "description": "Give your AI agent the perfect starting point. Generates AGENTS.md and CLAUDE.md from your real repo, verifies every command exists, detects doc drift, and saves session context. Free-tier friendly — works with Groq and NVIDIA free tiers, no paid key needed.",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "packages": [
     {
       "registry_type": "npm",
       "name": "mdpilot-mcp",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "runtime_arguments": []
     }
   ],

@@ -9,6 +9,25 @@ changelog:
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## 2026-06-18
+
+### VS Code extension `0.1.5`
+- Panel UI polish — brand header + single amber accent, a chat empty state with
+  suggestion chips, rich result bubbles (action · ✓ · tokens · Copy · Open file),
+  loading/error states, and a card-grouped Settings tab. Visual only; all colors via
+  `var(--vscode-*)` so it stays native in light/dark/Cursor/Windsurf.
+
+### Depth — make outputs expert, not plain
+- **Prompts** — added an `expert_analysis` pre-writing step and a `depth_bar` (ban
+  platitudes, require specific named mechanisms) to Task mode and the AGENTS / CLAUDE /
+  README generators.
+- **MCP server `mdpilot-mcp@0.3.4`** — optimizer no longer flattens insight-bearing
+  lines (technical nouns protected); `[NEEDS_EXPERT: …]` gaps logged to stderr.
+- **Evals** — depth assertions added (banned platitudes + required specificity); gate
+  stays at 80%.
+- **Lens growth** — new "Domain expertise gap" issue template so practitioners can
+  supply real expert knowledge that becomes lens content.
+
 ## 2026-06-17
 
 ### VS Code extension `0.1.4`

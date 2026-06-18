@@ -3,6 +3,24 @@
 All notable changes to the **MDPilot** VS Code extension are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.1.5] — 2026-06-18
+
+### Changed
+- **Panel UI polish** — same structure, product-grade look:
+  - Brand header with the MDPilot mark; one amber accent (`#E6A23C`) applied to the
+    active tab, primary/send buttons, focus rings, and chip hover.
+  - **Chat empty state** — logo, "What do you want to set up?", and four clickable
+    suggestion chips (Generate AGENTS.md · README · Check drift · New task…).
+  - **Result bubbles** — action name + ✓ + token count, output in a monospace block
+    with **Copy** and **Open file**; user vs reply styling.
+  - **Loading + error states** — spinner bubble while a tool runs; inline error bubble
+    with a Retry chip.
+  - **Settings** — key area grouped in a bordered card; secondary actions ("Get free
+    Groq key", "Clear stored key") moved to a divided footer; Clear is now a quiet
+    danger-tinted button.
+  - All base colors use `var(--vscode-*)` so it stays native in light + dark + Cursor +
+    Windsurf. Script runs under a CSP nonce; no remote assets.
+
 ## [0.1.4] — 2026-06-17
 
 ### Added

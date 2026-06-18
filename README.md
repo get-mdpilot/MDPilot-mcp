@@ -2,7 +2,7 @@
 
 **Markdown intelligence platform** — generate production-grade AI instruction files, optimize tokens, and convert any file to markdown. Works in the browser and as an MCP server inside your IDE.
 
-[mdpilot.in](https://mdpilot.in) · [Docs](https://mdpilot.in/docs) · [MCP setup](https://mdpilot.in/docs/mcp) · [VS Code extension](https://mdpilot.in/docs/vscode) · [npm — mdpilot-mcp@0.3.3](https://www.npmjs.com/package/mdpilot-mcp) · [Changelog](CHANGELOG.md)
+[mdpilot.in](https://mdpilot.in) · [Docs](https://mdpilot.in/docs) · [MCP setup](https://mdpilot.in/docs/mcp) · [VS Code extension](https://mdpilot.in/docs/vscode) · [npm — mdpilot-mcp@0.3.4](https://www.npmjs.com/package/mdpilot-mcp) · [Changelog](CHANGELOG.md)
 
 ---
 

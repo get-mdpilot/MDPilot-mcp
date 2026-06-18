@@ -1,0 +1,88 @@
+name: Domain expertise gap
+description: MDPilot produced plain / outsider-level output for a domain you know well — supply the real expertise so we can deepen the lens
+labels: ["domain-lens", "depth"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Lens content in MDPilot is **never** fabricated by an LLM — it comes from real
+        practitioner corrections (like the AWS Cost Explorer traps) or verified docs.
+        If a generation read as shallow in a domain you know, your correction here becomes
+        the actual expert knowledge we ship. Be as specific as you would when mentoring.
+
+  - type: input
+    id: domain
+    attributes:
+      label: Domain / sub-domain
+      description: The precise sub-domain, not the generic category.
+      placeholder: "Not 'frontend' — 'browser paint/composite cost & reflow triggers'"
+    validations:
+      required: true
+
+  - type: textarea
+    id: task
+    attributes:
+      label: The task you gave MDPilot
+      description: The real input (ticket, prompt, or description) that produced the plain output.
+      placeholder: "Generate a TASK.md for: 'the dashboard scrolls janky on a 10k-row table'"
+    validations:
+      required: true
+
+  - type: textarea
+    id: shallow
+    attributes:
+      label: What it produced (the shallow part)
+      description: Paste the lines that read as generic / outsider-level.
+      placeholder: "'Optimize rendering and follow best practices for performance.'"
+    validations:
+      required: true
+
+  - type: textarea
+    id: expert
+    attributes:
+      label: What an expert would have said
+      description: >
+        The real mechanism, traps, and non-obvious factors. Name specific tools, flags,
+        metrics, and failure modes — this is the content that becomes the lens.
+      placeholder: |
+        - Jank here is almost always layout thrash from per-row reflow, not paint.
+        - Virtualize (react-window) so only ~30 rows mount; measure with the Performance
+          panel's "Recalculate Style" / "Layout" timings, not FPS feel.
+        - `content-visibility: auto` on off-screen rows; avoid reading offsetHeight in a
+          loop (forces sync reflow).
+    validations:
+      required: true
+
+  - type: dropdown
+    id: source
+    attributes:
+      label: Source of this expertise
+      description: We only ship lens content that is real and verifiable.
+      options:
+        - "My own hands-on experience in this domain"
+        - "Authoritative docs / spec (link below)"
+        - "A real incident / postmortem I worked"
+    validations:
+      required: true
+
+  - type: input
+    id: reference
+    attributes:
+      label: Reference link (if any)
+      description: Docs, spec, or write-up that backs the correction.
+      placeholder: "https://..."
+    validations:
+      required: false
+
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Which surface produced it?
+      options:
+        - "Task mode (TASK.md)"
+        - "Generate mode (AGENTS / CLAUDE / README / …)"
+        - "MCP server"
+        - "VS Code extension"
+        - "Not sure"
+    validations:
+      required: true

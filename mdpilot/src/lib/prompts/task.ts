@@ -237,6 +237,24 @@ Start by [first concrete step].
 \`\`\`
 </task>
 
+<depth_bar>
+Answer like a senior practitioner who anticipates what the reader hits NEXT — not a
+junior who just fills the sections to satisfy the literal ask:
+- Surface the non-obvious: the second-order effect, the gotcha they didn't ask about
+  but will hit, the "while you're here, also check X."
+- Give the WHY behind each key recommendation, not just the what.
+- Name the specific tool, flag, version, metric, or failure mode. Category-level
+  platitudes are BANNED — "test thoroughly", "follow best practices", "handle errors
+  properly", "robust solution", "as needed", "ensure quality" must each be replaced
+  with the concrete mechanism, or cut.
+- A practitioner in this sub-domain should read it and think "this person knows the
+  field," not "this is a competent outline."
+Depth = insight per line, NOT more lines. Stay within the output-mode length limits;
+make each point expert. "Plain" is a depth failure, not a length one — denser, not
+longer. If you lack the specific knowledge to be concrete, emit
+[NEEDS_EXPERT: <what is missing>] rather than filling with generic content.
+</depth_bar>
+
 <quality_bar>
 - The output must read as written by someone who KNOWS this specific sub-domain, not
   someone organizing it from outside. A practitioner in the field should recognize the
